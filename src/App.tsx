@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import IntersectObserver from '@/components/common/IntersectObserver';
 import { Toaster } from '@/components/ui/sonner';
 import { LoanProvider } from '@/contexts/LoanContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { FloatingChatButton } from '@/components/common/FloatingChatButton';
 import { PwaInstallPrompt, PwaFloatingInstallButton } from '@/components/common/PwaInstallPrompt';
-import { AnimatePresence, motion } from 'motion/react';
+import { RouteLoadingScreen } from '@/components/common/AnimatedPage';
 
 import { routes } from './routes';
 
@@ -56,62 +56,37 @@ const prefetchAllLazyRoutes = () => {
   });
 };
 
-const pageVariants = {
-  initial: { opacity: 0, y: 10 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number] },
-  },
-  exit: {
-    opacity: 0,
-    y: -6,
-    transition: { duration: 0.14, ease: [0.4, 0, 1, 1] as [number, number, number, number] },
-  },
-};
+
 
 /** Inner shell — needs to be inside Router so useLocation works */
 const AppShell: React.FC = () => {
-  const location = useLocation();
-
   // Kick off prefetching once after mount
   useEffect(() => {
     prefetchAllLazyRoutes();
   }, []);
 
   return (
-    <>
+    <RouteLoadingScreen>
       <IntersectObserver />
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={location.pathname}
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              style={{ width: '100%', minHeight: '100%', display: 'flex', flexDirection: 'column' }}
-            >
-              <Routes location={location}>
-                {routes.map((route, index) => (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </motion.div>
-          </AnimatePresence>
+          <Routes>
+            {routes.map((route, index) => (
+              <Route
+                key={index}
+                path={route.path}
+                element={route.element}
+              />
+            ))}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </main>
       </div>
       <FloatingChatButton />
       <PwaInstallPrompt />
       <PwaFloatingInstallButton />
       <Toaster position="top-right" richColors />
-    </>
+    </RouteLoadingScreen>
   );
 };
 
