@@ -16,7 +16,8 @@ import {
   Coins, 
   MapPin, 
   Briefcase,
-  Quote
+  Quote,
+  Award
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
