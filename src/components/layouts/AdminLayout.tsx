@@ -40,7 +40,8 @@ import {
   Check,
   MessageSquare,
   Eye,
-  EyeOff
+  EyeOff,
+  GripVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -80,6 +81,29 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Resizable Sidebar Width (with localStorage persistence)
+  const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('dbs_admin_sidebar_width');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= 200 && parsed <= 450) return parsed;
+      }
+    } catch {}
+    return 260; // Default width in px
+  });
+  const isResizingRef = useRef(false);
+
+  // Drag and Drop reordering of nav items
+  const [navOrder, setNavOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('dbs_admin_nav_order');
+      if (saved) return JSON.parse(saved) as string[];
+    } catch {}
+    return [];
+  });
+  const [draggedNavPath, setDraggedNavPath] = useState<string | null>(null);
 
   // Admin Login State
   const [adminUsername, setAdminUsername] = useState('');
@@ -169,143 +193,134 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const adminNav = [
     {
-      name: 'ড্যাশবোর্ড ওভারভিউ',
+      name: 'ড্যাশবোর্ড',
       path: '/admin',
       icon: LayoutDashboard,
       badge: null,
       moduleKey: 'dashboard'
     },
     {
-      name: 'সকল ইউজার অ্যাকাউন্ট',
+      name: 'গ্রাহক অ্যাকাউন্ট',
       path: '/admin/customers',
       icon: Users,
       badge: adminRole === 'sub_admin' && currentSubAdmin
-        ? `${(currentSubAdmin.assigned_customer_ids || []).length} জন`
-        : `${users.length} জন`,
+        ? `${(currentSubAdmin.assigned_customer_ids || []).length}`
+        : `${users.length}`,
       badgeVariant: 'default' as const,
       moduleKey: 'customers'
     },
     {
-      name: 'ডিপোজিট ও পেমেন্ট মেথড',
+      name: 'ডিপোজিট',
       path: '/admin/deposits',
       icon: ArrowDownCircle,
-      badge: pendingDepositsCount > 0 ? `${pendingDepositsCount} নতুন জমা` : null,
+      badge: pendingDepositsCount > 0 ? `${pendingDepositsCount}` : null,
       badgeVariant: 'destructive' as const,
       moduleKey: 'deposits'
     },
     {
-      name: 'লোন আবেদনসমূহ',
+      name: 'লোন আবেদন',
       path: '/admin/applications',
       icon: FileSpreadsheet,
-      badge: pendingAppsCount > 0 ? `${pendingAppsCount} নতুন` : null,
+      badge: pendingAppsCount > 0 ? `${pendingAppsCount}` : null,
       badgeVariant: 'destructive' as const,
       moduleKey: 'applications'
     },
     {
-      name: 'ওয়ালেট ব্যালেন্স নিয়ন্ত্রণ',
+      name: 'ওয়ালেট নিয়ন্ত্রণ',
       path: '/admin/wallets',
       icon: Wallet,
-      badge: 'Add/Deduct',
+      badge: null,
       moduleKey: 'customers'
     },
     {
-      name: 'টাকা তুলুন (উইথড্রয়াল ও শর্ত নিয়ন্ত্রণ)',
+      name: 'উইথড্রয়াল ও শর্ত',
       path: '/admin/withdrawals',
       icon: ArrowDownToLine,
-      badge: pendingWithdrawalsCount > 0
-        ? `${pendingWithdrawalsCount} পেন্ডিং`
-        : 'গেটিং শর্ত',
-      badgeVariant: pendingWithdrawalsCount > 0
-        ? ('destructive' as const)
-        : ('secondary' as const),
+      badge: pendingWithdrawalsCount > 0 ? `${pendingWithdrawalsCount}` : null,
+      badgeVariant: 'destructive' as const,
       moduleKey: 'withdrawals'
     },
     {
-      name: 'চুক্তিপত্র (Contract Paper)',
+      name: 'চুক্তিপত্র',
       path: '/admin/contracts',
       icon: Scale,
-      badge: 'আইনি দলিল',
+      badge: null,
       moduleKey: 'contracts'
     },
     {
-      name: 'ভার্চুয়াল কার্ড (Virtual Cards)',
+      name: 'ভার্চুয়াল কার্ড',
       path: '/admin/cards',
       icon: CreditCard,
-      badge: 'কার্ড ইস্যু ও সেন্ড',
-      badgeVariant: 'secondary' as const,
+      badge: null,
       moduleKey: 'customers'
     },
     {
-      name: 'অফিসিয়াল লোন লেটার (PDF)',
+      name: 'লোন লেটার (PDF)',
       path: '/admin/letters',
       icon: FileCheck2,
-      badge: 'ব্যাংক সিল',
+      badge: null,
       moduleKey: 'letters'
     },
     {
-      name: 'দলিল ও ডকুমেন্ট জেনারেটর',
+      name: 'ডকুমেন্ট জেনারেটর',
       path: '/admin/documents',
       icon: Stamp,
-      badge: 'স্ট্যাম্প/চেক/রসিদ',
-      badgeVariant: 'secondary' as const,
+      badge: null,
       moduleKey: 'official_docs'
     },
     {
-      name: 'মিডিয়া ও হ্যাপি কাস্টমার গ্যালারি',
+      name: 'মিডিয়া গ্যালারি',
       path: '/admin/media-gallery',
       icon: Sparkles,
-      badge: 'কাস্টমার/অফার এড',
-      badgeVariant: 'secondary' as const,
+      badge: null,
       moduleKey: 'media'
     },
     {
-      name: 'স্টাফ আইডি কার্ড (NID স্টাইল)',
+      name: 'স্টাফ আইডি কার্ড',
       path: '/admin/staff-id',
       icon: Contact2,
-      badge: 'রিয়েল কার্ড',
-      badgeVariant: 'secondary' as const,
+      badge: null,
       moduleKey: 'staff_id'
     },
     {
-      name: 'সাপোর্ট ও পার্টনার ব্যাংক',
+      name: 'সাপোর্ট ও পার্টনার',
       path: '/admin/support-partners',
       icon: Headphones,
-      badge: 'Imo/WA/Bank',
+      badge: null,
       moduleKey: 'support_partners'
     },
     {
-      name: 'লোন প্যাকেজ ও স্কিম',
+      name: 'লোন প্যাকেজ',
       path: '/admin/packages',
       icon: Layers,
       badge: null,
       moduleKey: 'packages'
     },
     {
-      name: 'কিস্তি ও কালেকশন হিসাব',
+      name: 'কিস্তি ও কালেকশন',
       path: '/admin/installments',
       icon: CreditCard,
       badge: null,
       moduleKey: 'applications'
     },
     {
-      name: 'মেসেজ হাব ও লাইভ চ্যাট',
+      name: 'মেসেজ ও লাইভ চ্যাট',
       path: '/admin/messages',
       icon: MessageSquare,
-      badge: unreadChatCount > 0 ? `${toBengaliNumber(unreadChatCount)} আনসিন` : 'লাইভ',
-      badgeVariant: unreadChatCount > 0 ? ('destructive' as const) : ('secondary' as const),
+      badge: unreadChatCount > 0 ? `${toBengaliNumber(unreadChatCount)}` : null,
+      badgeVariant: 'destructive' as const,
       moduleKey: 'messages'
     },
     {
-      name: 'সাব-এডমিন ও পারমিশন কন্ট্রোল',
+      name: 'সাব-এডমিন',
       path: '/admin/sub-admins',
       icon: ShieldAlert,
-      badge: 'অ্যাক্সেস',
-      badgeVariant: 'default' as const,
+      badge: null,
       moduleKey: 'sub_admins',
       superAdminOnly: true
     },
     {
-      name: 'সাইট কনটেন্ট ও সেটিংস',
+      name: 'সেটিংস',
       path: '/admin/settings',
       icon: Settings,
       badge: null,
@@ -314,7 +329,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     }
   ];
 
-  const filteredNav = adminNav.filter((item: any) => {
+  // Re-order according to user's custom dragged order
+  const orderedNav = [...adminNav].sort((a, b) => {
+    const idxA = navOrder.indexOf(a.path);
+    const idxB = navOrder.indexOf(b.path);
+    if (idxA === -1 && idxB === -1) return 0;
+    if (idxA === -1) return 1;
+    if (idxB === -1) return -1;
+    return idxA - idxB;
+  });
+
+  const filteredNav = orderedNav.filter((item: any) => {
     if (adminRole === 'sub_admin') {
       if (item.superAdminOnly) return false;
       if (!item.moduleKey || item.moduleKey === 'dashboard') return true;
@@ -901,14 +926,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       </div>
 
       {/* Nav List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1">
-        <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          অ্যাডমিন মেনু
-        </div>
-
-        {filteredNav.map((item) => {
+      <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
+        {filteredNav.map((item, index) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
+          const isBeingDragged = draggedNavPath === item.path;
 
           // Preload route chunk on hover/touch so click transition is instantaneous
           const handlePrefetch = () => {
@@ -935,43 +957,88 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           };
 
           return (
-            <Link
+            <div
               key={item.path}
-              to={item.path}
-              onClick={onItemClick}
-              onMouseEnter={handlePrefetch}
-              onTouchStart={handlePrefetch}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-primary text-primary-foreground font-bold shadow-sm'
-                  : 'text-foreground/80 hover:bg-muted hover:text-foreground'
+              draggable
+              onDragStart={(e) => {
+                setDraggedNavPath(item.path);
+                e.dataTransfer.setData('text/plain', item.path);
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const sourcePath = e.dataTransfer.getData('text/plain') || draggedNavPath;
+                if (!sourcePath || sourcePath === item.path) return;
+
+                const currentList = filteredNav.map(n => n.path);
+                const fromIdx = currentList.indexOf(sourcePath);
+                const toIdx = currentList.indexOf(item.path);
+                if (fromIdx !== -1 && toIdx !== -1) {
+                  const updated = [...currentList];
+                  const [moved] = updated.splice(fromIdx, 1);
+                  updated.splice(toIdx, 0, moved);
+                  setNavOrder(updated);
+                  try {
+                    localStorage.setItem('dbs_admin_nav_order', JSON.stringify(updated));
+                  } catch {}
+                  toast.success('মেনু ক্রম পরিবর্তন করা হয়েছে');
+                }
+                setDraggedNavPath(null);
+              }}
+              onDragEnd={() => setDraggedNavPath(null)}
+              className={`group flex items-center rounded-lg transition-all ${
+                isBeingDragged ? 'opacity-40 scale-[0.98]' : 'opacity-100'
               }`}
             >
-              <div className="flex items-center gap-2.5 truncate">
-                <Icon
-                  className={`w-4 h-4 shrink-0 ${
-                    isActive
-                      ? 'text-primary-foreground'
-                      : 'text-muted-foreground'
-                  }`}
-                />
-                <span className="truncate">{item.name}</span>
+              {/* Drag Handle indicator */}
+              <div 
+                className="opacity-0 group-hover:opacity-60 hover:opacity-100 cursor-grab active:cursor-grabbing p-1 text-muted-foreground transition-opacity shrink-0"
+                title="ড্র্যাগ করে ক্রম পরিবর্তন করুন"
+              >
+                <GripVertical className="w-3 h-3" />
               </div>
 
-              {item.badge && (
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ${
-                    isActive
-                      ? 'bg-primary-foreground/20 text-primary-foreground'
-                      : item.badgeVariant === 'destructive'
-                        ? 'bg-red-500/15 text-red-600 font-extrabold'
-                        : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </Link>
+              <Link
+                to={item.path}
+                onClick={onItemClick}
+                onMouseEnter={handlePrefetch}
+                onTouchStart={handlePrefetch}
+                className={`flex-1 flex items-center justify-between px-2.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground font-bold shadow-xs'
+                    : 'text-foreground/80 hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Icon
+                    className={`w-4 h-4 shrink-0 ${
+                      isActive
+                        ? 'text-primary-foreground'
+                        : 'text-muted-foreground'
+                    }`}
+                  />
+                  <span className="truncate">{item.name}</span>
+                </div>
+
+                {item.badge && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 min-w-[20px] text-center ${
+                      isActive
+                        ? 'bg-primary-foreground/20 text-primary-foreground'
+                        : item.badgeVariant === 'destructive'
+                          ? 'bg-red-500/15 text-red-600 font-extrabold'
+                          : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            </div>
           );
         })}
       </div>
@@ -980,12 +1047,52 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     </div>
   );
 
+  // Resize handlers for dragging the sidebar border
+  const startResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizingRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!isResizingRef.current) return;
+      const newWidth = Math.max(200, Math.min(480, moveEvent.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const onMouseUp = () => {
+      isResizingRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      try {
+        localStorage.setItem('dbs_admin_sidebar_width', String(sidebarWidth));
+      } catch {}
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-br from-[#F1F5F9] via-[#E8EFF7] to-[#DFE7F2] text-foreground">
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-border h-screen sticky top-0 shadow-sm z-30 bg-card">
+      {/* Desktop Sidebar with dynamic draggable width & resize handle */}
+      <aside
+        style={{ width: `${sidebarWidth}px` }}
+        className="hidden md:flex flex-col shrink-0 border-r border-border h-screen sticky top-0 shadow-sm z-30 bg-card relative transition-[width] duration-75"
+      >
         {navContent()}
+
+        {/* Resizer Handle */}
+        <div
+          onMouseDown={startResizing}
+          className="absolute -right-1.5 top-0 bottom-0 w-3 cursor-col-resize z-50 hover:bg-primary/20 transition-colors group flex items-center justify-center"
+          title="ড্র্যাগ করে সাইডবার বড় বা ছোট করুন"
+        >
+          <div className="w-[3px] h-8 rounded-full bg-border group-hover:bg-primary group-active:bg-primary transition-colors" />
+        </div>
       </aside>
 
       {/* Main Content Area */}
