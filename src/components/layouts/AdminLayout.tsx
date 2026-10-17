@@ -976,35 +976,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         })}
       </div>
 
-      {/* Admin Sidebar Footer */}
-      <div className="p-3 border-t border-border bg-muted/20 space-y-1.5">
-        <Link
-          to="/"
-          target="_blank"
-          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/60 transition-colors"
-        >
-          <span className="flex items-center gap-1.5">
-            <ExternalLink className="w-3.5 h-3.5" />
-            গ্রাহক ওয়েবসাইট দেখুন
-          </span>
-
-          <ChevronRight className="w-3.5 h-3.5" />
-        </Link>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            logoutAdmin();
-            toast.info('এডমিন প্যানেল থেকে সফলভাবে লগআউট হয়েছেন');
-          }}
-          className="w-full text-xs text-destructive hover:bg-destructive/10 h-9 font-bold"
-          title="লগআউট"
-        >
-          <LogOut className="w-3.5 h-3.5 mr-1.5" />
-          লগআউট
-        </Button>
-      </div>
+      {/* Admin Sidebar Footer - (Removed logout & customer website link as requested) */}
     </div>
   );
 

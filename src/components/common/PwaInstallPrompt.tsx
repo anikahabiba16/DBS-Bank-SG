@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Download, 
   Smartphone, 
@@ -353,9 +353,27 @@ export function PwaInstallPrompt() {
   );
 }
 
-// Compact Floating Install Pill
+// Compact Draggable Floating Install Pill
+const PWA_POS_KEY = 'dbs_pwa_btn_pos';
+
+const getInitialPwaPos = () => {
+  try {
+    const saved = localStorage.getItem(PWA_POS_KEY);
+    if (saved) return JSON.parse(saved) as { x: number; y: number };
+  } catch {}
+  return null;
+};
+
 export function PwaFloatingInstallButton() {
   const [isApp, setIsApp] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const isDraggingRef = useRef(false);
+  const hasDraggedRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const posRef = useRef<{ x: number; y: number } | null>(getInitialPwaPos());
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(posRef.current);
+  const rafIdRef = useRef<number | null>(null);
+  const targetPosRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const standalone = 
@@ -364,19 +382,136 @@ export function PwaFloatingInstallButton() {
     setIsApp(standalone);
   }, []);
 
+  const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (e.button !== 0) return;
+    isDraggingRef.current = true;
+    hasDraggedRef.current = false;
+
+    const el = btnRef.current;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (!posRef.current) {
+        posRef.current = { x: rect.left, y: rect.top };
+        setPos({ x: rect.left, y: rect.top });
+      }
+      dragStartRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+      targetPosRef.current = { x: rect.left, y: rect.top };
+      el.style.transition = 'none';
+      el.style.willChange = 'transform';
+      el.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!isDraggingRef.current) return;
+    const el = btnRef.current;
+    if (!el) return;
+
+    const deltaX = Math.abs(e.clientX - (posRef.current?.x ?? 0) - dragStartRef.current.x);
+    const deltaY = Math.abs(e.clientY - (posRef.current?.y ?? 0) - dragStartRef.current.y);
+    if (deltaX > 2 || deltaY > 2) {
+      hasDraggedRef.current = true;
+    }
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = el.offsetWidth;
+    const bh = el.offsetHeight;
+
+    let nx = e.clientX - dragStartRef.current.x;
+    let ny = e.clientY - dragStartRef.current.y;
+
+    // Clamp inside viewport
+    nx = Math.max(8, Math.min(nx, Math.max(8, vw - bw - 8)));
+    ny = Math.max(8, Math.min(ny, Math.max(8, vh - bh - 8)));
+
+    targetPosRef.current = { x: nx, y: ny };
+    posRef.current = { x: nx, y: ny };
+
+    if (rafIdRef.current === null) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        if (btnRef.current) {
+          const { x, y } = targetPosRef.current;
+          btnRef.current.style.position = 'fixed';
+          btnRef.current.style.left = '0px';
+          btnRef.current.style.top = '0px';
+          btnRef.current.style.right = 'auto';
+          btnRef.current.style.bottom = 'auto';
+          btnRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        }
+        rafIdRef.current = null;
+      });
+    }
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+
+    const el = btnRef.current;
+    if (el) {
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {}
+      el.style.willChange = 'auto';
+      el.style.transition = 'transform 0.15s ease-out';
+    }
+
+    if (posRef.current) {
+      setPos(posRef.current);
+      try {
+        localStorage.setItem(PWA_POS_KEY, JSON.stringify(posRef.current));
+      } catch {}
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (hasDraggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    window.dispatchEvent(new CustomEvent('open-pwa-install'));
+  };
+
   if (isApp) return null;
+
+  const style: React.CSSProperties = pos
+    ? {
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        right: 'auto',
+        bottom: 'auto',
+        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
+        zIndex: 9990,
+        touchAction: 'none',
+      }
+    : {
+        zIndex: 9990,
+        touchAction: 'none',
+      };
 
   return (
     <button
+      ref={btnRef}
       type="button"
-      onClick={() => {
-        window.dispatchEvent(new CustomEvent('open-pwa-install'));
-      }}
-      className="fixed bottom-[4.5rem] sm:bottom-6 left-2 sm:left-4 z-40 flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full bg-primary/95 hover:bg-primary text-primary-foreground font-semibold text-[10px] sm:text-xs shadow-md hover:shadow-lg active:scale-95 transition-all border border-white/20 backdrop-blur-xs select-none"
-      title="DBS Bank SG অ্যাপ ইনস্টল করুন"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClick={handleClick}
+      style={style}
+      className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-full bg-primary/95 hover:bg-primary text-primary-foreground font-semibold text-[11px] sm:text-xs shadow-lg hover:shadow-xl active:scale-95 transition-shadow border border-white/25 backdrop-blur-xs select-none cursor-grab active:cursor-grabbing ${
+        !pos ? 'fixed bottom-[4.5rem] sm:bottom-6 left-2 sm:left-4' : ''
+      }`}
+      title="DBS Bank SG অ্যাপ ইনস্টল করুন (ড্র্যাগ করে সরানো যায়)"
     >
-      <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-bounce shrink-0" />
-      <span className="whitespace-nowrap">অ্যাপ ইনস্টল</span>
+      <Download className="w-3.5 h-3.5 animate-bounce shrink-0 pointer-events-none" />
+      <span className="whitespace-nowrap pointer-events-none font-bold">অ্যাপ ইনস্টল</span>
     </button>
   );
 }
