@@ -1,0 +1,276 @@
+import React, { lazy, Suspense, type ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useLoan } from '@/contexts/LoanContext';
+import { CustomerAuthGuard } from '@/components/auth/CustomerAuthGuard';
+
+const PageLoader: React.FC = () => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] w-full p-8 gap-3">
+    <div className="w-9 h-9 rounded-full border-3 border-primary border-t-transparent animate-spin" />
+    <span className="text-xs font-semibold text-muted-foreground animate-pulse">লোড হচ্ছে...</span>
+  </div>
+);
+
+const withSuspense = (Component: React.ComponentType) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
+
+import { HomePage } from './pages/HomePage';
+import { PackagesPage } from './pages/PackagesPage';
+import { CalculatorPage } from './pages/CalculatorPage';
+import { ApplyPage } from './pages/ApplyPage';
+import { TrackPage } from './pages/TrackPage';
+import { LoginPage, RegisterPage } from './pages/AuthPages';
+
+// Dynamic Protected & Admin Pages - Lazy loaded on demand
+const CustomerDashboardPage = lazy(() => import('./pages/CustomerDashboardPage').then((m) => ({ default: m.CustomerDashboardPage })));
+const CustomerMessagesPage = lazy(() => import('./pages/CustomerMessagesPage'));
+
+// Admin Pages - Lazy loaded on demand so customer portal never downloads admin bundles
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })));
+const AdminApplicationsPage = lazy(() => import('./pages/admin/AdminApplicationsPage').then((m) => ({ default: m.AdminApplicationsPage })));
+const AdminPackagesPage = lazy(() => import('./pages/admin/AdminPackagesPage').then((m) => ({ default: m.AdminPackagesPage })));
+const AdminCustomersPage = lazy(() => import('./pages/admin/AdminCustomersPage').then((m) => ({ default: m.AdminCustomersPage })));
+const AdminInstallmentsPage = lazy(() => import('./pages/admin/AdminInstallmentsPage').then((m) => ({ default: m.AdminInstallmentsPage })));
+const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })));
+const AdminWalletsPage = lazy(() => import('./pages/admin/AdminWalletsPage').then((m) => ({ default: m.AdminWalletsPage })));
+const AdminWithdrawalsPage = lazy(() => import('./pages/admin/AdminWithdrawalsPage').then((m) => ({ default: m.AdminWithdrawalsPage })));
+const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage').then((m) => ({ default: m.AdminNotificationsPage })));
+const AdminLettersPage = lazy(() => import('./pages/admin/AdminLettersPage').then((m) => ({ default: m.AdminLettersPage })));
+const AdminDepositsPage = lazy(() => import('./pages/admin/AdminDepositsPage').then((m) => ({ default: m.AdminDepositsPage })));
+const AdminContractsPage = lazy(() => import('./pages/admin/AdminContractsPage').then((m) => ({ default: m.AdminContractsPage })));
+const AdminSupportPartnersPage = lazy(() => import('./pages/admin/AdminSupportPartnersPage').then((m) => ({ default: m.AdminSupportPartnersPage })));
+const AdminOfficialDocumentGeneratorPage = lazy(() => import('./pages/admin/AdminOfficialDocumentGeneratorPage').then((m) => ({ default: m.AdminOfficialDocumentGeneratorPage })));
+const AdminStaffIdCardsPage = lazy(() => import('./pages/admin/AdminStaffIdCardsPage').then((m) => ({ default: m.AdminStaffIdCardsPage })));
+const AdminMediaGalleryPage = lazy(() => import('./pages/admin/AdminMediaGalleryPage').then((m) => ({ default: m.AdminMediaGalleryPage })));
+const AdminVirtualCardsPage = lazy(() => import('./pages/admin/AdminVirtualCardsPage').then((m) => ({ default: m.AdminVirtualCardsPage })));
+const AdminMessagesPage = lazy(() => import('./pages/admin/AdminMessagesPage'));
+const AdminSubAdminsPage = lazy(() => import('./pages/admin/AdminSubAdminsPage'));
+
+export interface RouteConfig {
+  name: string;
+  path: string;
+  element: ReactNode;
+  visible?: boolean;
+  public?: boolean;
+}
+
+export const routes: RouteConfig[] = [
+  // Customer Routes - Publicly explorable without login (Eagerly rendered for instantaneous navigation)
+  {
+    name: 'হোমপেজ',
+    path: '/',
+    element: <HomePage />,
+    public: true,
+  },
+  {
+    name: 'লোন প্যাকেজসমূহ',
+    path: '/packages',
+    element: <PackagesPage />,
+    public: true,
+  },
+  {
+    name: 'লোন ক্যালকুলেটর',
+    path: '/calculator',
+    element: <CalculatorPage />,
+    public: true,
+  },
+  {
+    name: 'লোন আবেদন',
+    path: '/apply',
+    element: <ApplyPage />,
+    public: true,
+  },
+  {
+    name: 'আবেদন ট্র্যাকিং',
+    path: '/track',
+    element: <TrackPage />,
+    public: true,
+  },
+  // Strictly Protected - Requires Login (cannot access dashboard or wallet via direct URL or any path without login)
+  {
+    name: 'গ্রাহক ড্যাশবোর্ড ও ওয়ালেট',
+    path: '/dashboard',
+    element: (
+      <CustomerAuthGuard>
+        {withSuspense(CustomerDashboardPage)}
+      </CustomerAuthGuard>
+    ),
+    public: false,
+  },
+  {
+    name: 'ওয়ালেট রিডাইরেক্ট',
+    path: '/wallet',
+    element: (
+      <CustomerAuthGuard>
+        {withSuspense(CustomerDashboardPage)}
+      </CustomerAuthGuard>
+    ),
+    public: false,
+  },
+  {
+    name: 'গ্রাহক সাপোর্ট মেসেজ',
+    path: '/messages',
+    element: (
+      <CustomerAuthGuard>
+        {withSuspense(CustomerMessagesPage)}
+      </CustomerAuthGuard>
+    ),
+    public: false,
+  },
+  {
+    name: 'ড্যাশবোর্ড রিডাইরেক্ট',
+    path: '/fixed-deposit',
+    element: (
+      <CustomerAuthGuard>
+        <Navigate to="/dashboard" replace />
+      </CustomerAuthGuard>
+    ),
+    public: false,
+  },
+  {
+    name: 'ড্যাশবোর্ড রিডাইরেক্ট',
+    path: '/fd-fund',
+    element: (
+      <CustomerAuthGuard>
+        <Navigate to="/dashboard" replace />
+      </CustomerAuthGuard>
+    ),
+    public: false,
+  },
+  {
+    name: 'গ্রাহক লগইন',
+    path: '/login',
+    element: <LoginPage />,
+    public: true,
+  },
+  {
+    name: 'গ্রাহক নিবন্ধন',
+    path: '/register',
+    element: <RegisterPage />,
+    public: true,
+  },
+
+  // Admin Routes
+  {
+    name: 'এডমিন ড্যাশবোর্ড',
+    path: '/admin',
+    element: withSuspense(AdminDashboardPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন আবেদন ব্যবস্থাপনা',
+    path: '/admin/applications',
+    element: withSuspense(AdminApplicationsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন ডিপোজিট ও পেমেন্ট মেথড',
+    path: '/admin/deposits',
+    element: withSuspense(AdminDepositsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন ওয়ালেট ও ব্যালেন্স নিয়ন্ত্রণ',
+    path: '/admin/wallets',
+    element: withSuspense(AdminWalletsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন উইথড্রয়াল রিকোয়েস্ট',
+    path: '/admin/withdrawals',
+    element: withSuspense(AdminWithdrawalsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন চুক্তিপত্র (Contract Paper)',
+    path: '/admin/contracts',
+    element: withSuspense(AdminContractsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন ভার্চুয়াল কার্ড রিকোয়েস্ট ও ইস্যু',
+    path: '/admin/cards',
+    element: withSuspense(AdminVirtualCardsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন লোন পাশের লেটার (PDF)',
+    path: '/admin/letters',
+    element: withSuspense(AdminLettersPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন অফিসিয়াল দলিল জেনারেটর',
+    path: '/admin/documents',
+    element: withSuspense(AdminOfficialDocumentGeneratorPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন স্টাফ আইডি কার্ড (NID স্টাইল)',
+    path: '/admin/staff-id',
+    element: withSuspense(AdminStaffIdCardsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন মিডিয়া ও হ্যাপি কাস্টমার গ্যালারি',
+    path: '/admin/media-gallery',
+    element: withSuspense(AdminMediaGalleryPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন ড্যাশবোর্ড রিডাইরেক্ট',
+    path: '/admin/fixed-deposits',
+    element: <Navigate to="/admin" replace />,
+    public: true,
+  },
+  {
+    name: 'এডমিন সাপোর্ট ও পার্টনার ব্যাংক',
+    path: '/admin/support-partners',
+    element: withSuspense(AdminSupportPartnersPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন সাব-এডমিন ও পারমিশন কন্ট্রোল',
+    path: '/admin/sub-admins',
+    element: withSuspense(AdminSubAdminsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন কাস্টম নোটিফিকেশন',
+    path: '/admin/notifications',
+    element: withSuspense(AdminNotificationsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন প্যাকেজ এডিটর',
+    path: '/admin/packages',
+    element: withSuspense(AdminPackagesPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন গ্রাহক তালিকা',
+    path: '/admin/customers',
+    element: withSuspense(AdminCustomersPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন কাস্টমার মেসেজ হাব ও লাইভ সাপোর্ট',
+    path: '/admin/messages',
+    element: withSuspense(AdminMessagesPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন কিস্তি ব্যবস্থাপনা',
+    path: '/admin/installments',
+    element: withSuspense(AdminInstallmentsPage),
+    public: true,
+  },
+  {
+    name: 'এডমিন সাইট কনটেন্ট ও সেটিংস',
+    path: '/admin/settings',
+    element: withSuspense(AdminSettingsPage),
+    public: true,
+  },
+];

@@ -1,0 +1,25 @@
+{
+  "short_name": "DBS Bank SG",
+  "name": "DBS Bank SG - ডিজিটাল ব্যাংকিং ও লোন সেবা",
+  "description": "DBS Bank SG অফিসিয়াল মোবাইল ব্যাংকিং ও ডিজিটাল লোন অ্যাপ্লিকেশন",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "display": "standalone",
+  "orientation": "portrait"
+}

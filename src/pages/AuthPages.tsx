@@ -1,0 +1,454 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLoan } from '@/contexts/LoanContext';
+import { CustomerLayout } from '@/components/layouts/CustomerLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Phone,
+  Lock,
+  User,
+  Sparkles,
+  CheckCircle2,
+  LogIn,
+  UserPlus,
+  Globe,
+  Smartphone,
+  Download,
+  Info,
+  X,
+  Eye,
+  EyeOff
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+
+export const LoginPage: React.FC = () => {
+  const { loginUser, registerUser, currentUser, settings } = useLoan();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/dashboard';
+
+  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+
+  // Login form state
+  const [loginPhone, setLoginPhone] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  // Register form state
+  const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
+  const [regLoading, setRegLoading] = useState(false);
+
+  // If already logged in, automatically redirect to dashboard
+  useEffect(() => {
+    if (currentUser) {
+      navigate(redirectPath, { replace: true });
+    }
+  }, [currentUser, navigate, redirectPath]);
+
+  // App Install Notification (shows once, persists skip permanently)
+  const [showInstallBanner, setShowInstallBanner] = useState(() => {
+    try {
+      if (typeof window === 'undefined') return false;
+      const isApp =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true;
+      if (isApp) return false;
+      const dismissed = sessionStorage.getItem('dbs_pwa_install_dismissed_permanently') === 'true';
+      return !dismissed;
+    } catch {
+      return false;
+    }
+  });
+
+  const handleDismissBanner = () => {
+    try {
+      sessionStorage.setItem('dbs_pwa_install_dismissed_permanently', 'true');
+      sessionStorage.setItem('pwa_prompt_dismissed', 'true');
+    } catch {}
+    setShowInstallBanner(false);
+  };
+
+  const handleOpenInstall = () => {
+    window.dispatchEvent(new CustomEvent('open-pwa-install'));
+  };
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!loginPhone.trim()) {
+      toast.error('অনুগ্রহ করে মোবাইল নম্বর দিন');
+      return;
+    }
+
+    if (!loginPassword.trim()) {
+      toast.error('অনুগ্রহ করে পাসওয়ার্ড দিন');
+      return;
+    }
+
+    setLoginLoading(true);
+    const res = loginUser(loginPhone.trim(), loginPassword.trim());
+    setLoginLoading(false);
+
+    if (res.success) {
+      toast.success(res.message);
+      navigate(redirectPath);
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!regName.trim()) {
+      toast.error('অনুগ্রহ করে পুরো নাম লিখুন');
+      return;
+    }
+
+    const cleanDigits = regPhone.trim().replace(/\D/g, '');
+
+    if (!regPhone.trim() || cleanDigits.length < 7) {
+      toast.error('অনুগ্রহ করে সঠিক মোবাইল নম্বর প্রদান করুন');
+      return;
+    }
+
+    if (!regPassword.trim() || regPassword.length < 6) {
+      toast.error('পাসওয়ার্ড ন্যূনতম ৬ অক্ষরের হতে হবে');
+      return;
+    }
+
+    if (regPassword !== regConfirmPassword) {
+      toast.error('পাসওয়ার্ড ও কনফার্ম পাসওয়ার্ড মিলছে না');
+      return;
+    }
+
+    setRegLoading(true);
+
+    const res = registerUser({
+      name: regName.trim(),
+      phone: regPhone.trim(),
+      password: regPassword.trim()
+    });
+
+    setRegLoading(false);
+
+    if (res.success) {
+      toast.success('অ্যাকাউন্ট সফলভাবে খোলা হয়েছে এবং লগইন সম্পন্ন হয়েছে!');
+      navigate(redirectPath);
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  // প্ল্যাটফর্মের নাম ও লোগো
+  const platformTitle = settings.companyNameBn || settings.platformName || 'DBS Bank SG';
+  const userPortalLogo = settings.userPortalLogoUrl || "https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png";
+  const bgLogo = settings.loginBackgroundLogoUrl || userPortalLogo;
+
+  return (
+    <CustomerLayout>
+      <div className="relative py-8 md:py-16 px-4 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-[85vh] flex items-center justify-center overflow-hidden">
+        {/* DBS Bank SG Background Logo Watermark (Admin configurable) */}
+        <div 
+          className="absolute inset-0 pointer-events-none flex items-center justify-center z-0 select-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <img
+            src={bgLogo}
+            alt="DBS Bank SG Background Watermark"
+            className="w-[320px] sm:w-[480px] md:w-[620px] object-contain opacity-[0.14] dark:opacity-[0.08] filter drop-shadow-xl transition-all"
+          />
+          <div className="absolute inset-0 bg-radial from-transparent via-background/20 to-background/70" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-lg bg-card/95 backdrop-blur-md border border-border/80 rounded-2xl shadow-2xl p-6 md:p-8">
+          {/* Header */}
+          <div className="text-center mb-6">
+            {/* Custom User Portal Logo (Image 2) */}
+            <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-3 shadow-lg shadow-primary/25 bg-white p-1 border border-slate-200">
+              <img
+                src={userPortalLogo}
+                alt={`${platformTitle} Logo`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
+              {platformTitle}
+            </h1>
+
+            <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto">
+              নিরাপদ, আধুনিক ও সহজ শর্তে ডিজিটাল ব্যাংকিং ও লোন সেবা
+            </p>
+          </div>
+
+          {/* App Install Notification Banner (Shown once, permanently hidden when skipped) */}
+          {showInstallBanner && !currentUser && (
+            <div className="mb-5 p-3 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex items-center justify-between gap-2.5 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-foreground truncate">
+                    📲 DBS Bank SG অ্যাপ ইনস্টল করুন
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    সহজে ব্যবহার ও নোটিফিকেশন পেতে হোম স্ক্রিনে নিন
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleOpenInstall}
+                  className="h-7 text-xs font-bold bg-primary text-primary-foreground px-2.5 rounded-lg shadow-xs"
+                >
+                  ইনস্টল
+                </Button>
+                <button
+                  type="button"
+                  onClick={handleDismissBanner}
+                  className="text-[11px] text-muted-foreground hover:text-foreground font-semibold px-2 py-1 rounded hover:bg-muted/50 transition-colors"
+                  title="আর দেখাবেন না"
+                >
+                  স্কিপ
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Login and registration tabs */}
+          <Tabs
+            value={activeTab}
+            onValueChange={(val) =>
+              setActiveTab(val as 'login' | 'register')
+            }
+            className="w-full"
+          >
+            <TabsList className="grid grid-cols-2 w-full mb-6 h-11 p-1 bg-muted/80 rounded-xl border border-border/60">
+              <TabsTrigger
+                value="login"
+                className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
+              >
+                <LogIn className="w-4 h-4 shrink-0" /> <span>লগইন করুন</span>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="register"
+                className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
+              >
+                <UserPlus className="w-4 h-4 shrink-0" /> <span>নতুন নিবন্ধন</span>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Login tab */}
+            <TabsContent value="login">
+              <form onSubmit={handleLoginSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-primary" />
+                      মোবাইল নম্বর (দেশ নির্বাচন করুন)
+                    </Label>
+
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-muted-foreground" />
+                      আন্তর্জাতিক
+                    </span>
+                  </div>
+
+                  <InternationalPhoneInput
+                    value={loginPhone}
+                    onChange={(phone) => setLoginPhone(phone)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-primary" />
+                      পাসওয়ার্ড
+                    </Label>
+
+                    <span className="text-[11px] text-muted-foreground">
+                      ডিফল্ট: 123456
+                    </span>
+                  </div>
+
+                  <div className="relative">
+                    <Input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      placeholder="আপনার গোপন পাসওয়ার্ড দিন"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      className="h-11 text-sm rounded-xl pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                      title={showLoginPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                    >
+                      {showLoginPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={loginLoading}
+                  className="w-full h-11 font-bold bg-primary text-primary-foreground text-sm rounded-xl shadow-md shadow-primary/20 hover:scale-[1.01] transition-transform"
+                >
+                  {loginLoading ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'}
+                </Button>
+              </form>
+            </TabsContent>
+
+            {/* Registration tab */}
+            <TabsContent value="register">
+              <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-primary" />
+                    পূর্ণ নাম (NID অনুযায়ী)
+                  </Label>
+
+                  <Input
+                    type="text"
+                    placeholder="আপনার পূর্ণ নাম লিখুন"
+                    value={regName}
+                    onChange={(e) => setRegName(e.target.value)}
+                    className="h-10 text-sm rounded-xl"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-primary" />
+                      সক্রিয় মোবাইল নম্বর (যেকোনো দেশ)
+                    </Label>
+
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-muted-foreground" />
+                      আন্তর্জাতিক সমর্থিত
+                    </span>
+                  </div>
+
+                  <InternationalPhoneInput
+                    value={regPhone}
+                    onChange={(phone) => setRegPhone(phone)}
+                    required
+                  />
+                </div>
+
+                {/* Helpful note */}
+                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-foreground text-xs leading-relaxed flex items-center gap-2">
+                  <Info className="w-4 h-4 text-primary shrink-0" />
+                  <span>
+                    লগইন করার পর ড্যাশবোর্ড থেকে যেকোনো সময় আপনার বিকাশ, নগদ বা ব্যাংক অ্যাকাউন্ট যুক্ত করতে পারবেন।
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">
+                      পাসওয়ার্ড
+                    </Label>
+
+                    <div className="relative">
+                      <Input
+                        type={showRegPassword ? 'text' : 'password'}
+                        placeholder="কমপক্ষে ৬ অক্ষর"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        className="h-10 text-sm rounded-xl pr-9"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegPassword((prev) => !prev)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                        title={showRegPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                      >
+                        {showRegPassword ? (
+                          <EyeOff className="w-3.5 h-3.5" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">
+                      পাসওয়ার্ড নিশ্চিত করুন
+                    </Label>
+
+                    <div className="relative">
+                      <Input
+                        type={showRegConfirmPassword ? 'text' : 'password'}
+                        placeholder="পুনরায় পাসওয়ার্ড দিন"
+                        value={regConfirmPassword}
+                        onChange={(e) =>
+                          setRegConfirmPassword(e.target.value)
+                        }
+                        className="h-10 text-sm rounded-xl pr-9"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegConfirmPassword((prev) => !prev)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                        title={showRegConfirmPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                      >
+                        {showRegConfirmPassword ? (
+                          <EyeOff className="w-3.5 h-3.5" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={regLoading}
+                  className="w-full h-11 font-bold bg-primary text-primary-foreground text-sm rounded-xl shadow-md shadow-primary/20 mt-2 hover:scale-[1.01] transition-transform"
+                >
+                  {regLoading
+                    ? 'অ্যাকাউন্ট তৈরি হচ্ছে...'
+                    : 'নিবন্ধন সম্পন্ন করুন'}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </CustomerLayout>
+  );
+};
+
+export const RegisterPage: React.FC = () => {
+  return <LoginPage />;
+};

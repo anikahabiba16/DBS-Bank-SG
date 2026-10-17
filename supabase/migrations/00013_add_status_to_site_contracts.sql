@@ -1,0 +1,1 @@
+ALTER TABLE public.site_contracts ADD COLUMN IF NOT EXISTS status text DEFAULT 'sent';
