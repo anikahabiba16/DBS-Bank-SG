@@ -3,7 +3,7 @@ import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { useLoan } from '@/contexts/LoanContext';
 import { supabaseSync } from '@/services/supabaseSyncService';
 import { formatTaka, toBengaliNumber } from '@/services/storage';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,9 +25,9 @@ import {
 import { toast } from 'sonner';
 
 export const AdminVirtualCardsPage: React.FC = () => {
-  const { users, updateCustomerVirtualCard, settings } = useLoan();
+  const { users, updateCustomerVirtualCard } = useLoan();
   const [cards, setCards] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [ setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'pending' | 'sent'>('pending');
 
   // Modal State
