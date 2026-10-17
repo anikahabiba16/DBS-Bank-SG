@@ -362,6 +362,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       (cleanLower === 'molla0506' && p === 'Mdroton126799@') ||
       (cleanLower === 'admin' && p === 'admin123')
     ) {
+      /*
+      // --- [TEMPORARILY COMMENTED: 2FA TOTP AUTHENTICATOR CODE PROMPT] ---
+      // Uncomment below to re-enable Google Authenticator 2FA verification step
       const syncedSecret = FIXED_ADMIN_SECRETS[cleanLower] || 'EF4EQOSPV3IDH3KX';
       const uri = getTotpUri(syncedSecret, cleanU, 'DBSBankSG');
 
@@ -377,6 +380,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       setLoginStep('totp_verify');
       toast.info('Google Authenticator থেকে ৬ ডিজিট কোড প্রদান করুন');
       setIsSubmitting(false);
+      return;
+      // -------------------------------------------------------------------
+      */
+
+      // Direct Login (bypassing 2FA code prompt as requested)
+      loginAdmin(u, p);
+      toast.success('অ্যাডমিন প্যানেলে সফলভাবে লগইন হয়েছে!');
+      setIsSubmitting(false);
+      setAdminUsername('');
+      setAdminPassword('');
       return;
     }
 
@@ -437,6 +450,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         return;
       }
 
+      /*
+      // --- [TEMPORARILY COMMENTED: 2FA TOTP AUTHENTICATOR CODE PROMPT] ---
+      // Uncomment below to re-enable Google Authenticator 2FA verification step
       const syncedSecret = record?.totp_secret || FIXED_ADMIN_SECRETS[cleanLower] || 'EF4EQOSPV3IDH3KX';
       const uri = getTotpUri(syncedSecret, cleanU, 'DBSBankSG');
       const qr = await generateQrCodeDataUrl(uri);
@@ -446,6 +462,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       setTotpCode('');
       setLoginStep('totp_verify');
       toast.info('Google Authenticator থেকে ৬ ডিজিট কোড প্রদান করুন');
+      // -------------------------------------------------------------------
+      */
+
+      // Direct Login (bypassing 2FA code prompt as requested)
+      loginAdmin(cleanU, p);
+      toast.success('অ্যাডমিন প্যানেলে সফলভাবে লগইন হয়েছে!');
+      setAdminUsername('');
+      setAdminPassword('');
     } catch (err: any) {
       console.error('Admin login error:', err);
       setLoginError('সার্ভারে যোগাযোগ করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।');
