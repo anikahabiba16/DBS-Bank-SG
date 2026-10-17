@@ -71,20 +71,31 @@ export const RouteLoadingScreen: React.FC<Props> = ({ children }) => {
       return;
     }
 
+    const previous = prevPath.current;
+    const current = location.pathname;
+
     // Same path — ignore
-    if (prevPath.current === location.pathname) return;
-    prevPath.current = location.pathname;
+    if (previous === current) return;
+    prevPath.current = current;
 
     clearTimers();
 
-    setRouteInfo(getRouteInfo(location.pathname));
+    // If navigating within admin dashboard (e.g., from /admin/customers to /admin/applications),
+    // do NOT block with the full-screen overlay so admin navigation feels instant and snappy
+    const wasAdmin = previous.startsWith('/admin');
+    const isAdminRoute = current.startsWith('/admin');
+    if (wasAdmin && isAdminRoute) {
+      return;
+    }
+
+    setRouteInfo(getRouteInfo(current));
     setProgress(0);
     setFadeOut(false);
     setVisible(true);
 
-    // Animate progress bar: 0 → 90% over 700ms, then jump to 100%
+    // Fast, responsive progress animation
     const startTime = Date.now();
-    const duration = 700;
+    const duration = 400;
     progressRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const pct = Math.min(90, (elapsed / duration) * 90);
@@ -95,14 +106,14 @@ export const RouteLoadingScreen: React.FC<Props> = ({ children }) => {
       }
     }, 16);
 
-    // After 1 second total: fade out, then hide
+    // Fade out smoothly after 550ms instead of a full slow second
     timerRef.current = setTimeout(() => {
       setFadeOut(true);
       timerRef.current = setTimeout(() => {
         setVisible(false);
         setProgress(0);
-      }, 320); // match CSS transition duration
-    }, 1000);
+      }, 250);
+    }, 550);
 
     return clearTimers;
   }, [location.pathname, clearTimers]);

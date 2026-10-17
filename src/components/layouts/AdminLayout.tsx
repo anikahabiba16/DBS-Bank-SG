@@ -882,11 +882,37 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
 
+          // Preload route chunk on hover/touch so click transition is instantaneous
+          const handlePrefetch = () => {
+            switch (item.path) {
+              case '/admin': import('@/pages/admin/AdminDashboardPage').catch(() => {}); break;
+              case '/admin/customers': import('@/pages/admin/AdminCustomersPage').catch(() => {}); break;
+              case '/admin/deposits': import('@/pages/admin/AdminDepositsPage').catch(() => {}); break;
+              case '/admin/applications': import('@/pages/admin/AdminApplicationsPage').catch(() => {}); break;
+              case '/admin/wallets': import('@/pages/admin/AdminWalletsPage').catch(() => {}); break;
+              case '/admin/withdrawals': import('@/pages/admin/AdminWithdrawalsPage').catch(() => {}); break;
+              case '/admin/contracts': import('@/pages/admin/AdminContractsPage').catch(() => {}); break;
+              case '/admin/cards': import('@/pages/admin/AdminVirtualCardsPage').catch(() => {}); break;
+              case '/admin/letters': import('@/pages/admin/AdminLettersPage').catch(() => {}); break;
+              case '/admin/documents': import('@/pages/admin/AdminOfficialDocumentGeneratorPage').catch(() => {}); break;
+              case '/admin/media-gallery': import('@/pages/admin/AdminMediaGalleryPage').catch(() => {}); break;
+              case '/admin/staff-id': import('@/pages/admin/AdminStaffIdCardsPage').catch(() => {}); break;
+              case '/admin/support-partners': import('@/pages/admin/AdminSupportPartnersPage').catch(() => {}); break;
+              case '/admin/packages': import('@/pages/admin/AdminPackagesPage').catch(() => {}); break;
+              case '/admin/installments': import('@/pages/admin/AdminInstallmentsPage').catch(() => {}); break;
+              case '/admin/messages': import('@/pages/admin/AdminMessagesPage').catch(() => {}); break;
+              case '/admin/sub-admins': import('@/pages/admin/AdminSubAdminsPage').catch(() => {}); break;
+              case '/admin/settings': import('@/pages/admin/AdminSettingsPage').catch(() => {}); break;
+            }
+          };
+
           return (
             <Link
               key={item.path}
               to={item.path}
               onClick={onItemClick}
+              onMouseEnter={handlePrefetch}
+              onTouchStart={handlePrefetch}
               className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-primary text-primary-foreground font-bold shadow-sm'
