@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLoan } from '@/contexts/LoanContext';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { formatTaka, toBengaliNumber, normalizePhone, format16DigitAccountNumber, loanStorage } from '@/services/storage';
@@ -57,7 +57,9 @@ import {
   Building2,
   LayoutGrid,
   List,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { CustomerDocumentInspectorModal } from '@/components/common/CustomerDocumentInspectorModal';
 import { VirtualDebitCardView } from '@/components/customer/VirtualDebitCardView';
@@ -209,194 +211,252 @@ export const AdminCustomersPage: React.FC = () => {
   const [cardCvv, setCardCvv] = useState('');
   const [cardStatus, setCardStatus] = useState<'active' | 'pending' | 'blocked'>('active');
 
-  // Unified customer map - keyed by u.id so every registered customer always shows up
-  const customerMap = new Map<string, CustomerListItem>();
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 20;
 
-  users.forEach((u) => {
-    const userPhoneNorm = normalizePhone(u.phone);
-    const userApps = applications.filter(
-      (a) => a.userId === u.id || normalizePhone(a.phone) === userPhoneNorm
-    );
-    const totalBorrowed = userApps
-      .filter((a) => a.status === 'approved' || a.status === 'disbursed')
-      .reduce((sum, a) => sum + (a.loanAmount || a.amount || 0), 0);
-    const customerDocs = getAllDocumentsForCustomer(u.id || u.phone);
+  // Reset page when search term or filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType]);
 
-    let userRegDate = u.registeredAt;
-    if (!userRegDate) {
-      const match = (u.id || '').match(/(\d{10,14})/);
-      if (match) {
-        const ts = parseInt(match[1], 10);
-        if (!isNaN(ts) && ts > 1000000000000) {
-          userRegDate = new Date(ts).toISOString();
-        }
+  // Unified customer map - memoized so expensive loops don't re-run on every state change
+  const allCustomers = useMemo(() => {
+    const customerMap = new Map<string, CustomerListItem>();
+
+    // Pre-index applications by normalized phone and userId for O(1) lookups
+    const appsByPhone = new Map<string, typeof applications>();
+    const appsByUserId = new Map<string, typeof applications>();
+
+    applications.forEach((a) => {
+      const pNorm = normalizePhone(a.phone);
+      if (pNorm) {
+        if (!appsByPhone.has(pNorm)) appsByPhone.set(pNorm, []);
+        appsByPhone.get(pNorm)!.push(a);
       }
-    }
-
-    customerMap.set(u.id, {
-      id: u.id,
-      userId: u.id,
-      name: u.name,
-      phone: u.phone,
-      email: u.email || `${u.phone}@client.com`,
-      nidNumber: u.nidNumber || 'প্রক্রিয়াধীন',
-      profession: u.profession || 'বেসরকারি চাকরিজীবী',
-      monthlyIncome: 45000,
-      address: u.address || 'ঢাকা, বাংলাদেশ',
-      registeredAt: userRegDate || '2025-01-01',
-      walletBalance: u.walletBalance || 0,
-      kycVerified: u.kycVerified ?? true,
-      totalApplications: userApps.length,
-      activeLoans: userApps.filter((a) => a.status === 'disbursed').length,
-      totalBorrowed,
-      isRegisteredUser: true,
-      isActive: u.isActive !== false,
-      accountType: u.accountType,
-      accountNumber: u.accountNumber,
-      accountHolderName: u.accountHolderName || u.name,
-      bankName: u.bankName,
-      branchName: u.branchName,
-      boundWithdrawalAccounts: u.boundWithdrawalAccounts,
-      password: u.password || 'Aa112233@',
-      withdrawalCondition: u.withdrawalCondition,
-      virtualCard: u.virtualCard,
-      documents: customerDocs
+      if (a.userId) {
+        if (!appsByUserId.has(a.userId)) appsByUserId.set(a.userId, []);
+        appsByUserId.get(a.userId)!.push(a);
+      }
     });
-  });
 
-  applications.forEach((app) => {
-    const appPhoneNorm = normalizePhone(app.phone);
-    let isAlreadyInList = false;
+    users.forEach((u) => {
+      const userPhoneNorm = normalizePhone(u.phone);
+      const matchedApps = [
+        ...(u.id && appsByUserId.has(u.id) ? appsByUserId.get(u.id)! : []),
+        ...(userPhoneNorm && appsByPhone.has(userPhoneNorm) ? appsByPhone.get(userPhoneNorm)! : [])
+      ];
+      // Deduplicate matched applications
+      const userApps = Array.from(new Set(matchedApps));
 
-    for (const existing of customerMap.values()) {
-      if (
-        (app.userId && existing.userId === app.userId) ||
-        normalizePhone(existing.phone) === appPhoneNorm ||
-        existing.name.toLowerCase().trim() === app.applicantName.toLowerCase().trim()
-      ) {
-        isAlreadyInList = true;
-        break;
-      }
-    }
-
-    if (!isAlreadyInList) {
-      const userApps = applications.filter((a) => normalizePhone(a.phone) === appPhoneNorm);
       const totalBorrowed = userApps
         .filter((a) => a.status === 'approved' || a.status === 'disbursed')
         .reduce((sum, a) => sum + (a.loanAmount || a.amount || 0), 0);
-      const disbursedWalletSum = userApps
-        .filter((a) => a.status === 'disbursed')
-        .reduce((sum, a) => sum + (a.approvedAmount || a.loanAmount || 0), 0);
-      const customerDocs = getAllDocumentsForCustomer(app.phone);
 
-      customerMap.set(`applicant-${app.id}`, {
-        id: `applicant-${app.id}`,
-        userId: undefined,
-        name: app.applicantName,
-        phone: app.phone,
-        email: app.email,
-        nidNumber: app.nidNumber,
-        profession: app.profession,
-        monthlyIncome: app.monthlyIncome,
-        address: app.presentAddress,
-        registeredAt: app.appliedDate || new Date().toISOString().split('T')[0],
-        walletBalance: disbursedWalletSum,
-        kycVerified: true,
+      // Collect documents from matched apps without doing disk/localStorage queries
+      const customerDocs: LoanApplicationDocument[] = [];
+      const seenDocIds = new Set<string>();
+      userApps.forEach((a) => {
+        (a.documents || []).forEach((d) => {
+          if (!seenDocIds.has(d.id)) {
+            seenDocIds.add(d.id);
+            customerDocs.push(d);
+          }
+        });
+      });
+
+      let userRegDate = u.registeredAt;
+      if (!userRegDate) {
+        const match = (u.id || '').match(/(\d{10,14})/);
+        if (match) {
+          const ts = parseInt(match[1], 10);
+          if (!isNaN(ts) && ts > 1000000000000) {
+            userRegDate = new Date(ts).toISOString();
+          }
+        }
+      }
+
+      customerMap.set(u.id, {
+        id: u.id,
+        userId: u.id,
+        name: u.name,
+        phone: u.phone,
+        email: u.email || `${u.phone}@client.com`,
+        nidNumber: u.nidNumber || 'প্রক্রিয়াধীন',
+        profession: u.profession || 'বেসরকারি চাকরিজীবী',
+        monthlyIncome: 45000,
+        address: u.address || 'ঢাকা, বাংলাদেশ',
+        registeredAt: userRegDate || '2025-01-01',
+        walletBalance: u.walletBalance || 0,
+        kycVerified: u.kycVerified ?? true,
         totalApplications: userApps.length,
         activeLoans: userApps.filter((a) => a.status === 'disbursed').length,
         totalBorrowed,
-        isRegisteredUser: false,
-        isActive: true,
-        accountType: 'bKash',
-        accountNumber: app.bankAccountNumber || app.phone,
-        accountHolderName: app.applicantName,
-        password: 'User@123456',
-        withdrawalCondition: undefined,
-        virtualCard: undefined,
+        isRegisteredUser: true,
+        isActive: u.isActive !== false,
+        accountType: u.accountType,
+        accountNumber: u.accountNumber,
+        accountHolderName: u.accountHolderName || u.name,
+        bankName: u.bankName,
+        branchName: u.branchName,
+        boundWithdrawalAccounts: u.boundWithdrawalAccounts,
+        password: u.password || 'Aa112233@',
+        withdrawalCondition: u.withdrawalCondition,
+        virtualCard: u.virtualCard,
         documents: customerDocs
       });
-    }
-  });
+    });
 
-  const getSortTimestamp = (c: CustomerListItem): number => {
-    // 1. Check registeredAt / appliedDate
-    if (c.registeredAt) {
-      const parsed = Date.parse(c.registeredAt);
-      if (!isNaN(parsed) && parsed > 0) return parsed;
-    }
-    // 2. Check ID for numeric timestamp (e.g. user-1792046795142)
-    const match = (c.id || '').match(/(\d{10,14})/);
-    if (match) {
-      const parsed = parseInt(match[1], 10);
-      if (!isNaN(parsed) && parsed > 1000000000000) return parsed;
-    }
-    // 3. Check applicant ID for loan suffix number (e.g. LN-2026-6940)
-    const loanMatch = (c.id || '').match(/LN-(\d{4})-(\d{4})/);
-    if (loanMatch) {
-      const year = parseInt(loanMatch[1], 10);
-      const seq = parseInt(loanMatch[2], 10);
-      return new Date(year, 0, 1).getTime() + seq * 10000;
-    }
-    return 0;
-  };
+    applications.forEach((app) => {
+      const appPhoneNorm = normalizePhone(app.phone);
+      let isAlreadyInList = false;
 
-  // Sub-Admin Isolation: filter customerMap to only assigned customers
-  const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
-    ? (currentSubAdmin.assigned_customer_ids || [])
-    : null;
+      for (const existing of customerMap.values()) {
+        if (
+          (app.userId && existing.userId === app.userId) ||
+          normalizePhone(existing.phone) === appPhoneNorm ||
+          existing.name.toLowerCase().trim() === app.applicantName.toLowerCase().trim()
+        ) {
+          isAlreadyInList = true;
+          break;
+        }
+      }
 
-  const rawCustomerList = Array.from(customerMap.values()).filter((c) => {
-    if (assignedCustomerIds === null) return true;
-    const phoneNorm = normalizePhone(c.phone);
-    return (
-      assignedCustomerIds.includes(c.id) ||
-      (c.userId && assignedCustomerIds.includes(c.userId)) ||
-      assignedCustomerIds.includes(c.phone) ||
-      assignedCustomerIds.includes(phoneNorm)
-    );
-  });
+      if (!isAlreadyInList) {
+        const userApps = appsByPhone.get(appPhoneNorm) || [app];
+        const totalBorrowed = userApps
+          .filter((a) => a.status === 'approved' || a.status === 'disbursed')
+          .reduce((sum, a) => sum + (a.loanAmount || a.amount || 0), 0);
+        const disbursedWalletSum = userApps
+          .filter((a) => a.status === 'disbursed')
+          .reduce((sum, a) => sum + (a.approvedAmount || a.loanAmount || 0), 0);
 
-  const allCustomers = rawCustomerList.sort((a, b) => {
-    const timeA = getSortTimestamp(a);
-    const timeB = getSortTimestamp(b);
-    if (timeB !== timeA) {
-      return timeB - timeA;
-    }
-    return (b.id || '').localeCompare(a.id || '');
-  });
+        const customerDocs: LoanApplicationDocument[] = [];
+        const seenDocIds = new Set<string>();
+        userApps.forEach((a) => {
+          (a.documents || []).forEach((d) => {
+            if (!seenDocIds.has(d.id)) {
+              seenDocIds.add(d.id);
+              customerDocs.push(d);
+            }
+          });
+        });
 
-  const filteredCustomers = allCustomers.filter((c) => {
-    const rawSearch = searchTerm.toLowerCase().trim();
-    const cleanDigits = rawSearch.replace(/[\s-]+/g, '');
-    const normSearch = normalizePhone(searchTerm).toLowerCase();
-    const userBankAcc = (c.bankAccountNumber || '').toLowerCase().replace(/[\s-]+/g, '');
-    const formattedBankAcc = format16DigitAccountNumber(c.bankAccountNumber || c.phone).toLowerCase().replace(/[\s-]+/g, '');
-    const userPhoneClean = (c.phone || '').replace(/[\s-]+/g, '');
+        customerMap.set(`applicant-${app.id}`, {
+          id: `applicant-${app.id}`,
+          userId: undefined,
+          name: app.applicantName,
+          phone: app.phone,
+          email: app.email,
+          nidNumber: app.nidNumber,
+          profession: app.profession,
+          monthlyIncome: app.monthlyIncome,
+          address: app.presentAddress,
+          registeredAt: app.appliedDate || new Date().toISOString().split('T')[0],
+          walletBalance: disbursedWalletSum,
+          kycVerified: true,
+          totalApplications: userApps.length,
+          activeLoans: userApps.filter((a) => a.status === 'disbursed').length,
+          totalBorrowed,
+          isRegisteredUser: false,
+          isActive: true,
+          accountType: 'bKash',
+          accountNumber: app.bankAccountNumber || app.phone,
+          accountHolderName: app.applicantName,
+          password: 'User@123456',
+          withdrawalCondition: undefined,
+          virtualCard: undefined,
+          documents: customerDocs
+        });
+      }
+    });
 
-    const matchesSearch = 
-      !rawSearch ||
-      (c.name || '').toLowerCase().includes(rawSearch) ||
-      userPhoneClean.includes(cleanDigits) ||
-      (c.phone || '').includes(rawSearch) ||
-      normalizePhone(c.phone || '').includes(normSearch) ||
-      (c.id || '').toLowerCase().includes(rawSearch) ||
-      (c.userId || '').toLowerCase().includes(rawSearch) ||
-      userBankAcc.includes(cleanDigits) ||
-      formattedBankAcc.includes(cleanDigits) ||
-      (c.accountNumber && c.accountNumber.replace(/[\s-]+/g, '').includes(cleanDigits)) ||
-      (c.nidNumber || '').includes(rawSearch);
+    const getSortTimestamp = (c: CustomerListItem): number => {
+      if (c.registeredAt) {
+        const parsed = Date.parse(c.registeredAt);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+      const match = (c.id || '').match(/(\d{10,14})/);
+      if (match) {
+        const parsed = parseInt(match[1], 10);
+        if (!isNaN(parsed) && parsed > 1000000000000) return parsed;
+      }
+      const loanMatch = (c.id || '').match(/LN-(\d{4})-(\d{4})/);
+      if (loanMatch) {
+        const year = parseInt(loanMatch[1], 10);
+        const seq = parseInt(loanMatch[2], 10);
+        return new Date(year, 0, 1).getTime() + seq * 10000;
+      }
+      return 0;
+    };
 
-    if (!matchesSearch) return false;
+    // Sub-Admin Isolation
+    const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
+      ? (currentSubAdmin.assigned_customer_ids || [])
+      : null;
 
-    if (filterType === 'verified') return c.kycVerified;
-    if (filterType === 'pending') return !c.kycVerified;
-    return true;
-  });
+    const rawList = Array.from(customerMap.values()).filter((c) => {
+      if (assignedCustomerIds === null) return true;
+      const phoneNorm = normalizePhone(c.phone);
+      return (
+        assignedCustomerIds.includes(c.id) ||
+        (c.userId && assignedCustomerIds.includes(c.userId)) ||
+        assignedCustomerIds.includes(c.phone) ||
+        assignedCustomerIds.includes(phoneNorm)
+      );
+    });
+
+    return rawList.sort((a, b) => {
+      const timeA = getSortTimestamp(a);
+      const timeB = getSortTimestamp(b);
+      if (timeB !== timeA) {
+        return timeB - timeA;
+      }
+      return (b.id || '').localeCompare(a.id || '');
+    });
+  }, [users, applications, adminRole, currentSubAdmin]);
+
+  const filteredCustomers = useMemo(() => {
+    return allCustomers.filter((c) => {
+      const rawSearch = searchTerm.toLowerCase().trim();
+      const cleanDigits = rawSearch.replace(/[\s-]+/g, '');
+      const normSearch = normalizePhone(searchTerm).toLowerCase();
+      const userBankAcc = (c.bankAccountNumber || '').toLowerCase().replace(/[\s-]+/g, '');
+      const formattedBankAcc = format16DigitAccountNumber(c.bankAccountNumber || c.phone).toLowerCase().replace(/[\s-]+/g, '');
+      const userPhoneClean = (c.phone || '').replace(/[\s-]+/g, '');
+
+      const matchesSearch = 
+        !rawSearch ||
+        (c.name || '').toLowerCase().includes(rawSearch) ||
+        userPhoneClean.includes(cleanDigits) ||
+        (c.phone || '').includes(rawSearch) ||
+        normalizePhone(c.phone || '').includes(normSearch) ||
+        (c.id || '').toLowerCase().includes(rawSearch) ||
+        (c.userId || '').toLowerCase().includes(rawSearch) ||
+        userBankAcc.includes(cleanDigits) ||
+        formattedBankAcc.includes(cleanDigits) ||
+        (c.accountNumber && c.accountNumber.replace(/[\s-]+/g, '').includes(cleanDigits)) ||
+        (c.nidNumber || '').includes(rawSearch);
+
+      if (!matchesSearch) return false;
+
+      if (filterType === 'verified') return c.kycVerified;
+      if (filterType === 'pending') return !c.kycVerified;
+      return true;
+    });
+  }, [allCustomers, searchTerm, filterType]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredCustomers.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const pagedCustomers = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return filteredCustomers.slice(start, start + pageSize);
+  }, [filteredCustomers, safeCurrentPage, pageSize]);
 
   const totalRegisteredCount = allCustomers.length;
-  const verifiedCount = allCustomers.filter((c) => c.kycVerified).length;
-  const totalWalletSum = allCustomers.reduce((sum, c) => sum + (c.walletBalance || 0), 0);
-  const activeLoansCount = allCustomers.filter((c) => c.activeLoans > 0).length;
+  const verifiedCount = useMemo(() => allCustomers.filter((c) => c.kycVerified).length, [allCustomers]);
+  const totalWalletSum = useMemo(() => allCustomers.reduce((sum, c) => sum + (c.walletBalance || 0), 0), [allCustomers]);
+  const activeLoansCount = useMemo(() => allCustomers.filter((c) => c.activeLoans > 0).length, [allCustomers]);
 
   const handleOpenInspector = (c: CustomerListItem) => {
     const docs = getAllDocumentsForCustomer(c.phone);
@@ -979,7 +1039,7 @@ export const AdminCustomersPage: React.FC = () => {
                   কোনো গ্রাহকের তথ্য পাওয়া যায়নি।
                 </div>
               ) : (
-                filteredCustomers.map((c) => {
+                pagedCustomers.map((c) => {
                   const boundList = Object.values(c.boundWithdrawalAccounts || {}).filter(Boolean);
                   if (boundList.length === 0 && c.accountNumber && c.accountNumber !== c.phone) {
                     boundList.push({
@@ -1410,7 +1470,7 @@ export const AdminCustomersPage: React.FC = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCustomers.map((c) => {
+                    pagedCustomers.map((c) => {
                       const boundList = Object.values(c.boundWithdrawalAccounts || {}).filter(Boolean);
                       if (boundList.length === 0 && c.accountNumber && c.accountNumber !== c.phone) {
                         boundList.push({
@@ -1620,6 +1680,46 @@ export const AdminCustomersPage: React.FC = () => {
                   )}
                 </TableBody>
               </Table>
+            </div>
+          )}
+          {/* Pagination Navigation Bar */}
+          {filteredCustomers.length > pageSize && (
+            <div className="px-4 py-3 bg-card border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shrink-0">
+              <span className="text-muted-foreground">
+                মোট <strong className="text-foreground font-mono">{toBengaliNumber(filteredCustomers.length)}</strong> জনের মধ্যে{' '}
+                <strong className="text-foreground font-mono">{toBengaliNumber((safeCurrentPage - 1) * pageSize + 1)}</strong> -{' '}
+                <strong className="text-foreground font-mono">{toBengaliNumber(Math.min(safeCurrentPage * pageSize, filteredCustomers.length))}</strong> দেখাচ্ছে
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={safeCurrentPage <= 1}
+                  className="h-8 px-2.5 text-xs gap-1"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>আগের পাতা</span>
+                </Button>
+
+                <span className="px-2 font-mono font-bold text-xs">
+                  {toBengaliNumber(safeCurrentPage)} / {toBengaliNumber(totalPages)}
+                </span>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safeCurrentPage >= totalPages}
+                  className="h-8 px-2.5 text-xs gap-1"
+                >
+                  <span>পরের পাতা</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
             </div>
           )}
         </Card>
