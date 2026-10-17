@@ -621,7 +621,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </h1>
 
             <p className="text-xs text-slate-400 mt-1">
-              DBS Bank SG বিজনেস ম্যানেজমেন্ট • 2FA গুগল অথেন্টিকেটর দ্বারা সুরক্ষিত
+              DBS Bank SG বিজনেস ম্যানেজমেন্ট
             </p>
           </div>
 
@@ -682,17 +682,21 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 </div>
               </div>
 
+              {/*
+              // --- [TEMPORARILY COMMENTED: 2FA QR NOTICE] ---
               <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center gap-2">
                 <QrCode className="w-4 h-4 text-primary shrink-0" />
                 <span>পরবর্তী ধাপে Google Authenticator QR কোড যাচাইকরণ প্রযোজ্য</span>
               </div>
+              // ----------------------------------------------
+              */}
 
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="w-full h-11 font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
               >
-                {isSubmitting ? 'যাচাই করা হচ্ছে...' : 'এগিয়ে যান (Next Step)'}
+                {isSubmitting ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'}
               </Button>
             </form>
           )}
