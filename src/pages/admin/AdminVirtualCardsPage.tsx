@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 export const AdminVirtualCardsPage: React.FC = () => {
   const { users, updateCustomerVirtualCard } = useLoan();
   const [cards, setCards] = useState<any[]>([]);
-  const [ setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'pending' | 'sent'>('pending');
 
   // Modal State

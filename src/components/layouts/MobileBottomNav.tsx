@@ -22,7 +22,7 @@ export const MobileBottomNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, walletBalance } = useLoan();
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [supportMenuOpen, setSupportMenuOpen] = useState(false);
 

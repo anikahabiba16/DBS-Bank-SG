@@ -381,7 +381,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const [totpQrUrl, setTotpQrUrl] = useState('');
   const [totpCode, setTotpCode] = useState('');
   const [copiedSecret, setCopiedSecret] = useState(false);
-  const [showQrInVerify, setShowQrInVerify] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Step 1: Handle Username & Password Submission (Instant Super-Admin check + Fast Timeout)
