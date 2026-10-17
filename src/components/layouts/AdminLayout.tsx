@@ -119,6 +119,34 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const locationRef = useRef(location.pathname);
   locationRef.current = location.pathname;
 
+  // Browser back-button protection: keeps admin securely within the admin panel
+  // Prevents accidental exit to customer portal on pressing browser back button
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    // Push state so back button is trapped within admin
+    try {
+      window.history.pushState({ adminGuard: true }, '', window.location.href);
+    } catch {}
+
+    const handlePopState = (e: PopStateEvent) => {
+      // If user tries to navigate out of /admin routes via back button
+      if (!window.location.pathname.startsWith('/admin')) {
+        // Re-push admin url so they stay inside admin
+        try {
+          window.history.pushState({ adminGuard: true }, '', locationRef.current || '/admin');
+        } catch {}
+        navigate(locationRef.current || '/admin', { replace: true });
+        toast.info('এডমিন ড্যাশবোর্ড থেকে বের হতে অনুগ্রহ করে লগআউট বাটনে ক্লিক করুন');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isAdmin, navigate]);
+
   useEffect(() => {
     if (!isAdmin) return;
     let isMounted = true;

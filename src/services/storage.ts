@@ -1649,7 +1649,21 @@ class LoanStorageService {
   isAdminAuthenticated(): boolean {
     if (!this.isBrowser()) return true;
     try {
-      return memoryStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
+      const fromMem = memoryStorage.getItem(STORAGE_KEYS.ADMIN_AUTH);
+      if (fromMem === 'true') return true;
+      if (typeof window !== 'undefined') {
+        const fromLocal = window.localStorage?.getItem(STORAGE_KEYS.ADMIN_AUTH);
+        if (fromLocal === 'true') {
+          memoryStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+          return true;
+        }
+        const fromSession = window.sessionStorage?.getItem(STORAGE_KEYS.ADMIN_AUTH);
+        if (fromSession === 'true') {
+          memoryStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+          return true;
+        }
+      }
+      return false;
     } catch {
       return false;
     }
@@ -1662,6 +1676,10 @@ class LoanStorageService {
     ) {
       if (this.isBrowser()) {
         memoryStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+        try {
+          window.localStorage?.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+          window.sessionStorage?.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+        } catch {}
       }
       return true;
     }
@@ -1671,6 +1689,10 @@ class LoanStorageService {
   logoutAdmin(): void {
     if (this.isBrowser()) {
       memoryStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      try {
+        window.localStorage?.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+        window.sessionStorage?.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      } catch {}
     }
   }
 

@@ -257,18 +257,30 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [users, setUsers] = useState<CustomerUser[]>(loanStorage.getUsers());
   const [currentUser, setCurrentUserState] = useState<CustomerUser | null>(loanStorage.getCurrentUser());
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    return loanStorage.isAdminAuthenticated() || (typeof window !== 'undefined' && sessionStorage.getItem('medo_sub_admin_auth') === 'true');
+    if (loanStorage.isAdminAuthenticated()) return true;
+    if (typeof window !== 'undefined') {
+      return (
+        sessionStorage.getItem('medo_sub_admin_auth') === 'true' ||
+        localStorage.getItem('medo_sub_admin_auth') === 'true'
+      );
+    }
+    return false;
   });
   const [adminRole, setAdminRole] = useState<'super_admin' | 'sub_admin'>(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('medo_sub_admin_auth') === 'true') {
-      return 'sub_admin';
+    if (typeof window !== 'undefined') {
+      if (
+        sessionStorage.getItem('medo_sub_admin_auth') === 'true' ||
+        localStorage.getItem('medo_sub_admin_auth') === 'true'
+      ) {
+        return 'sub_admin';
+      }
     }
     return 'super_admin';
   });
   const [currentSubAdmin, setCurrentSubAdmin] = useState<SubAdmin | null>(() => {
     try {
       if (typeof window !== 'undefined') {
-        const s = sessionStorage.getItem('medo_sub_admin_data');
+        const s = sessionStorage.getItem('medo_sub_admin_data') || localStorage.getItem('medo_sub_admin_data');
         return s ? JSON.parse(s) : null;
       }
     } catch {}
@@ -517,6 +529,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('medo_sub_admin_auth', 'true');
         sessionStorage.setItem('medo_sub_admin_data', JSON.stringify(subAdmin));
+        localStorage.setItem('medo_sub_admin_auth', 'true');
+        localStorage.setItem('medo_sub_admin_data', JSON.stringify(subAdmin));
       }
       setIsAdmin(true);
       setAdminRole('sub_admin');
@@ -529,6 +543,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('medo_sub_admin_auth');
         sessionStorage.removeItem('medo_sub_admin_data');
+        localStorage.removeItem('medo_sub_admin_auth');
+        localStorage.removeItem('medo_sub_admin_data');
       }
       setIsAdmin(true);
       setAdminRole('super_admin');
@@ -542,6 +558,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('medo_sub_admin_auth');
       sessionStorage.removeItem('medo_sub_admin_data');
+      localStorage.removeItem('medo_sub_admin_auth');
+      localStorage.removeItem('medo_sub_admin_data');
     }
     setIsAdmin(false);
     setAdminRole('super_admin');
