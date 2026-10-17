@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLoan } from '@/contexts/LoanContext';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { formatTaka, toBengaliNumber, normalizePhone, format16DigitAccountNumber, loanStorage } from '@/services/storage';
-import { CustomerUser, LoanApplicationDocument, VirtualDebitCard, WithdrawalCondition } from '@/types/loan';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {  LoanApplicationDocument, VirtualDebitCard, WithdrawalCondition } from '@/types/loan';
+import { Card,CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,6 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
-  DialogFooter
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -33,16 +32,15 @@ import {
   Search, 
   UserCheck, 
   Phone, 
-  MapPin, 
+
   Briefcase, 
-  Mail, 
+
   Trash2, 
   FileText, 
   Wallet, 
-  Clock, 
+
   ShieldCheck, 
-  PlusCircle, 
-  MinusCircle, 
+
   Eye, 
   EyeOff,
   Copy,
@@ -50,7 +48,7 @@ import {
   AlertTriangle,
   Lock,
   CheckCircle2,
-  Sparkles,
+ 
   ArrowRight,
   RotateCcw,
   Edit,
@@ -62,7 +60,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { CustomerDocumentInspectorModal } from '@/components/common/CustomerDocumentInspectorModal';
-import { VirtualDebitCardView } from '@/components/customer/VirtualDebitCardView';
 import { toast } from 'sonner';
 
 interface CustomerListItem {
@@ -108,13 +105,13 @@ export const AdminCustomersPage: React.FC = () => {
     updateUserWallet,
     updateCustomerAccount,
     updateCustomerWithdrawalCondition,
-    submitWithdrawalConditionPayment,
+  
     acceptCustomerWithdrawalCondition,
     rejectCustomerWithdrawalConditionSlip,
     addNextWithdrawalCondition,
     updateCustomerVirtualCard,
     toggleCustomerActive,
-    settings,
+   
     adminRole,
     currentSubAdmin
   } = useLoan();
@@ -783,9 +780,7 @@ export const AdminCustomersPage: React.FC = () => {
     setPostAcceptDialogOpen(false);
   };
 
-  const handleQuickApproveCondition = (c: CustomerListItem) => {
-    handleAcceptAndUnlockWithdrawal(c);
-  };
+  
 
   // Open Virtual Card Modal
   const handleOpenCardModal = (c: CustomerListItem) => {
@@ -967,7 +962,7 @@ export const AdminCustomersPage: React.FC = () => {
         <div className="p-3.5 sm:p-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-2 border-amber-400 rounded-xl flex items-center justify-between flex-wrap gap-3 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-900 flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5 text-amber-600" />
+             
             </div>
             <div>
               <div className="font-extrabold text-foreground text-xs sm:text-sm flex items-center gap-2">
@@ -988,7 +983,7 @@ export const AdminCustomersPage: React.FC = () => {
             }}
             className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs h-9 px-4 gap-1.5 shadow-sm ml-auto sm:ml-0"
           >
-            <Sparkles className="w-4 h-4" />
+           
             <span>⚡ ইউজার সিলেক্ট করে শর্ত দিন / পরিবর্তন করুন</span>
           </Button>
         </div>
@@ -1391,7 +1386,6 @@ export const AdminCustomersPage: React.FC = () => {
                             }`}
                             title="ভার্চুয়াল কার্ড অনুমোদন ও ইডিট"
                           >
-                            <Sparkles className="w-3.5 h-3.5" />
                             <span>কার্ড</span>
                             {c.virtualCard?.status === 'pending' && (
                               <Badge className="bg-amber-500 text-white text-[9px] px-1 py-0 h-4">
@@ -2206,7 +2200,7 @@ export const AdminCustomersPage: React.FC = () => {
         <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-lg p-4 sm:p-6 max-h-[88dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
+              
               ভার্চুয়াল ডেবিট কার্ড সম্পাদনা ও অনুমোদন
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -2857,7 +2851,6 @@ export const AdminCustomersPage: React.FC = () => {
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs h-10 gap-2 shadow-sm"
               >
-                <Sparkles className="w-4 h-4" />
                 <span>+ পরবর্তী কাস্টম শর্ত যুক্ত করুন (Add Next Stage)</span>
               </Button>
 

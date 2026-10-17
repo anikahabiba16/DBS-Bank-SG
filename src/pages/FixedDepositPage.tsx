@@ -11,18 +11,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { 
   TrendingUp, 
   PiggyBank, 
-  Percent, 
-  Clock, 
-  ShieldCheck, 
   CheckCircle2, 
   AlertCircle, 
-  ArrowRight, 
+ 
   Copy, 
   Upload, 
   Wallet,
   PhoneCall,
-  Calendar,
-  Sparkles,
+
   HelpCircle
 } from 'lucide-react';
 import { formatTaka, toBengaliNumber } from '@/services/storage';

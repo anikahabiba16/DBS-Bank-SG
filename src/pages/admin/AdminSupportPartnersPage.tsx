@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLoan } from '@/contexts/LoanContext';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
-import { CustomerSupportConfig, SupportChannelOption, PartnerBankConfig } from '@/types/loan';
+import {  SupportChannelOption, PartnerBankConfig } from '@/types/loan';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -20,14 +20,11 @@ import {
   Edit3, 
   Trash2, 
   Save, 
-  ExternalLink,
-  ShieldCheck,
-  CheckCircle2,
+
   Mail,
   MessageSquare,
-  Power,
-  HelpCircle,
-  Sparkles
+  Power
+ 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -464,7 +461,7 @@ export const AdminSupportPartnersPage: React.FC = () => {
               <form onSubmit={handleSaveSupport} className="space-y-4 text-xs pt-4 border-t">
                 <div className="p-4 rounded-xl border bg-muted/20 space-y-3">
                   <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                   
                     গ্রাহক সেবা সময়সূচী ও জরুরি সাপোর্ট নোটিশ
                   </div>
 

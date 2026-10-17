@@ -12,14 +12,9 @@ import { BankApprovalLetterView } from '@/components/common/BankApprovalLetterVi
 import { 
   FileCheck2, 
   Eye, 
-  Printer, 
+
   FileEdit, 
   CheckCircle2, 
-  Building2, 
-  ShieldCheck, 
-  Sparkles,
-  Search,
-  Plus
 } from 'lucide-react';
 import { formatTaka } from '@/services/storage';
 import { toast } from 'sonner';

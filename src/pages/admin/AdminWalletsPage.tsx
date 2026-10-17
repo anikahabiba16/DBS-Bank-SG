@@ -10,23 +10,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { 
   Wallet, 
   PlusCircle, 
-  MinusCircle, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
+  MinusCircle,  
   Search, 
   User, 
   Phone, 
-  Clock, 
-  History,
-  CheckCircle2,
-  AlertTriangle
+  History
 } from 'lucide-react';
 import { formatTaka, updateCustomerWithdrawalCondition } from '@/services/storage';
 import { toast } from 'sonner';
-import { CustomerUser, WithdrawalCondition } from '@/types/loan';
+import { CustomerUser } from '@/types/loan';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Lock, Sparkles, ShieldAlert } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 export const AdminWalletsPage: React.FC = () => {
   const { users, updateUserWallet, transactions } = useLoan();

@@ -3,7 +3,7 @@ import { useLoan } from '@/contexts/LoanContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Video, Download, Play, Pause, Sparkles, ArrowRight, ExternalLink } from 'lucide-react';
+import { Video, Download, Play, ArrowRight} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -129,7 +129,7 @@ export const VideoGuideSection: React.FC = () => {
             <div className="md:col-span-5 p-6 md:p-8 flex flex-col justify-between bg-muted/20 border-t md:border-t-0 md:border-l border-border space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
+                  
                   <span className="text-xs font-bold uppercase tracking-wider text-primary">সহজ ৩ ধাপের প্রক্রিয়া</span>
                 </div>
 

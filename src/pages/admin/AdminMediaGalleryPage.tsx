@@ -10,9 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 import { 
-  Sparkles, 
   Plus, 
   Trash2, 
   Edit3, 
@@ -24,9 +23,6 @@ import {
   ExternalLink, 
   CheckCircle2, 
   Coins, 
-  MapPin, 
-  Eye, 
-  AlertCircle 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -256,7 +252,7 @@ export const AdminMediaGalleryPage: React.FC = () => {
                 <h3 className="text-2xl font-bold text-primary mt-1">{activeCount} টি</h3>
               </div>
               <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                <Sparkles className="w-5 h-5" />
+               
               </div>
             </CardContent>
           </Card>

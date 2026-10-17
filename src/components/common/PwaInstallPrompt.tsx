@@ -3,13 +3,11 @@ import {
   Download, 
   Smartphone, 
   CheckCircle2, 
-  Sparkles, 
-  ShieldCheck, 
-  
+  ShieldCheck,
   Share, 
   PlusSquare, 
   MoreVertical,
-
+  Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -187,7 +185,7 @@ export function PwaInstallPrompt() {
           {/* Benefits Grid */}
           <div className="space-y-2.5 py-3">
             <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10 text-xs">
-              <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <Star className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div>
                 <strong className="text-foreground block font-bold">সরাসরি মোবাইলের হোম স্ক্রিনে ইনস্টল</strong>
                 <span className="text-muted-foreground text-[11px]">অন্য কোনো সফটওয়্যার বা ফাইল ডাউনলোডের ঝামেলা নেই।</span>

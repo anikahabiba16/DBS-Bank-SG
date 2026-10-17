@@ -15,16 +15,11 @@ import {
   Send, 
   CheckCircle2, 
   Clock, 
-  Sparkles, 
   ShieldCheck, 
-  User, 
-  Phone, 
-  Calendar, 
-  Copy, 
+  
   Trash2, 
   Edit3, 
   RefreshCw,
-  Eye,
   Plus
 } from 'lucide-react';
 import { toast } from 'sonner';

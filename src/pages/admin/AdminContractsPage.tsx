@@ -32,8 +32,7 @@ import {
   Loader2,
   ImageIcon,
   Send,
-  Clock,
-  Sparkles
+  Clock
 } from 'lucide-react';
 import { AuthenticStampContractDocument } from '@/components/common/AuthenticStampContractDocument';
 import { toast } from 'sonner';
@@ -538,7 +537,6 @@ export const AdminContractsPage: React.FC = () => {
             {/* Auto-Fill Customer Selector */}
             <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 space-y-2">
               <Label className="text-xs font-bold text-primary flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4" />
                 <span>গ্রাহক নির্বাচন করুন (সমস্ত তথ্য ও অনুচ্ছেদ অটো-ফিল হবে) *</span>
               </Label>
               <select

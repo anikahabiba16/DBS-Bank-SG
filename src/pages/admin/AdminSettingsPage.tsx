@@ -14,21 +14,18 @@ import {
   RotateCcw, 
   Building, 
   Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  Sparkles, 
-  Sliders, 
+
   ShieldCheck,
-  CheckCircle2,
+
   MessageSquareQuote,
   Plus,
   Trash2,
   ExternalLink,
   Building2,
-  Star,
+
   Palette,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Bell
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { DirectImageUploadField } from '@/components/common/DirectImageUploadField';
@@ -424,7 +421,7 @@ export const AdminSettingsPage: React.FC = () => {
             </CardDescription>
             <div className="mt-3 p-3 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-between gap-3">
               <span className="text-xs text-foreground font-medium flex items-center gap-1.5">
-                <Image className="w-4 h-4 text-primary shrink-0" />
+                <ImageIcon className="w-4 h-4 text-primary shrink-0" />
                 সরাসরি গ্যালারি থেকে ছবি আপলোড, লোন প্রমোশন ব্যানার ও স্ক্রোলযোগ্য গ্যালারি পরিচালনার জন্য মিডিয়া ম্যানেজারে যান:
               </span>
               <Button asChild size="sm" variant="default" className="text-xs h-7 shrink-0 gap-1">

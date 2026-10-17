@@ -10,15 +10,11 @@ import {
   Phone,
   Lock,
   User,
-  Sparkles,
-  CheckCircle2,
   LogIn,
   UserPlus,
   Globe,
   Smartphone,
-  Download,
   Info,
-  X,
   Eye,
   EyeOff
 } from 'lucide-react';

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Phone, Mail, MapPin, Printer, Download, Sparkles, Building2 } from "lucide-react";
+import { Phone, Mail, MapPin, Printer, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";

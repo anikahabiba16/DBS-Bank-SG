@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { 
   ArrowDownToLine, 
@@ -21,10 +20,9 @@ import {
   ShieldCheck,
   AlertTriangle,
   Lock,
-  Unlock,
-  Sparkles,
+ 
   ArrowRight,
-  Filter,
+
   UserCheck,
   Send,
   RefreshCw,
@@ -35,7 +33,7 @@ import {
 } from 'lucide-react';
 import { formatTaka, getUsers, updateCustomerWithdrawalCondition, toBengaliNumber } from '@/services/storage';
 import { toast } from 'sonner';
-import { WithdrawalRequest, UserProfile, WithdrawalCondition, PaymentMethodConfig } from '@/types/loan';
+import { WithdrawalRequest, UserProfile, PaymentMethodConfig } from '@/types/loan';
 
 export const AdminWithdrawalsPage: React.FC = () => {
   const { withdrawals, processWithdrawal, paymentMethods, savePaymentMethod, deletePaymentMethod } = useLoan();

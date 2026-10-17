@@ -14,12 +14,8 @@ import {
   Check, 
   UploadCloud, 
   Clock, 
-  CheckCircle2, 
-  XCircle, 
-  Info, 
-  Sparkles,
-  History,
-  AlertCircle
+ 
+  History
 } from 'lucide-react';
 import { toast } from 'sonner';
 

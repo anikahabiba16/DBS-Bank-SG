@@ -36,23 +36,23 @@ import {
   Square,
   Play,
   Pause,
-  Headphones,
+
   Search,
   User,
   Clock,
-  Sparkles,
+ 
   Phone,
   RefreshCw,
   MessageSquare,
   CheckCheck,
   Image as ImageIcon,
   X,
-  UserCheck,
+ 
   ArrowLeft,
-  Volume2,
+ 
   UserPlus,
-  Plus,
-  CreditCard,
+
+
   Check,
   Trash2
 } from 'lucide-react';
@@ -1012,7 +1012,7 @@ export default function AdminMessagesPage() {
                 {uniqueMessages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3 text-muted-foreground">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-xs">
-                      <Sparkles className="w-6 h-6" />
+                   
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-bold text-foreground">

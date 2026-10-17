@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Eraser, Check, Undo2, PenTool, Sparkles } from 'lucide-react';
+import { Eraser, Check, Undo2, PenTool } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SignaturePadProps {
@@ -182,7 +182,6 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
         {/* Helper Watermark */}
         {!hasDrawn && (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-muted-foreground/60 select-none px-4 text-center">
-            <Sparkles className="w-6 h-6 mb-1 text-primary/40 animate-pulse" />
             <span className="text-xs font-bold text-foreground/70">
               এখানে আঙুল (Touch) বা মাউস দিয়ে আপনার স্বাক্ষর আঁকুন
             </span>

@@ -20,8 +20,6 @@ import {
   ShieldCheck,
   ShieldAlert,
   AlertTriangle,
-  ExternalLink,
-  ChevronRight,
   LogOut,
   Wallet,
   ArrowDownToLine,
@@ -33,7 +31,6 @@ import {
   Headphones,
   Stamp,
   Contact2,
-  Sparkles,
   QrCode,
   Key,
   Copy,
@@ -41,7 +38,8 @@ import {
   MessageSquare,
   Eye,
   EyeOff,
-  GripVertical
+  GripVertical,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -299,7 +297,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     {
       name: 'মিডিয়া গ্যালারি',
       path: '/admin/media-gallery',
-      icon: Sparkles,
+      icon: ImageIcon,
       badge: null,
       moduleKey: 'media'
     },

@@ -20,9 +20,9 @@ import {
   Copy, 
   RefreshCw, 
   Eye, 
-  Sparkles,
+ 
   Check,
-  UserCheck,
+  
   Image as ImageIcon,
   PenTool,
   ShieldCheck

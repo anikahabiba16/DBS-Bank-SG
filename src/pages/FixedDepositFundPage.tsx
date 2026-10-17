@@ -7,25 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   PiggyBank, 
-  Wallet, 
+
   TrendingUp, 
   Clock, 
   CheckCircle2, 
   ShieldCheck, 
   Percent, 
-  Calendar, 
-  ArrowRight, 
-  Sparkles, 
+ 
   Zap, 
-  AlertCircle,
+
   Eye,
   PlusCircle,
-  Coins,
+
   History,
   Lock
 } from 'lucide-react';
 import { formatTaka, toBengaliNumber } from '@/services/storage';
-import { CustomerFixedDeposit } from '@/types/loan';
+
 
 export const FixedDepositFundPage: React.FC = () => {
   const { currentUser, customerFixedDeposits, refreshCustomerFixedDeposits } = useLoan();

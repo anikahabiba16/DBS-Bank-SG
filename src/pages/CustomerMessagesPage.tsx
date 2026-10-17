@@ -17,7 +17,6 @@ import {
   type CustomerMessage,
 } from '@/services/customerMessagingService';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   Send,
@@ -25,17 +24,15 @@ import {
   Square,
   Play,
   Pause,
-  Headphones,
+
   CheckCheck,
   Clock,
-  Sparkles,
+
   PhoneCall,
   Image as ImageIcon,
   X,
-  User,
-  ShieldCheck,
-  ExternalLink,
-  Check
+  Check,
+  MessageSquare
 } from 'lucide-react';
 import { toast } from 'sonner';
 

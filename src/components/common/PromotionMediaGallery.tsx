@@ -9,7 +9,6 @@ import {
   ChevronLeft, 
   ChevronRight, 
   CheckCircle2, 
-  Sparkles, 
   ArrowRight, 
   Eye, 
   Megaphone, 
@@ -17,7 +16,6 @@ import {
   Coins, 
   MapPin, 
   Briefcase,
-  Star,
   Quote
 } from 'lucide-react';
 import { Link } from 'react-router-dom';

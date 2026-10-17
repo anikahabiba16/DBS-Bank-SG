@@ -9,13 +9,12 @@ import {
   Headphones, 
   User,
   MessageSquare,
-  PhoneCall,
-  Sparkles
+  PhoneCall
 } from 'lucide-react';
 import { formatTaka } from '@/services/storage';
 import { CustomerSupportModal } from '@/components/common/CustomerSupportModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+
 
 import { useLanguage } from '@/contexts/LanguageContext';
 
