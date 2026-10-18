@@ -1750,6 +1750,13 @@ class LoanStorageService {
           memoryStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
           return true;
         }
+        // Also check sub-admin credentials persistence
+        if (
+          window.sessionStorage?.getItem('medo_sub_admin_auth') === 'true' ||
+          window.localStorage?.getItem('medo_sub_admin_auth') === 'true'
+        ) {
+          return true;
+        }
       }
       return false;
     } catch {

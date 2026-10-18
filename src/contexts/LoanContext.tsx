@@ -390,7 +390,27 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const cur = loanStorage.getCurrentUser();
     if (cur) setCurrentUserState(cur);
-    setIsAdmin(loanStorage.isAdminAuthenticated());
+
+    // Re-hydrate Admin and Sub-Admin auth on page reload
+    const isSubAdmin = typeof window !== 'undefined' && (
+      sessionStorage.getItem('medo_sub_admin_auth') === 'true' ||
+      localStorage.getItem('medo_sub_admin_auth') === 'true'
+    );
+
+    if (isSubAdmin) {
+      setIsAdmin(true);
+      setAdminRole('sub_admin');
+      try {
+        const s = sessionStorage.getItem('medo_sub_admin_data') || localStorage.getItem('medo_sub_admin_data');
+        if (s) {
+          const parsed = JSON.parse(s);
+          setCurrentSubAdmin(parsed);
+          currentSubAdminRef.current = parsed;
+        }
+      } catch {}
+    } else {
+      setIsAdmin(loanStorage.isAdminAuthenticated());
+    }
 
     // Initialize cloud sync and realtime updates from Supabase
     supabaseSync.init((newSettings) => {
@@ -398,13 +418,17 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const handleSubAdminSync = async (e?: any) => {
-      if (adminRoleRef.current === 'sub_admin' && currentSubAdminRef.current) {
+      const activeRole = adminRoleRef.current;
+      const activeSub = currentSubAdminRef.current;
+      if (activeRole === 'sub_admin' && activeSub) {
         try {
           const fresh = await subAdminService.getAllSubAdmins();
-          const me = fresh.find((s: any) => s.id === currentSubAdminRef.current!.id || s.username === currentSubAdminRef.current!.username);
+          const me = fresh.find((s: any) => s.id === activeSub.id || s.username === activeSub.username);
           if (me) {
             setCurrentSubAdmin(me);
+            currentSubAdminRef.current = me;
             sessionStorage.setItem('medo_sub_admin_data', JSON.stringify(me));
+            localStorage.setItem('medo_sub_admin_data', JSON.stringify(me));
           }
         } catch {}
       }

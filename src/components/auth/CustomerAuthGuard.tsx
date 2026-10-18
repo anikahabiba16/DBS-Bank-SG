@@ -17,22 +17,24 @@ export const CustomerAuthGuard: React.FC<CustomerAuthGuardProps> = ({ children }
 
   // Protect logged-in customer from accidental back button exit out of dashboard
   useEffect(() => {
-    if (!activeUser) return;
-
-    try {
-      window.history.pushState({ customerGuard: true }, '', window.location.href);
-    } catch {}
+    // Only push guard state if currently on dashboard/wallet routes
+    const isDashboardRoute = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/wallet');
+    if (isDashboardRoute) {
+      try {
+        if (!window.history.state?.customerGuard) {
+          window.history.pushState({ customerGuard: true }, '', window.location.href);
+        }
+      } catch {}
+    }
 
     const handlePopState = () => {
       const currentPath = window.location.pathname;
-      const isDashboardRoute = locationRef.current.startsWith('/dashboard') || locationRef.current.startsWith('/wallet');
+      const onDashboard = locationRef.current.startsWith('/dashboard') || locationRef.current.startsWith('/wallet');
 
-      // If on dashboard and back button is clicked, or attempting to land on public/login/register/landing pages
+      // If user is on dashboard and clicks back into public/login/register
       if (
-        currentPath === '/' ||
-        currentPath === '/login' ||
-        currentPath === '/register' ||
-        (isDashboardRoute && !currentPath.startsWith('/dashboard') && !currentPath.startsWith('/wallet'))
+        onDashboard &&
+        (currentPath === '/' || currentPath === '/login' || currentPath === '/register')
       ) {
         try {
           window.history.pushState({ customerGuard: true }, '', locationRef.current || '/dashboard');
@@ -45,7 +47,7 @@ export const CustomerAuthGuard: React.FC<CustomerAuthGuardProps> = ({ children }
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [activeUser, navigate]);
+  }, [activeUser, location.pathname, navigate]);
 
   // If customer is not authenticated, redirect to /login
   if (!activeUser) {

@@ -60,11 +60,6 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
         toast.success(res.message);
         onOpenChange(false);
         navigate('/dashboard', { replace: true });
-        setTimeout(() => {
-          if (!window.location.pathname.startsWith('/dashboard')) {
-            window.location.href = '/dashboard';
-          }
-        }, 100);
         onSuccess?.();
       } else {
         toast.error(res.message);
@@ -108,11 +103,6 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
       toast.success('রেজিস্ট্রেশন সফল হয়েছে এবং আপনি লগইন হয়েছেন!');
       onOpenChange(false);
       navigate('/dashboard', { replace: true });
-      setTimeout(() => {
-        if (!window.location.pathname.startsWith('/dashboard')) {
-          window.location.href = '/dashboard';
-        }
-      }, 100);
       onSuccess?.();
     } else {
       toast.error(res.message);

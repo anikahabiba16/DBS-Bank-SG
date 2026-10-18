@@ -109,12 +109,6 @@ export const LoginPage: React.FC = () => {
       if (res.success) {
         toast.success(res.message);
         navigate(redirectPath, { replace: true });
-        // Immediate fallback in case router state has pending popstate lock
-        setTimeout(() => {
-          if (!window.location.pathname.startsWith('/dashboard')) {
-            window.location.href = redirectPath;
-          }
-        }, 100);
       } else {
         toast.error(res.message);
       }
@@ -163,11 +157,6 @@ export const LoginPage: React.FC = () => {
     if (res.success) {
       toast.success('অ্যাকাউন্ট সফলভাবে খোলা হয়েছে এবং লগইন সম্পন্ন হয়েছে!');
       navigate(redirectPath, { replace: true });
-      setTimeout(() => {
-        if (!window.location.pathname.startsWith('/dashboard')) {
-          window.location.href = redirectPath;
-        }
-      }, 100);
     } else {
       toast.error(res.message);
     }

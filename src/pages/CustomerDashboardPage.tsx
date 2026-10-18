@@ -602,7 +602,7 @@ export const CustomerDashboardPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-primary text-primary-foreground font-black flex items-center justify-center text-lg shadow-sm">
-                {currentUser ? currentUser.name.charAt(0) : 'সহ'}
+                {currentUser?.name ? currentUser.name.charAt(0) : 'সহ'}
               </div>
               <div>
                 <div className="flex items-center gap-2">

@@ -23,8 +23,7 @@ import { ApplyPage } from './pages/ApplyPage';
 import { TrackPage } from './pages/TrackPage';
 import { LoginPage, RegisterPage } from './pages/AuthPages';
 
-// Dynamic Protected & Admin Pages - Lazy loaded on demand
-const CustomerDashboardPage = lazy(() => import('./pages/CustomerDashboardPage').then((m) => ({ default: m.CustomerDashboardPage })));
+import { CustomerDashboardPage } from './pages/CustomerDashboardPage';
 const CustomerMessagesPage = lazy(() => import('./pages/CustomerMessagesPage'));
 
 // Admin Pages - Lazy loaded on demand so customer portal never downloads admin bundles
@@ -141,7 +140,7 @@ export const routes: RouteConfig[] = [
     path: '/dashboard',
     element: (
       <CustomerAuthGuard>
-        {withSuspense(CustomerDashboardPage)}
+        <CustomerDashboardPage />
       </CustomerAuthGuard>
     ),
     public: false,
@@ -151,7 +150,7 @@ export const routes: RouteConfig[] = [
     path: '/wallet',
     element: (
       <CustomerAuthGuard>
-        {withSuspense(CustomerDashboardPage)}
+        <CustomerDashboardPage />
       </CustomerAuthGuard>
     ),
     public: false,
