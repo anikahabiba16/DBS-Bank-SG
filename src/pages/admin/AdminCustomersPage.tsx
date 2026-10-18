@@ -88,6 +88,7 @@ interface CustomerListItem {
   branchName?: string;
   boundWithdrawalAccounts?: Partial<Record<'bKash' | 'Nagad' | 'Rocket' | 'Bank', any>>;
   password?: string;
+  canViewLoanAgreement?: boolean;
   withdrawalCondition?: WithdrawalCondition;
   virtualCard?: VirtualDebitCard;
   documents: LoanApplicationDocument[];
@@ -175,6 +176,7 @@ export const AdminCustomersPage: React.FC = () => {
   const [accBankName, setAccBankName] = useState<string>('');
   const [accBankBranch, setAccBankBranch] = useState<string>('');
   const [accBankHolder, setAccBankHolder] = useState<string>('');
+  const [accCanViewAgreement, setAccCanViewAgreement] = useState<boolean>(false);
   const [showPasswordInModal, setShowPasswordInModal] = useState<boolean>(false);
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
@@ -298,6 +300,7 @@ export const AdminCustomersPage: React.FC = () => {
         branchName: u.branchName,
         boundWithdrawalAccounts: u.boundWithdrawalAccounts,
         password: u.password || 'Aa112233@',
+        canViewLoanAgreement: Boolean(u.canViewLoanAgreement),
         withdrawalCondition: u.withdrawalCondition,
         virtualCard: u.virtualCard,
         documents: customerDocs
@@ -559,6 +562,7 @@ export const AdminCustomersPage: React.FC = () => {
     setAccBankName(bm.Bank?.bankName || c.bankName || 'ইসলামী ব্যাংক বাংলাদেশ');
     setAccBankBranch(bm.Bank?.branchName || c.branchName || 'প্রধান শাখা');
     setAccBankHolder(bm.Bank?.accountHolderName || c.accountHolderName || c.name || '');
+    setAccCanViewAgreement(Boolean(c.canViewLoanAgreement));
 
     setShowPasswordInModal(false);
     setAccountModalOpen(true);
@@ -632,7 +636,8 @@ export const AdminCustomersPage: React.FC = () => {
       bankName: primaryKey === 'Bank' ? primaryAcc?.bankName : undefined,
       branchName: primaryKey === 'Bank' ? primaryAcc?.branchName : undefined,
       boundWithdrawalAccounts: newBound,
-      password: accPassword.trim() || undefined
+      password: accPassword.trim() || undefined,
+      canViewLoanAgreement: accCanViewAgreement
     });
 
     if (res) {
@@ -955,6 +960,58 @@ export const AdminCustomersPage: React.FC = () => {
                 যেকোনো গ্রাহকের নাম, লগইন নম্বর, পাসওয়ার্ড বা বিকাশ, নগদ, রকেট ও ব্যাংক একাউন্ট পরিবর্তন করতে নামের নিচে অথবা ডানপাশের অ্যাকশন কলামে থাকা <span className="font-bold text-primary underline">"তথ্য এডিট"</span> বাটনে চাপুন। এডমিন প্যানেল থেকে সংরক্ষিত তথ্য গ্রাহকের পেজে স্বয়ংক্রিয়ভাবে লাইভ আপডেট হয়ে যাবে।
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Loan Agreement Paper Global & Batch Access Control Banner */}
+        <div className="p-3.5 sm:p-4 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 border-2 border-blue-400 rounded-xl flex items-center justify-between flex-wrap gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-900 flex items-center justify-center shrink-0">
+              <FileText className="w-5 h-5 text-blue-700" />
+            </div>
+            <div>
+              <div className="font-extrabold text-foreground text-xs sm:text-sm flex items-center gap-2">
+                <span>চুক্তিপত্র পেপার অ্যাক্সেস নিয়ন্ত্রণ (Loan Agreement Paper Access)</span>
+                <Badge className="bg-blue-600 text-white text-[10px] font-bold">নিরাপত্তা নিয়ন্ত্রণ</Badge>
+              </div>
+              <p className="text-muted-foreground text-[11px] mt-0.5">
+                বাই-ডিফল্ট কোনো গ্রাহকের ড্যাশবোর্ডে চুক্তিপত্র পেপার প্রদর্শিত হবে না। আপনি চাইলে সব গ্রাহককে একসাথে অনুমতি দিতে পারেন অথবা এডিট অপশন থেকে নির্দিষ্ট কোনো গ্রাহককে অনুমতি দিতে পারেন।
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 ml-auto sm:ml-0 flex-wrap">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const count = allCustomers.length;
+                allCustomers.forEach((c) => {
+                  updateCustomerAccount(c.id || c.phone, { canViewLoanAgreement: true });
+                });
+                toast.success(`সকল (${count} জন) গ্রাহককে চুক্তিপত্র দেখার অনুমতি প্রদান করা হয়েছে!`);
+                refreshUsers();
+              }}
+              className="text-xs font-bold text-blue-700 border-blue-300 hover:bg-blue-50 h-8"
+            >
+              ✓ সবাইকে অনুমতি দিন (Grant All)
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const count = allCustomers.length;
+                allCustomers.forEach((c) => {
+                  updateCustomerAccount(c.id || c.phone, { canViewLoanAgreement: false });
+                });
+                toast.info(`সকল (${count} জন) গ্রাহকের চুক্তিপত্র দেখার অনুমতি প্রত্যাহার করা হয়েছে!`);
+                refreshUsers();
+              }}
+              className="text-xs font-bold text-slate-700 border-slate-300 hover:bg-slate-100 h-8"
+            >
+              ✕ সবার অনুমতি বন্ধ করুন (Revoke All)
+            </Button>
           </div>
         </div>
 
@@ -1884,6 +1941,25 @@ export const AdminCustomersPage: React.FC = () => {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* 3. Loan Agreement Paper Visibility Control */}
+            <div className="p-3 bg-muted/30 border-2 border-primary/20 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-primary" />
+                    <span>চুক্তিপত্র পেপার (Loan Agreement Paper) অ্যাক্সেস</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    অনুমতি চালু করলে এই গ্রাহক তার ড্যাশবোর্ডে চুক্তিপত্র পেপার দেখার ও ডাউনলোড করার অপশন দেখতে পাবেন। বাই-ডিফল্ট এটি বন্ধ থাকে।
+                  </p>
+                </div>
+                <Switch
+                  checked={accCanViewAgreement}
+                  onCheckedChange={setAccCanViewAgreement}
+                />
               </div>
             </div>
 

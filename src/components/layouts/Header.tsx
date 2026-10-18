@@ -14,7 +14,8 @@ import {
   Wallet,
   Smartphone,
   Bell,
-  ChevronDown
+  ChevronDown,
+  Headphones
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -26,7 +27,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { CustomerAuthModal } from '@/components/auth/CustomerAuthModal';
 import { BDLoanLogo } from '@/components/common/BDLoanLogo';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
 import { formatTaka } from '@/services/storage';
@@ -40,8 +40,6 @@ export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [trackDialogOpen, setTrackDialogOpen] = useState(false);
   const [trackSearchId, setTrackSearchId] = useState('');
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authDefaultTab, setAuthDefaultTab] = useState<'login' | 'register'>('login');
 
   // Dynamic header branding text
   const { language, t } = useLanguage();
@@ -139,6 +137,17 @@ export const Header: React.FC = () => {
           </Button>
 
 
+          {/* Fixed App Install Button in Navbar */}
+          <button
+            type="button"
+            onClick={handleInstallApp}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[11px] sm:text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 shrink-0"
+            title="DBS Bank SG মোবাইল অ্যাপ ইনস্টল করুন"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="hidden xs:inline sm:inline">অ্যাপ ইনস্টল</span>
+          </button>
+
           {currentUser ? (
             <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
               <Link
@@ -192,10 +201,10 @@ export const Header: React.FC = () => {
                   <DropdownMenuItem asChild>
                     <Link
                       to="/dashboard"
-                      className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold cursor-pointer rounded-lg hover:bg-muted transition-colors"
+                      className="group flex items-center gap-2 px-2.5 py-2 text-xs font-semibold cursor-pointer rounded-lg hover:bg-muted focus:bg-muted transition-colors text-foreground"
                     >
-                      <Wallet className="w-3.5 h-3.5 text-primary" />
-                      <span>ড্যাশবোর্ড ও ওয়ালেট</span>
+                      <Wallet className="w-3.5 h-3.5 text-primary shrink-0 transition-colors" />
+                      <span className="transition-colors group-hover:text-primary">ড্যাশবোর্ড ও ওয়ালেট</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1" />
@@ -204,35 +213,21 @@ export const Header: React.FC = () => {
                     className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer rounded-lg transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    <span>লগআউট করুন</span>
+                    <span>লগআউট</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setAuthDefaultTab('login');
-                  setAuthModalOpen(true);
-                }}
-                className="text-xs font-bold h-8 px-2 md:px-2.5"
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all shadow-xs"
+                title="ড্যাশবোর্ডে প্রবেশ করুন"
               >
-                {t('nav.login', 'লগইন')}
-              </Button>
-
-              <Button
-                size="sm"
-                onClick={() => {
-                  setAuthDefaultTab('register');
-                  setAuthModalOpen(true);
-                }}
-                className="text-xs font-bold h-8 px-2 md:px-2.5 bg-primary hover:bg-primary/90 text-primary-foreground hidden sm:flex"
-              >
-                {t('nav.register', 'নিবন্ধন')}
-              </Button>
+                <Wallet className="w-3.5 h-3.5" />
+                <span>ড্যাশবোর্ড</span>
+              </Link>
             </div>
           )}
 
@@ -291,32 +286,14 @@ export const Header: React.FC = () => {
                     আপনার {headerName} অ্যাকাউন্ট
                   </p>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        setAuthDefaultTab('login');
-                        setAuthModalOpen(true);
-                      }}
-                      className="text-xs font-bold h-8"
-                    >
-                      {t('nav.login', 'লগইন')}
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        setAuthDefaultTab('register');
-                        setAuthModalOpen(true);
-                      }}
-                      className="text-xs font-bold h-8 bg-primary text-primary-foreground"
-                    >
-                      {t('nav.register', 'নিবন্ধন')}
-                    </Button>
-                  </div>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-xs"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>ড্যাশবোর্ডে প্রবেশ করুন</span>
+                  </Link>
                 </div>
               )}
 
@@ -350,12 +327,6 @@ export const Header: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 border-t bg-muted/30 text-xs text-muted-foreground space-y-1">
-                <p className="font-semibold text-foreground">হেল্পলাইন সাপোর্ট:</p>
-                <p className="flex items-center gap-1.5 text-primary font-bold">
-                  <Phone className="w-3.5 h-3.5" /> {settings.supportPhone}
-                </p>
-              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -402,16 +373,6 @@ export const Header: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
-
-      {/* Customer Login and Registration Modal */}
-      <CustomerAuthModal
-        open={authModalOpen}
-        onOpenChange={setAuthModalOpen}
-        defaultTab={authDefaultTab}
-        onSuccess={() => {
-          navigate('/dashboard');
-        }}
-      />
     </header>
   );
 };

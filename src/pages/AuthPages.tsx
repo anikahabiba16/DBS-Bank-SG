@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useLoan } from '@/contexts/LoanContext';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { Button } from '@/components/ui/button';
@@ -16,18 +16,30 @@ import {
   Smartphone,
   Info,
   Eye,
-  EyeOff
+  EyeOff,
+  Headphones,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const LoginPage: React.FC = () => {
   const { loginUser, registerUser, currentUser, settings } = useLoan();
+  const { language } = useLanguage();
+  const isEn = language === 'en';
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
+  // Mandatory: Login & Register MUST land on /dashboard on entry, never home page
+  const redirectPath = '/dashboard';
 
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useState<'login' | 'register'>(() => {
+    if (location.pathname === '/register' || searchParams.get('tab') === 'register') {
+      return 'register';
+    }
+    return 'login';
+  });
 
   // Login form state
   const [loginPhone, setLoginPhone] = useState('');
@@ -47,9 +59,9 @@ export const LoginPage: React.FC = () => {
   // If already logged in, automatically redirect to dashboard
   useEffect(() => {
     if (currentUser) {
-      navigate(redirectPath, { replace: true });
+      navigate('/dashboard', { replace: true });
     }
-  }, [currentUser, navigate, redirectPath]);
+  }, [currentUser, navigate]);
 
   // App Install Notification (shows once, persists skip permanently)
   const [showInstallBanner, setShowInstallBanner] = useState(() => {
@@ -78,7 +90,7 @@ export const LoginPage: React.FC = () => {
     window.dispatchEvent(new CustomEvent('open-pwa-install'));
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!loginPhone.trim()) {
@@ -92,14 +104,24 @@ export const LoginPage: React.FC = () => {
     }
 
     setLoginLoading(true);
-    const res = loginUser(loginPhone.trim(), loginPassword.trim());
-    setLoginLoading(false);
-
-    if (res.success) {
-      toast.success(res.message);
-      navigate(redirectPath);
-    } else {
-      toast.error(res.message);
+    try {
+      const res = await loginUser(loginPhone.trim(), loginPassword.trim());
+      if (res.success) {
+        toast.success(res.message);
+        navigate(redirectPath, { replace: true });
+        // Immediate fallback in case router state has pending popstate lock
+        setTimeout(() => {
+          if (!window.location.pathname.startsWith('/dashboard')) {
+            window.location.href = redirectPath;
+          }
+        }, 100);
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error('লগইন করার সময় একটি ত্রুটি দেখা দিয়েছে');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -140,7 +162,12 @@ export const LoginPage: React.FC = () => {
 
     if (res.success) {
       toast.success('অ্যাকাউন্ট সফলভাবে খোলা হয়েছে এবং লগইন সম্পন্ন হয়েছে!');
-      navigate(redirectPath);
+      navigate(redirectPath, { replace: true });
+      setTimeout(() => {
+        if (!window.location.pathname.startsWith('/dashboard')) {
+          window.location.href = redirectPath;
+        }
+      }, 100);
     } else {
       toast.error(res.message);
     }
@@ -153,21 +180,26 @@ export const LoginPage: React.FC = () => {
 
   return (
     <CustomerLayout>
-      <div className="relative py-8 md:py-16 px-4 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-[85vh] flex items-center justify-center overflow-hidden">
-        {/* DBS Bank SG Background Logo Watermark (Admin configurable) */}
+      <div className="relative py-10 md:py-20 px-4 min-h-[92vh] flex items-center justify-center overflow-hidden bg-slate-50">
+        {/* Full-screen DBS Bank & Modern Financial District Ultra-High Resolution Crisp 4K Identity */}
         <div 
-          className="absolute inset-0 pointer-events-none flex items-center justify-center z-0 select-none overflow-hidden"
+          className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0"
           aria-hidden="true"
         >
           <img
-            src={bgLogo}
-            alt="DBS Bank SG Background Watermark"
-            className="w-[320px] sm:w-[480px] md:w-[620px] object-contain opacity-[0.14] dark:opacity-[0.08] filter drop-shadow-xl transition-all"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=95&w=3840&auto=format&fit=crop"
+            alt="DBS Bank Singapore Financial District 4K"
+            className="w-full h-full object-cover object-center filter brightness-[0.97] contrast-[1.05] scale-100 transform"
           />
-          <div className="absolute inset-0 bg-radial from-transparent via-background/20 to-background/70" />
+          {/* Crystal Clear Light Overlay with Soft Cool Slate & Ocean Glass Tint */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-100/90 via-sky-50/65 to-sky-100/30 backdrop-blur-[0.5px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400/25 via-primary/5 to-transparent" />
+          {/* Subtle Ambient Glowing Orbs matching primary color */}
+          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        <div className="relative z-10 w-full max-w-lg bg-card/95 backdrop-blur-md border border-border/80 rounded-2xl shadow-2xl p-6 md:p-8">
+        <div className="relative z-10 w-full max-w-lg bg-white/90 dark:bg-card/90 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-3xl shadow-[0_24px_60px_rgba(15,23,42,0.14),0_0_0_1px_rgba(255,255,255,0.8)_inset] p-6 sm:p-8 md:p-9 transition-all">
           {/* Header */}
           <div className="text-center mb-6">
             {/* Custom User Portal Logo (Image 2) */}
@@ -238,14 +270,14 @@ export const LoginPage: React.FC = () => {
                 value="login"
                 className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
               >
-                <LogIn className="w-4 h-4 shrink-0" /> <span>লগইন করুন</span>
+                <LogIn className="w-4 h-4 shrink-0" /> <span>{isEn ? 'Login' : 'লগইন করুন'}</span>
               </TabsTrigger>
 
               <TabsTrigger
                 value="register"
                 className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
               >
-                <UserPlus className="w-4 h-4 shrink-0" /> <span>নতুন নিবন্ধন</span>
+                <UserPlus className="w-4 h-4 shrink-0" /> <span>{isEn ? 'Register' : 'নতুন নিবন্ধন'}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -256,18 +288,19 @@ export const LoginPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-semibold flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
-                      মোবাইল নম্বর (দেশ নির্বাচন করুন)
+                      {isEn ? 'Mobile Number (Select Country)' : 'মোবাইল নম্বর (দেশ নির্বাচন করুন)'}
                     </Label>
 
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                       <Globe className="w-3 h-3 text-muted-foreground" />
-                      আন্তর্জাতিক
+                      {isEn ? 'International' : 'আন্তর্জাতিক'}
                     </span>
                   </div>
 
                   <InternationalPhoneInput
                     value={loginPhone}
                     onChange={(phone) => setLoginPhone(phone)}
+                    placeholder={isEn ? 'Enter mobile number' : 'মোবাইল নম্বর দিন'}
                     required
                   />
                 </div>
@@ -276,18 +309,18 @@ export const LoginPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-semibold flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5 text-primary" />
-                      পাসওয়ার্ড
+                      {isEn ? 'Password' : 'পাসওয়ার্ড'}
                     </Label>
 
                     <span className="text-[11px] text-muted-foreground">
-                      ডিফল্ট: 123456
+                      {isEn ? 'Default: 123456' : 'ডিফল্ট: 123456'}
                     </span>
                   </div>
 
                   <div className="relative">
                     <Input
                       type={showLoginPassword ? 'text' : 'password'}
-                      placeholder="আপনার গোপন পাসওয়ার্ড দিন"
+                      placeholder={isEn ? 'Enter your password' : 'আপনার গোপন পাসওয়ার্ড দিন'}
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       className="h-11 text-sm rounded-xl pr-10"
@@ -297,7 +330,7 @@ export const LoginPage: React.FC = () => {
                       type="button"
                       onClick={() => setShowLoginPassword((prev) => !prev)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
-                      title={showLoginPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                      title={showLoginPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
                     >
                       {showLoginPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -313,7 +346,7 @@ export const LoginPage: React.FC = () => {
                   disabled={loginLoading}
                   className="w-full h-11 font-bold bg-primary text-primary-foreground text-sm rounded-xl shadow-md shadow-primary/20 hover:scale-[1.01] transition-transform"
                 >
-                  {loginLoading ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'}
+                  {loginLoading ? (isEn ? 'Verifying...' : 'যাচাই করা হচ্ছে...') : (isEn ? 'Login' : 'লগইন করুন')}
                 </Button>
               </form>
             </TabsContent>
@@ -324,12 +357,12 @@ export const LoginPage: React.FC = () => {
                 <div className="space-y-1">
                   <Label className="text-xs font-semibold flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-primary" />
-                    পূর্ণ নাম (NID অনুযায়ী)
+                    {isEn ? 'Full Name (As per NID/Passport)' : 'পূর্ণ নাম (NID অনুযায়ী)'}
                   </Label>
 
                   <Input
                     type="text"
-                    placeholder="আপনার পূর্ণ নাম লিখুন"
+                    placeholder={isEn ? 'Enter your full name' : 'আপনার পূর্ণ নাম লিখুন'}
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
                     className="h-10 text-sm rounded-xl"
@@ -341,18 +374,19 @@ export const LoginPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-semibold flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
-                      সক্রিয় মোবাইল নম্বর (যেকোনো দেশ)
+                      {isEn ? 'Active Mobile Number (Any country)' : 'সক্রিয় মোবাইল নম্বর (যেকোনো দেশ)'}
                     </Label>
 
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                       <Globe className="w-3 h-3 text-muted-foreground" />
-                      আন্তর্জাতিক সমর্থিত
+                      {isEn ? 'International' : 'আন্তর্জাতিক সমর্থিত'}
                     </span>
                   </div>
 
                   <InternationalPhoneInput
                     value={regPhone}
                     onChange={(phone) => setRegPhone(phone)}
+                    placeholder={isEn ? 'Enter mobile number' : 'মোবাইল নম্বর দিন'}
                     required
                   />
                 </div>
@@ -361,20 +395,22 @@ export const LoginPage: React.FC = () => {
                 <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-foreground text-xs leading-relaxed flex items-center gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0" />
                   <span>
-                    লগইন করার পর ড্যাশবোর্ড থেকে যেকোনো সময় আপনার বিকাশ, নগদ বা ব্যাংক অ্যাকাউন্ট যুক্ত করতে পারবেন।
+                    {isEn
+                      ? 'After logging in, you can link your bKash, Nagad or bank account anytime from the dashboard.'
+                      : 'লগইন করার পর ড্যাশবোর্ড থেকে যেকোনো সময় আপনার বিকাশ, নগদ বা ব্যাংক অ্যাকাউন্ট যুক্ত করতে পারবেন।'}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs font-semibold">
-                      পাসওয়ার্ড
+                      {isEn ? 'Password' : 'পাসওয়ার্ড'}
                     </Label>
 
                     <div className="relative">
                       <Input
                         type={showRegPassword ? 'text' : 'password'}
-                        placeholder="কমপক্ষে ৬ অক্ষর"
+                        placeholder={isEn ? 'At least 6 characters' : 'কমপক্ষে ৬ অক্ষর'}
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
                         className="h-10 text-sm rounded-xl pr-9"
@@ -384,7 +420,7 @@ export const LoginPage: React.FC = () => {
                         type="button"
                         onClick={() => setShowRegPassword((prev) => !prev)}
                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
-                        title={showRegPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                        title={showRegPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
                       >
                         {showRegPassword ? (
                           <EyeOff className="w-3.5 h-3.5" />
@@ -397,13 +433,13 @@ export const LoginPage: React.FC = () => {
 
                   <div className="space-y-1">
                     <Label className="text-xs font-semibold">
-                      পাসওয়ার্ড নিশ্চিত করুন
+                      {isEn ? 'Confirm Password' : 'পাসওয়ার্ড নিশ্চিত করুন'}
                     </Label>
 
                     <div className="relative">
                       <Input
                         type={showRegConfirmPassword ? 'text' : 'password'}
-                        placeholder="পুনরায় পাসওয়ার্ড দিন"
+                        placeholder={isEn ? 'Re-enter password' : 'পুনরায় পাসওয়ার্ড দিন'}
                         value={regConfirmPassword}
                         onChange={(e) =>
                           setRegConfirmPassword(e.target.value)
@@ -415,7 +451,7 @@ export const LoginPage: React.FC = () => {
                         type="button"
                         onClick={() => setShowRegConfirmPassword((prev) => !prev)}
                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
-                        title={showRegConfirmPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
+                        title={showRegConfirmPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
                       >
                         {showRegConfirmPassword ? (
                           <EyeOff className="w-3.5 h-3.5" />
@@ -433,12 +469,24 @@ export const LoginPage: React.FC = () => {
                   className="w-full h-11 font-bold bg-primary text-primary-foreground text-sm rounded-xl shadow-md shadow-primary/20 mt-2 hover:scale-[1.01] transition-transform"
                 >
                   {regLoading
-                    ? 'অ্যাকাউন্ট তৈরি হচ্ছে...'
-                    : 'নিবন্ধন সম্পন্ন করুন'}
+                    ? (isEn ? 'Creating account...' : 'অ্যাকাউন্ট তৈরি হচ্ছে...')
+                    : (isEn ? 'Complete Registration' : 'নিবন্ধন সম্পন্ন করুন')}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
+
+          {/* Quick 24/7 Customer Support & Helpdesk for visitors/guests */}
+          <div className="mt-6 pt-5 border-t border-border/60 text-center">
+            <button
+              type="button"
+              onClick={() => navigate('/messages')}
+              className="w-full py-2.5 px-4 rounded-xl border border-primary/25 bg-primary/5 hover:bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99]"
+            >
+              <Headphones className="w-4 h-4 text-primary shrink-0 animate-pulse" />
+              <span>লগইনে সমস্যা? ২৪/৭ লাইভ সাপোর্ট ও মেসেজ করুন</span>
+            </button>
+          </div>
         </div>
       </div>
     </CustomerLayout>

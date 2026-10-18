@@ -650,14 +650,41 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
     return (
       <div 
-        className={`min-h-screen ${getThemeWrapperClass()} flex flex-col justify-center items-center p-4 transition-colors`}
-        style={getThemeBgStyle()}
+        className="min-h-screen relative flex flex-col justify-center items-center p-4 overflow-hidden bg-slate-900"
       >
-        <div className="w-full max-w-md bg-slate-900/95 border border-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-md">
+        {/* Authentic Banking Security & Operations Hub Aesthetic with Subtle Matte Balance */}
+        <div 
+          className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0"
+          aria-hidden="true"
+        >
+          <img
+            src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=95&w=3840&auto=format&fit=crop"
+            alt="DBS Bank Cyber & Operations Command Architecture"
+            className="w-full h-full object-cover object-center filter brightness-[1.0] contrast-[1.05]"
+          />
+          {/* Elegant Matte Slate & Light Translucent Overlay (Low Opacity for Rich Architectural Visibility) */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-100/80 via-slate-50/72 to-amber-50/50 backdrop-blur-[0.7px]" />
+          
+          {/* Subtle Matte Architectural Grid Pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:28px_28px]" 
+          />
+          
+          {/* Subtle Executive Warm Amber & Slate Matte Ambient Highlights */}
+          <div className="absolute top-1/4 -left-20 w-[34rem] h-[34rem] bg-amber-500/10 rounded-full blur-[90px] pointer-events-none" />
+          <div className="absolute -bottom-20 -right-20 w-[34rem] h-[34rem] bg-slate-700/10 rounded-full blur-[90px] pointer-events-none" />
+        </div>
 
-          {/* Top Logo (Image 3) */}
+        <div className="relative z-10 w-full max-w-md bg-white/92 backdrop-blur-md border border-slate-300/80 rounded-3xl shadow-[0_24px_50px_rgba(15,23,42,0.12),0_1px_3px_rgba(15,23,42,0.06)] p-6 sm:p-8">
+
+          {/* Executive Security Badge & Top Logo */}
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/20 overflow-hidden border border-slate-200 p-1">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-amber-300 text-[11px] font-extrabold uppercase tracking-wider mb-4 shadow-sm">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+              <span>Executive Admin Portal</span>
+            </div>
+
+            <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mx-auto mb-3 shadow-md shadow-slate-200 overflow-hidden border border-slate-200 p-1.5">
               <img
                 src={adminLoginLogo}
                 alt="Admin Logo"
@@ -665,19 +692,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               />
             </div>
 
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center justify-center gap-2">
               এডমিন সিকিউরিটি প্যানেল
             </h1>
 
-            <p className="text-xs text-slate-400 mt-1">
-              DBS Bank SG বিজনেস ম্যানেজমেন্ট
+            <p className="text-xs font-medium text-slate-500 mt-1">
+              DBS Bank SG কোর অ্যাডমিনিস্ট্রেশন ও ম্যানেজমেন্ট
             </p>
           </div>
 
           {loginError && (
-            <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-medium">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{loginError}</span>
             </div>
           )}
@@ -686,25 +712,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {loginStep === 'credentials' && (
             <form onSubmit={handleAdminCredentialsSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-primary" />
+                <Label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-slate-800" />
                   এডমিন ইউজারনেম (User Name)
                 </Label>
 
                 <Input
                   type="text"
-                  placeholder="ইউজারনেম লিখুন"
+                  placeholder="অ্যাডমিন ইউজারনেম লিখুন"
                   value={adminUsername}
                   onChange={(e) => setAdminUsername(e.target.value)}
-                  className="h-11 bg-slate-950 border-slate-800 text-slate-100 placeholder:text-slate-500 text-sm focus-visible:ring-primary"
+                  className="h-11 bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400 text-sm focus-visible:ring-slate-800 focus-visible:border-slate-800 focus-visible:bg-white rounded-xl transition-all font-medium"
                   required
                   autoFocus
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-primary" />
+                <Label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-slate-800" />
                   পাসওয়ার্ড (Password)
                 </Label>
 
@@ -714,13 +740,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     placeholder="গোপন পাসওয়ার্ড লিখুন"
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
-                    className="h-11 bg-slate-950 border-slate-800 text-slate-100 placeholder:text-slate-500 text-sm focus-visible:ring-primary pr-10"
+                    className="h-11 bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400 text-sm focus-visible:ring-slate-800 focus-visible:border-slate-800 focus-visible:bg-white rounded-xl pr-10 transition-all"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowAdminPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 transition-colors"
                     title={showAdminPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                   >
                     {showAdminPassword ? (
@@ -732,21 +758,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 </div>
               </div>
 
-              {/*
-              // --- [TEMPORARILY COMMENTED: 2FA QR NOTICE] ---
-              <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center gap-2">
-                <QrCode className="w-4 h-4 text-primary shrink-0" />
-                <span>পরবর্তী ধাপে Google Authenticator QR কোড যাচাইকরণ প্রযোজ্য</span>
-              </div>
-              // ----------------------------------------------
-              */}
-
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+                className="w-full h-11 font-bold text-sm bg-slate-900 hover:bg-slate-800 active:bg-black text-amber-300 hover:text-amber-200 rounded-xl shadow-lg shadow-slate-900/20 border border-slate-700 transition-all flex items-center justify-center gap-2"
               >
-                {isSubmitting ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'}
+                <ShieldCheck className="w-4 h-4 text-amber-400" />
+                <span>{isSubmitting ? 'যাচাই করা হচ্ছে...' : 'অ্যাডমিন প্যানেলে লগইন করুন'}</span>
               </Button>
             </form>
           )}
@@ -895,10 +913,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           )}
 
           {/* Back to Home Link */}
-          <div className="mt-6 pt-4 border-t border-slate-800 text-center">
+          <div className="mt-6 pt-4 border-t border-slate-200 text-center">
             <Link
               to="/"
-              className="text-xs text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1"
+              className="text-xs text-slate-500 hover:text-indigo-600 font-medium inline-flex items-center justify-center gap-1.5 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               মূল ওয়েবসাইটে ফিরে যান

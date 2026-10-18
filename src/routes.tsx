@@ -56,39 +56,86 @@ export interface RouteConfig {
   public?: boolean;
 }
 
+const RootEntryRoute: React.FC = () => {
+  const { currentUser } = useLoan();
+  if (currentUser) {
+    return <HomePage />;
+  }
+  return <LoginPage />;
+};
+
 export const routes: RouteConfig[] = [
-  // Customer Routes - Publicly explorable without login (Eagerly rendered for instantaneous navigation)
+  // Site Entry: If logged in -> HomePage, If NOT logged in -> Login / Registration
+  {
+    name: 'হোমপেজ / লগইন',
+    path: '/',
+    element: <RootEntryRoute />,
+    public: true,
+  },
+  {
+    name: 'গ্রাহক লগইন',
+    path: '/login',
+    element: <LoginPage />,
+    public: true,
+  },
+  {
+    name: 'গ্রাহক নিবন্ধন',
+    path: '/register',
+    element: <RegisterPage />,
+    public: true,
+  },
+
+  // Fully Protected Customer Routes - Cannot access directly via URL/path without login
   {
     name: 'হোমপেজ',
-    path: '/',
-    element: <HomePage />,
-    public: true,
+    path: '/home',
+    element: (
+      <CustomerAuthGuard>
+        <HomePage />
+      </CustomerAuthGuard>
+    ),
+    public: false,
   },
   {
     name: 'লোন প্যাকেজসমূহ',
     path: '/packages',
-    element: <PackagesPage />,
-    public: true,
+    element: (
+      <CustomerAuthGuard>
+        <PackagesPage />
+      </CustomerAuthGuard>
+    ),
+    public: false,
   },
   {
     name: 'লোন ক্যালকুলেটর',
     path: '/calculator',
-    element: <CalculatorPage />,
-    public: true,
+    element: (
+      <CustomerAuthGuard>
+        <CalculatorPage />
+      </CustomerAuthGuard>
+    ),
+    public: false,
   },
   {
     name: 'লোন আবেদন',
     path: '/apply',
-    element: <ApplyPage />,
-    public: true,
+    element: (
+      <CustomerAuthGuard>
+        <ApplyPage />
+      </CustomerAuthGuard>
+    ),
+    public: false,
   },
   {
     name: 'আবেদন ট্র্যাকিং',
     path: '/track',
-    element: <TrackPage />,
-    public: true,
+    element: (
+      <CustomerAuthGuard>
+        <TrackPage />
+      </CustomerAuthGuard>
+    ),
+    public: false,
   },
-  // Strictly Protected - Requires Login (cannot access dashboard or wallet via direct URL or any path without login)
   {
     name: 'গ্রাহক ড্যাশবোর্ড ও ওয়ালেট',
     path: '/dashboard',
@@ -112,12 +159,8 @@ export const routes: RouteConfig[] = [
   {
     name: 'গ্রাহক সাপোর্ট মেসেজ',
     path: '/messages',
-    element: (
-      <CustomerAuthGuard>
-        {withSuspense(CustomerMessagesPage)}
-      </CustomerAuthGuard>
-    ),
-    public: false,
+    element: withSuspense(CustomerMessagesPage),
+    public: true,
   },
   {
     name: 'ড্যাশবোর্ড রিডাইরেক্ট',
@@ -138,18 +181,6 @@ export const routes: RouteConfig[] = [
       </CustomerAuthGuard>
     ),
     public: false,
-  },
-  {
-    name: 'গ্রাহক লগইন',
-    path: '/login',
-    element: <LoginPage />,
-    public: true,
-  },
-  {
-    name: 'গ্রাহক নিবন্ধন',
-    path: '/register',
-    element: <RegisterPage />,
-    public: true,
   },
 
   // Admin Routes

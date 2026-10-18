@@ -7,6 +7,162 @@
 // 1. Full Multi-Word Phrases (matched from longest to shortest)
 export const PHRASE_TRANSLATIONS: [string, string][] = [
   [
+    "রকেট অ্যাকাউন্ট থেকে উপরে উল্লেখিত ১২ ডিজিট নম্বর পাঠিয়ে ট্রানজেকশন আইডি দিয়ে ডিপোজিট করুন।",
+    "Send money from Rocket account to the above mentioned 12-digit number and deposit using Transaction ID."
+  ],
+  [
+    "রকেট অ্যাকাউন্ট থেকে উপরে উল্লেখিত 12 ডিজিট নম্বর পাঠিয়ে ট্রানজেকশন আইডি দিয়ে ডিপোজিট করুন।",
+    "Send money from Rocket account to the above mentioned 12-digit number and deposit using Transaction ID."
+  ],
+  [
+    "রকেট অ্যাকাউন্ট থেকে উপরে উল্লেখিত ১২ ডিজিটের নম্বরে পাঠিয়ে ট্রানজেকশন আইডি দিয়ে ডিপোজিট করুন",
+    "Send money from Rocket account to the above mentioned 12-digit number and deposit using Transaction ID"
+  ],
+  [
+    "রকেট অ্যাকাউন্ট থেকে উপরে উল্লেখিত 12 ডিজিটের নম্বরে পাঠিয়ে ট্রানজেকশন আইডি দিয়ে ডিপোজিট করুন",
+    "Send money from Rocket account to the above mentioned 12-digit number and deposit using Transaction ID"
+  ],
+  [
+    "ইমু, হোয়াটসঅ্যাপ বা সরাসরি হেল্পলাইনে ফোন করে যেকোনো সময় লোন ও কিস্তি সংক্রান্ত সেবা নিন।",
+    "Get loan and installment services anytime by calling imo, WhatsApp or helpline directly."
+  ],
+  [
+    "ইমু, হোয়াটসঅ্যাপ বা সরাসরি হেল্পলাইনে ফোন করে যেকোনো সময় সেবা নিন।",
+    "Get services anytime by calling imo, WhatsApp or helpline directly."
+  ],
+  [
+    "২৪ ঘণ্টা নিরবচ্ছিন্ন গ্রাহক সহায়তা খোলা",
+    "24/7 Uninterrupted Customer Support Open"
+  ],
+  [
+    "24 ঘণ্টা নিরবচ্ছিন্ন গ্রাহক সহায়তা খোলা",
+    "24/7 Uninterrupted Customer Support Open"
+  ],
+  [
+    "যেগুলো চ্যানেল একটিভ রাখবেন সেগুলো গ্রাহক সহায়তার মডালে প্রদর্শিত হবে। আপনি চাইলে যেকোনো অপশন ডিলিট করে বাদ দিতে বা নতুন যোগ করতে পারেন।",
+    "Channels you keep active will be displayed in the Customer Support modal. You can delete or add any option."
+  ],
+  [
+    "যেগুলো চ্যানেল একটিভ রাখবেন সেগুলো গ্রাহক সহায়তার মডালে প্রদর্শিত হবে",
+    "Channels kept active will be displayed in Customer Support modal"
+  ],
+  [
+    "রিয়েল-টাইম সিঙ্ক সক্রিয়: নতুন কোনো গ্রাহক যেকোনো ডিভাইস থেকে অ্যাকাউন্ট খোলার সাথে সাথেই ব্রাউজার রিফ্রেশ ছাড়াই এই তালিকায় স্বয়ংক্রিয়ভাবে যুক্ত হবে।",
+    "Real-time Sync Active: Whenever a new customer opens an account from any device, they will be automatically added to this list without browser refresh."
+  ],
+  [
+    "বাই-ডিফল্ট কোনো গ্রাহকের ড্যাশবোর্ডে চুক্তিপত্র পেপার প্রদর্শিত হবে না। আপনি চাইলে সব গ্রাহককে একসাথে অনুমতি দিতে পারেন অথবা এডিট অপশন থেকে নির্দিষ্ট কোনো গ্রাহককে অনুমতি দিতে পারেন।",
+    "By default, loan agreement paper will not be displayed on any customer's dashboard. You can grant permission to all customers at once or specific customers via edit."
+  ],
+  [
+    "কোনো ডানে স্ক্রল ছাড়াই এক নজরে সব তথ্য ও নিয়ন্ত্রণ",
+    "All information and control at a glance without horizontal scrolling"
+  ],
+  [
+    "যে কোনো ইউজার সিলেক্ট করে কিস্তি বাবদ টাকা জমার শর্ত (যেমন ২০০০ টাকা), বীমা ফি বা ভেরিফিকেশন ফি দিন। গ্রাহক স্লিপ জমা দিলে ভিউ করে Accept করুন এবং চাইলে পরবর্তী শর্ত যুক্ত করুন।",
+    "Select any user and set installment condition (e.g. 2000 BDT), insurance fee, or verification fee. View and accept customer slips, and add next conditions as needed."
+  ],
+  [
+    "যে কোনো ইউজার সিলেক্ট করে কিস্তি বাবদ টাকা জমার শর্ত",
+    "Select any user to set installment deposit conditions"
+  ],
+  [
+    "ইউজার সিলেক্ট করে কাস্টম উইথড্রয়াল শর্ত নির্ধারণ ও স্লিপ যাচাই",
+    "Select User to Configure Custom Withdrawal Conditions & Verify Slips"
+  ],
+  [
+    "ইউজার সিলেক্ট করে শর্ত দিন / পরিবর্তন করুন",
+    "Select User to Set / Change Conditions"
+  ],
+  [
+    "তথ্য ও পাসওয়ার্ড এডিট",
+    "Edit Info & Password"
+  ],
+  [
+    "উচ্চ রেজোলিউশন ৩x ক্রিস্প ক্লিয়ার প্রিন্ট ও পিএনজি রেডি",
+    "High-Resolution 3x Crisp Clear Print & PNG Ready"
+  ],
+  [
+    "উচ্চ রেজোলিউশন 3x ক্রিস্প ক্লিয়ার প্রিন্ট ও পিএনজি রেডি",
+    "High-Resolution 3x Crisp Clear Print & PNG Ready"
+  ],
+  [
+    "স্মার্ট কার্ড ভিউ (স্ক্রল-মুক্ত)",
+    "Smart Card View (Scroll-Free)"
+  ],
+  [
+    "কমপ্যাক্ট টেবিল",
+    "Compact Table"
+  ],
+  [
+    "ডিজিটাল একাউন্ট নম্বর, মোবাইল নম্বর বা ইউজার আইডি খুঁজুন...",
+    "Search digital account number, mobile number, or user ID..."
+  ],
+  [
+    "গ্রাহক তালিকা ও নিয়ন্ত্রণ প্যানেল",
+    "Customer List & Control Panel"
+  ],
+  [
+    "চুক্তিপত্র পেপার অ্যাক্সেস নিয়ন্ত্রণ (Loan Agreement Paper Access)",
+    "Loan Agreement Paper Access Control"
+  ],
+  [
+    "সবাইকে অনুমতি দিন (Grant All)",
+    "Grant All Permission"
+  ],
+  [
+    "সবার অনুমতি বন্ধ করুন (Revoke All)",
+    "Revoke All Permission"
+  ],
+  [
+    "নিরাপত্তা নিয়ন্ত্রণ",
+    "Security Control"
+  ],
+  [
+    "কাস্টম শর্ত সিস্টেম",
+    "Custom Condition System"
+  ],
+  [
+    "লাইভ সিঙ্ক চালু",
+    "Live Sync Active"
+  ],
+  [
+    "গ্রাহক ভিউ",
+    "Customer View"
+  ],
+  [
+    "অফিসিয়াল সনদ ও ব্যাংক দলিল",
+    "Official Certificate & Bank Documents"
+  ],
+  [
+    "স্টাফ আইডি কার্ড (NID স্টাইল)",
+    "Staff ID Card (NID Style)"
+  ],
+  [
+    "স্ট্যাম্প ও ডিজিটাল ঋণ চুক্তিপত্র",
+    "Stamp & Digital Loan Contract"
+  ],
+  [
+    "লোন অনুমোদন লেটার (Sanction Letter)",
+    "Loan Approval Sanction Letter"
+  ],
+  [
+    "টাকা উত্তোলন (Withdraw) ও চার্জ",
+    "Withdraw Funds & Charges"
+  ],
+  [
+    "ডিপোজিট ও পেমেন্ট মেথড ম্যানেজমেন্ট",
+    "Deposit & Payment Method Management"
+  ],
+  [
+    "সকল ইউজার অ্যাকাউন্টস ও প্রোফাইল",
+    "All User Accounts & Profiles"
+  ],
+  [
+    "লোন আবেদন যাচাই ও অনুমোদন",
+    "Verify & Approve Loan Applications"
+  ],
+  [
     "ব্যাংকের নাম: DBS Bank Ltd. ঠিকানা: 12 মেরিনা বুলেভার্ড, মেরিনা বে ফাইন্যান্সিয়াল সেন্টার, টাওয়ার 3, সিঙ্গাপুর 018982। দেশ: সিঙ্গাপুর",
     "Bank Name: DBS Bank Ltd. Address: 12 Marina Boulevard, Marina Bay Financial Centre, Tower 3, Singapore 018982. Country: Singapore"
   ],
@@ -3458,7 +3614,191 @@ export const WORD_TRANSLATIONS: Record<string, string> = {
   "নিয়োজিত": "Dedicated",
   "খুবই": "Very",
   "গ্রহণের": "Obtaining",
-  "পদ্ধতিতে": "Method"
+  "পদ্ধতিতে": "Method",
+  "তালিকায়": "in the list",
+  "তালিকাভুক্ত": "Listed",
+  "তালিকা": "List",
+  "ইনস্পেক্টরে": "in Inspector",
+  "ইনস্পেক্টর": "Inspector",
+  "চিহ্নিত": "Marked",
+  "প্রয়োজনীয়": "Necessary",
+  "চাপামাত্র": "Immediately upon clicking",
+  "অটোমেটিক": "Automatic",
+  "তে": "in",
+  "সম্বলিত": "Containing",
+  "সাথেই": "Immediately with",
+  "ডানপাশের": "Right-side",
+  "ডানপাশে": "On the right",
+  "কলামে": "in Column",
+  "এক্টিভ": "Active",
+  "দেখাচ্ছে": "Showing",
+  "পাতা": "Page",
+  "ক্রেডেনশিয়াল": "Credentials",
+  "অ্যাকাউন্টসমূহ": "Accounts",
+  "বাই": "By",
+  "ডেটাবেস": "Database",
+  "তাৎক্ষণিকভাবে": "Instantly",
+  "তাঁর": "Their",
+  "বহাল": "Retain",
+  "রাখবেন": "Keep",
+  "সক্রিয়করণ": "Activation",
+  "আর্কাইভ": "Archive",
+  "আলাদা": "Separate",
+  "করেননি": "Did not do",
+  "নাকি": "Or",
+  "পার্মানেন্ট": "Permanent",
+  "যাবতীয়": "All / Various",
+  "চিরতরে": "Permanently",
+  "হ্যাঁ": "Yes",
+  "সাম্প্রতিক": "Recent",
+  "সর্বশেষ": "Latest",
+  "পড়া": "Read",
+  "আবেদনগুলোর": "of Applications",
+  "কার্যকর": "Effective",
+  "বোতামে": "Button",
+  "বোতাম": "Button",
+  "গেটওয়ের": "Gateway",
+  "গেটওয়ে": "Gateway",
+  "পেপার": "Paper",
+  "ভিউয়ার": "Viewer",
+  "পেপারসমূহ": "Papers",
+  "ভাউচার": "Voucher",
+  "দেখে": "Seeing",
+  "পার্সেন্টেজ": "Percentage",
+  "চাইলে": "If desired",
+  "ম্যানুয়ালি": "Manually",
+  "এমএফএস": "MFS",
+  "পার্সেন্ট": "Percent",
+  "ফিরে": "Back",
+  "দিনগুলোতে": "in Days",
+  "লোনসমূহের": "of Loans",
+  "আওতায়": "Under",
+  "লিখে": "Writing",
+  "দিবেন": "Will give",
+  "বক্তব্য": "Statement",
+  "হুবহু": "Exactly as is",
+  "রিস্টোর": "Restore",
+  "বিজ্ঞাপনগুলো": "Advertisements",
+  "ঠিক": "Just / Right",
+  "স্ক্রোলযোগ্য": "Scrollable",
+  "বাছুন": "Choose",
+  "কথোপকথন": "Conversation",
+  "পাঠিয়ে": "Sending",
+  "খুলেছেন": "Opened",
+  "ইতিপূর্বে": "Previously",
+  "নিন": "Take / Get",
+  "অনাকাঙ্ক্ষিত": "Unexpected",
+  "মৃত্যুজনিত": "Accidental Death",
+  "মওকুফ": "Waiver",
+  "দেনা": "Debt",
+  "বর্তাবে": "Will apply",
+  "পঙ্গুত্ব": "Disability",
+  "অনুদান": "Grant",
+  "সামনে": "Front",
+  "পেছনে": "Back",
+  "এক্সক্লুসিভ": "Exclusive",
+  "এক্সিকিউটিভ": "Executive",
+  "রয়েল": "Royal",
+  "এমারেল্ড": "Emerald",
+  "গোল্ড": "Gold",
+  "বারগুন্ডি": "Burgundy",
+  "মেটালিক": "Metallic",
+  "প্লাটিনাম": "Platinum",
+  "করেও": "Even after doing",
+  "ক্রিস্টাল": "Crystal",
+  "ল্যানইয়ার্ড": "Lanyard",
+  "স্লট": "Slot",
+  "বারকোড": "Barcode",
+  "কোডসহ": "With Code",
+  "সুবিধাসহ": "With Facilities",
+  "আওতাভুক্ত": "Covered under",
+  "সুরক্ষাসমূহ": "Protections",
+  "গ্রহীতা": "Recipient / Borrower",
+  "মঞ্জুরিপত্র": "Sanction Letter",
+  "মহোদয়": "Sir / Madam",
+  "প্রেক্ষিতে": "in Light of",
+  "জানানো": "Informed",
+  "যাচ্ছে": "Going",
+  "কমিটির": "of Committee",
+  "কমিটি": "Committee",
+  "সুপারিশক্রমে": "Upon Recommendation",
+  "কাউন্টারফয়েল": "Counterfoil",
+  "স্টাব": "Stub",
+  "ফিন্যান্স": "Finance",
+  "অ্যান্ড": "and",
+  "মাইক্রো": "Micro",
+  "প্রাপ্তিস্বীকার": "Acknowledgement",
+  "লেখা": "Written / Text",
+  "সংযুক্তি": "Attachment",
+  "রেডি": "Ready",
+  "সবকিছু": "Everything",
+  "প্রতিফলিত": "Reflected",
+  "যখন": "When",
+  "ওয়াটারমার্কে": "Watermark",
+  "পরিচালনার": "Management",
+  "ম্যানেজারে": "Manager",
+  "ম্যানেজার": "Manager",
+  "রিভিউসমূহ": "Reviews",
+  "পরিচালনা": "Management",
+  "পৃষ্ঠার": "Page",
+  "পৃষ্ঠা": "Page",
+  "কার্যদিবস": "Working Days",
+  "জন্মতারিখ": "Date of Birth",
+  "ইচ্ছেমতো": "As desired",
+  "ফ্রেমে": "in Frame",
+  "সুন্দরভাবে": "Nicely",
+  "স্যাম্পল": "Sample",
+  "মুছুন": "Delete / Clear",
+  "স্থায়ী": "Permanent",
+  "শীর্ষ": "Top",
+  "রঙের": "Color",
+  "নামেও": "Also in name",
+  "লেভেল": "Level",
+  "টিক": "Tick / Checkmark",
+  "অপশনগুলো": "Options",
+  "সবার": "Everyone's",
+  "সিলেক্টেড": "Selected",
+  "সবাইকে": "Everyone",
+  "তথ্যই": "Information",
+  "আনচেক": "Uncheck",
+  "সেগুলো": "Those",
+  "চুক্তিবদ্ধ": "Contractual",
+  "্যান্ডম": "Random",
+  "সাববেস": "Subbase",
+  "ইউজারের": "User's",
+  "ইউজার": "User",
+  "অ্যাপ্রুভ": "Approve",
+  "পেআউট": "Payout",
+  "ব্লকিং": "Blocking",
+  "প্রিসেটসমূহ": "Presets",
+  "লেখাটি": "The text",
+  "দিবে": "Will provide",
+  "হলুদ": "Yellow",
+  "সতর্কবার্তায়": "Warning Notice",
+  "ট্রান্সফারসহ": "Including Transfer",
+  "আবেদনের": "Application's",
+  "আবেদন": "Application",
+  "গ্রাহকের": "Customer's",
+  "গ্রাহক": "Customer",
+  "টাকা": "BDT",
+  "টাকার": "BDT",
+  "ব্যাংক": "Bank",
+  "ব্যাংকের": "Bank",
+  "অ্যাকাউন্ট": "Account",
+  "ব্যালেন্স": "Balance",
+  "অনুমোদন": "Approval",
+  "বাতিল": "Cancel",
+  "বিতরণ": "Disburse",
+  "পরিশোধ": "Repayment",
+  "কিস্তি": "Installment",
+  "ঋণ": "Loan",
+  "তারিখ": "Date",
+  "নম্বর": "Number",
+  "মোবাইল": "Mobile",
+  "ফোন": "Phone",
+  "স্ট্যাটাস": "Status",
+  "বিবরণ": "Description",
+  "সফলভাবে": "Successfully"
 };
 
 // Suffix replacement patterns for compound Bengali words (e.g., "Monthsিক", "Pay Installmentের", "Amountে")
@@ -3600,6 +3940,7 @@ export function translateTextToEnglish(text: string): string {
     .replace(/(\w+)র/g, '$1')
     .replace(/(\w+)রা/g, '$1')
     .replace(/(\w+)কৃত/g, '$1')
+    .replace(/(\w+)ই/g, '$1')
     .replace(/([0-9]+)\s*টি/g, '$1')
     .replace(/([0-9]+)\s*টা/g, '$1')
     .replace(/1[\u09ae]/g, '1st')
@@ -3615,10 +3956,11 @@ export function translateTextToEnglish(text: string): string {
     .replace(/[\s\(\[\{]টি[\s\)\]\}]/g, ' ')
     .replace(/\s+টি(?=[^\u0980-\u09FF]|$)/g, '')
     .replace(/\s+টা(?=[^\u0980-\u09FF]|$)/g, '')
+    .replace(/\bই\b/g, '')
     .replace(/।/g, '.');
 
-  // 6. Currency symbol spacing
-  result = result.replace(/৳([0-9])/g, '৳ $1');
+  // 6. Currency symbol: convert Bengali Taka symbol ৳ to BDT in English mode
+  result = result.replace(/৳\s*([0-9])/g, 'BDT $1').replace(/([0-9])\s*৳/g, '$1 BDT').replace(/৳/g, 'BDT');
 
   if (TRANSLATION_MEMO_CACHE.size >= MAX_MEMO_ENTRIES) {
     const firstKey = TRANSLATION_MEMO_CACHE.keys().next().value;

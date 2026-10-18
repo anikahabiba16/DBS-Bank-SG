@@ -172,6 +172,12 @@ function restoreSubtree(root: Node) {
     }
 
     if (root instanceof Element) {
+      if (originalAttrMap.has(root)) {
+        const map = originalAttrMap.get(root)!;
+        for (const [attr, origVal] of Object.entries(map)) {
+          root.setAttribute(attr, origVal);
+        }
+      }
       const elWalker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null);
       let curEl = elWalker.nextNode();
       while (curEl) {
@@ -325,7 +331,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 translateTextNode(node);
               } else if (node.nodeType === Node.ELEMENT_NODE) {
                 translateElementAttributes(node as Element);
-                // Only walk direct text children of the added element, not deep subtrees
+                // Also translate attributes of all descendant elements (e.g., input, textarea in dialogs)
+                const els = (node as Element).querySelectorAll?.('input, textarea, select, [placeholder], [title], [aria-label]');
+                if (els) {
+                  for (let i = 0; i < els.length; i++) {
+                    translateElementAttributes(els[i]);
+                  }
+                }
+                // Walk text nodes of the added subtree
                 const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
                 let c = tw.nextNode();
                 while (c) { translateTextNode(c); c = tw.nextNode(); }
@@ -339,6 +352,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
         };
 
+        const hasBengaliAttr = (el: Element) => {
+          return ['placeholder', 'title', 'aria-label'].some((a) => /[\u0980-\u09FF]/.test(el.getAttribute(a) || ''));
+        };
+
         const obs = new MutationObserver((mutations) => {
           for (const mut of mutations) {
             if (mut.type === 'childList') {
@@ -346,8 +363,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 const nd = mut.addedNodes[i];
                 if (nd.nodeType === Node.TEXT_NODE && /[\u0980-\u09FF]/.test(nd.nodeValue || '')) {
                   pending.add(nd);
-                } else if (nd.nodeType === Node.ELEMENT_NODE && /[\u0980-\u09FF]/.test((nd as Element).textContent || '')) {
-                  pending.add(nd);
+                } else if (nd.nodeType === Node.ELEMENT_NODE) {
+                  const el = nd as Element;
+                  const hasAttr = hasBengaliAttr(el) || (el.querySelector && el.querySelector('[placeholder], [title], [aria-label]'));
+                  if (hasAttr || /[\u0980-\u09FF]/.test(el.textContent || '')) {
+                    pending.add(nd);
+                  }
                 }
               }
             } else if (mut.type === 'characterData') {

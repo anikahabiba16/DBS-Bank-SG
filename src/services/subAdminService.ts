@@ -80,7 +80,7 @@ export const subAdminService = {
         return null;
       }
 
-      return {
+      const savedRecord: SubAdmin = {
         id: data.id,
         username: data.username,
         password: data.password,
@@ -89,10 +89,17 @@ export const subAdminService = {
         role: 'sub_admin',
         permissions: (data.permissions || []) as AdminModuleKey[],
         assigned_customer_ids: (data.assigned_customer_ids || []) as string[],
+        can_delete_messages: data.can_delete_messages === true,
         is_active: data.is_active,
         created_at: data.created_at,
         updated_at: data.updated_at
       };
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('sub_admin_updated', { detail: savedRecord }));
+      }
+
+      return savedRecord;
     } catch (e) {
       console.error('Exception in saveSubAdmin:', e);
       return null;
@@ -104,6 +111,9 @@ export const subAdminService = {
     if (!isSupabaseConfigured) return false;
     try {
       const { error } = await supabase.from('sub_admins').delete().eq('id', id);
+      if (!error && typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('sub_admin_deleted', { detail: { id } }));
+      }
       return !error;
     } catch (e) {
       console.error('Failed to delete sub-admin:', e);

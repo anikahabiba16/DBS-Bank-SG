@@ -42,7 +42,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
 
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginPhone.trim()) {
       toast.error('অনুগ্রহ করে মোবাইল নম্বর প্রদান করুন');
@@ -54,16 +54,25 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
     }
 
     setLoading(true);
-    const res = loginUser(loginPhone.trim(), loginPassword.trim());
-    setLoading(false);
-
-    if (res.success) {
-      toast.success(res.message);
-      onOpenChange(false);
-      navigate('/dashboard');
-      onSuccess?.();
-    } else {
-      toast.error(res.message);
+    try {
+      const res = await loginUser(loginPhone.trim(), loginPassword.trim());
+      if (res.success) {
+        toast.success(res.message);
+        onOpenChange(false);
+        navigate('/dashboard', { replace: true });
+        setTimeout(() => {
+          if (!window.location.pathname.startsWith('/dashboard')) {
+            window.location.href = '/dashboard';
+          }
+        }, 100);
+        onSuccess?.();
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error('লগইন করার সময় একটি ত্রুটি দেখা দিয়েছে');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,7 +107,12 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
     if (res.success) {
       toast.success('রেজিস্ট্রেশন সফল হয়েছে এবং আপনি লগইন হয়েছেন!');
       onOpenChange(false);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
+      setTimeout(() => {
+        if (!window.location.pathname.startsWith('/dashboard')) {
+          window.location.href = '/dashboard';
+        }
+      }, 100);
       onSuccess?.();
     } else {
       toast.error(res.message);

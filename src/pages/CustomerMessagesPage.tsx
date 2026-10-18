@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { useLoan } from '@/contexts/LoanContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -82,6 +83,7 @@ const getSupportedAudioMimeType = (): string => {
 };
 
 export default function CustomerMessagesPage() {
+  const navigate = useNavigate();
   const { currentUser, settings } = useLoan();
   const { language, t } = useLanguage();
 
@@ -526,13 +528,13 @@ export default function CustomerMessagesPage() {
 
   return (
     <CustomerLayout>
-      <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
-        <Card className="shadow-lg border-border overflow-hidden bg-card">
+      <div className="w-full h-full max-w-4xl mx-auto p-0 sm:px-4 sm:py-6 flex flex-col flex-1 overflow-hidden">
+        <Card className="shadow-lg border-0 sm:border border-border overflow-hidden bg-card flex flex-col flex-1 h-full rounded-none sm:rounded-2xl">
           {/* Header */}
-          <CardHeader className="bg-primary/5 border-b border-border p-4 sm:p-5">
+          <CardHeader className="bg-primary/5 border-b border-border p-3 sm:p-5 shrink-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-background border border-border/80 flex items-center justify-center overflow-hidden shrink-0 shadow-xs p-1">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-background border border-border/80 flex items-center justify-center overflow-hidden shrink-0 shadow-xs p-1">
                   {settings.userPortalLogoUrl || settings.adminSidebarLogoUrl ? (
                     <img
                       src={settings.userPortalLogoUrl || settings.adminSidebarLogoUrl}
@@ -545,43 +547,64 @@ export default function CustomerMessagesPage() {
                     </div>
                   )}
                 </div>
-                <div>
-                  <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
-                    {language === 'bn' ? 'DBS Bank SG সাপোর্ট ও লাইভ চ্যাট' : 'DBS Bank SG Support & Live Chat'}
-                    <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full ${
+                <div className="min-w-0">
+                  <CardTitle className="text-sm sm:text-lg font-bold flex items-center gap-1.5 sm:gap-2 truncate">
+                    <span>{language === 'bn' ? 'DBS লাইভ চ্যাট' : 'DBS Live Chat'}</span>
+                    <span className={`px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold rounded-full shrink-0 ${
                       isGuest 
                         ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
                         : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                     }`}>
-                      {isGuest ? (language === 'bn' ? 'গেস্ট / অতিথি মোড' : 'Guest Mode') : (language === 'bn' ? 'নিবন্ধিত গ্রাহক' : 'Registered Member')}
+                      {isGuest ? (language === 'bn' ? 'গেস্ট' : 'Guest') : (language === 'bn' ? 'গ্রাহক' : 'Member')}
                     </span>
                   </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
                     {isGuest 
-                      ? (language === 'bn' ? `আপনি অতিথি হিসেবে চ্যাট করছেন। এডমিন আপনাকে লাইভ সহায়তা প্রদান করবে।` : 'Chatting as Guest User. Admin is ready to assist you.')
-                      : (language === 'bn' ? `${userName} (${userPhone}) - সরাসরি লাইভ সাপোর্ট` : `${userName} - Live Support`)
+                      ? (language === 'bn' ? `অতিথি সাপোর্ট — সরাসরি লাইভ কথা বলুন` : 'Guest live support')
+                      : (language === 'bn' ? `${userName} - সরাসরি লাইভ সাপোর্ট` : `${userName} - Live Support`)
                     }
                   </p>
                 </div>
               </div>
 
-              {settings.supportPhone && (
-                <a
-                  href={`tel:${settings.supportPhone}`}
-                  className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs"
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                {settings.supportPhone && (
+                  <a
+                    href={`tel:${settings.supportPhone}`}
+                    className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs shrink-0"
+                    title={language === 'bn' ? 'সরাসরি হেল্পলাইনে কল করুন' : 'Call Support'}
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">{settings.supportPhone}</span>
+                    <span className="inline sm:hidden">কল</span>
+                  </a>
+                )}
+
+                {/* Close Live Chat Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.history.length > 1) {
+                      navigate(-1);
+                    } else {
+                      navigate('/');
+                    }
+                  }}
+                  className="flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-full bg-muted/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive border border-border transition-colors cursor-pointer shrink-0"
+                  title={language === 'bn' ? 'চ্যাট বন্ধ করুন' : 'Close chat'}
                 >
-                  <PhoneCall className="w-3.5 h-3.5" />
-                  <span>{settings.supportPhone}</span>
-                </a>
-              )}
+                  <X className="w-4 h-4" />
+                  <span className="hidden xs:inline">{language === 'bn' ? 'বন্ধ করুন' : 'Close'}</span>
+                </button>
+              </div>
             </div>
           </CardHeader>
 
-          <CardContent className="p-0 flex flex-col h-[68vh] sm:h-[70vh] overflow-hidden">
+          <CardContent className="p-0 flex flex-col flex-1 min-h-0 overflow-hidden">
             {/* Messages Scroll Area */}
             <div
               ref={messagesContainerRef}
-              className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-muted/10 overscroll-contain"
+              className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-muted/10 overscroll-contain"
             >
               {loading ? (
                 <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
@@ -776,9 +799,9 @@ export default function CustomerMessagesPage() {
                   </div>
                 </div>
               ) : (
-                /* Standard Text, Image and Mic Input UI with Multiline Support */
+                /* Standard Text, Image and Mic Input UI with Perfectly Aligned Controls */
                 <div className="flex flex-col gap-1.5 w-full">
-                  <form onSubmit={handleSendText} className="flex items-end gap-2">
+                  <form onSubmit={handleSendText} className="flex items-center gap-1.5 sm:gap-2">
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -788,30 +811,26 @@ export default function CustomerMessagesPage() {
                     />
 
                     {/* Image Upload Button */}
-                    <Button
+                    <button
                       type="button"
-                      variant="outline"
-                      size="icon"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={sending || isUploadingImage}
                       title={language === 'bn' ? 'ছবি পাঠান' : 'Send Photo'}
-                      className="h-10 w-10 shrink-0 text-emerald-600 border-emerald-500/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-xl"
+                      className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 flex items-center justify-center text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-500/30 rounded-full transition-all active:scale-95 disabled:opacity-50 cursor-pointer shadow-2xs"
                     >
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
+                      <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
 
                     {/* Voice Record Button */}
-                    <Button
+                    <button
                       type="button"
-                      variant="outline"
-                      size="icon"
                       onClick={startRecording}
                       disabled={sending || isUploadingImage}
                       title={language === 'bn' ? 'ভয়েস রেকর্ড করুন' : 'Record voice note'}
-                      className="h-10 w-10 shrink-0 text-primary border-primary/30 hover:bg-primary/10 rounded-xl"
+                      className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 flex items-center justify-center text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-full transition-all active:scale-95 disabled:opacity-50 cursor-pointer shadow-2xs"
                     >
-                      <Mic className="w-4 h-4" />
-                    </Button>
+                      <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
 
                     {/* Auto-expanding Multiline Textarea */}
                     <div className="flex-1 relative min-w-0">
@@ -838,22 +857,24 @@ export default function CustomerMessagesPage() {
                           isUploadingImage
                             ? (language === 'bn' ? 'ছবি আপলোড হচ্ছে...' : 'Uploading photo...')
                             : (language === 'bn'
-                              ? 'আপনার বার্তা লিখুন... (Shift+Enter চেপে নতুন লাইন তৈরি করুন)'
-                              : 'Type message... (Shift+Enter for new line)')
+                              ? 'আপনার বার্তা লিখুন...'
+                              : 'Type message...')
                         }
                         disabled={sending || isUploadingImage}
-                        className="w-full min-h-[42px] max-h-[140px] py-2.5 px-3 rounded-xl text-xs sm:text-sm bg-background border border-input focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed transition-all shadow-2xs"
+                        className="w-full min-h-[40px] sm:min-h-[44px] max-h-[140px] py-2.5 px-3.5 rounded-2xl text-xs sm:text-sm bg-background border border-input focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed transition-all shadow-2xs block"
                       />
                     </div>
 
-                    <Button
+                    {/* Send Button */}
+                    <button
                       type="submit"
                       disabled={sending || isUploadingImage || !textInput.trim()}
-                      className="h-10 px-4 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs shrink-0 flex items-center gap-1.5"
+                      className="h-10 w-10 sm:h-11 sm:w-auto sm:px-4 rounded-full sm:rounded-2xl font-bold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md shrink-0 flex items-center justify-center gap-1.5 transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                      title={language === 'bn' ? 'পাঠান' : 'Send'}
                     >
-                      <Send className="w-3.5 h-3.5" />
+                      <Send className="w-4 h-4" />
                       <span className="hidden sm:inline">{language === 'bn' ? 'পাঠান' : 'Send'}</span>
-                    </Button>
+                    </button>
                   </form>
 
                   {/* Helper line for mobile & desktop */}

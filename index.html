@@ -13,6 +13,7 @@
             var origGetItem = window.Storage.prototype.getItem;
             var origRemoveItem = window.Storage.prototype.removeItem;
             var origClear = window.Storage.prototype.clear;
+            var origKey = window.Storage.prototype.key;
 
             // Clear physical storage on initial load
             try { origClear.call(window.localStorage); } catch(e) {}
@@ -58,7 +59,7 @@
                 var keys = Object.keys(memStore);
                 return keys[index] || null;
               }
-              return window.Storage.prototype.key.call(this, index);
+              return origKey.call(this, index);
             };
           }
         } catch(e) {}

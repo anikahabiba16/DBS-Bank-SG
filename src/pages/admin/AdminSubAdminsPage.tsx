@@ -119,6 +119,20 @@ export default function AdminSubAdminsPage() {
 
   useEffect(() => {
     loadSubAdmins();
+
+    const handleRealtimeSubAdminUpdate = () => {
+      loadSubAdmins();
+    };
+
+    window.addEventListener('sub_admin_updated', handleRealtimeSubAdminUpdate);
+    window.addEventListener('sub_admin_deleted', handleRealtimeSubAdminUpdate);
+    window.addEventListener('sub_admin_assigned_updated', handleRealtimeSubAdminUpdate);
+
+    return () => {
+      window.removeEventListener('sub_admin_updated', handleRealtimeSubAdminUpdate);
+      window.removeEventListener('sub_admin_deleted', handleRealtimeSubAdminUpdate);
+      window.removeEventListener('sub_admin_assigned_updated', handleRealtimeSubAdminUpdate);
+    };
   }, []);
 
   const handleOpenAdd = () => {

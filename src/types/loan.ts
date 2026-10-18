@@ -280,6 +280,7 @@ export interface CustomerUser {
   // Virtual Card & Conditional Withdrawal
   virtualCard?: VirtualDebitCard;
   withdrawalCondition?: WithdrawalCondition;
+  canViewLoanAgreement?: boolean; // Control whether customer can view loan agreement contract paper on dashboard
 }
 
 export interface BoundWithdrawalAccount {

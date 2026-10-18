@@ -656,51 +656,52 @@ const isDummyRecord = (record: any): boolean => {
 const initPersistentMemoryStore = () => {
   if (typeof window === 'undefined') return;
   try {
-    const st = window.sessionStorage;
-    if (!st) return;
-    for (let i = 0; i < st.length; i++) {
-      const key = st.key(i);
-      if (key && (key.startsWith('shohoj_') || key.startsWith('medo_') || key.startsWith('dbs_'))) {
-        let val = st.getItem(key);
-        if (val !== null) {
-          // Actively purge any legacy dummy or test data arrays
-          if (
-            key === STORAGE_KEYS.USERS ||
-            key === STORAGE_KEYS.APPLICATIONS ||
-            key === STORAGE_KEYS.WITHDRAWALS ||
-            key === STORAGE_KEYS.DEPOSIT_REQUESTS ||
-            key === STORAGE_KEYS.WALLET_TRANSACTIONS ||
-            key === STORAGE_KEYS.APPROVAL_LETTERS ||
-            key === STORAGE_KEYS.INSTALLMENTS
-          ) {
-            try {
-              const parsed = JSON.parse(val);
-              if (Array.isArray(parsed)) {
-                const clean = parsed.filter((item) => !isDummyRecord(item));
-                val = JSON.stringify(clean);
-                st.setItem(key, val);
-              }
-            } catch {}
-          } else if (
-            key === STORAGE_KEYS.CUSTOMER_FIXED_DEPOSITS ||
-            key === STORAGE_KEYS.CUSTOMER_REVIEWS ||
-            key === STORAGE_KEYS.GENERATED_DOCUMENTS ||
-            key === STORAGE_KEYS.STAFF_ID_CARDS ||
-            key === STORAGE_KEYS.PROMOTION_MEDIA
-          ) {
-            // Clean empty arrays for demo collections
-            val = JSON.stringify([]);
-            st.setItem(key, val);
-          } else if (key === STORAGE_KEYS.CURRENT_USER) {
-            try {
-              const parsedUser = JSON.parse(val);
-              if (isDummyRecord(parsedUser)) {
-                st.removeItem(key);
-                continue;
-              }
-            } catch {}
+    const storages = [window.localStorage, window.sessionStorage].filter(Boolean);
+    for (const st of storages) {
+      for (let i = 0; i < st.length; i++) {
+        const key = st.key(i);
+        if (key && (key.startsWith('shohoj_') || key.startsWith('medo_') || key.startsWith('dbs_'))) {
+          let val = st.getItem(key);
+          if (val !== null) {
+            // Actively purge any legacy dummy or test data arrays
+            if (
+              key === STORAGE_KEYS.USERS ||
+              key === STORAGE_KEYS.APPLICATIONS ||
+              key === STORAGE_KEYS.WITHDRAWALS ||
+              key === STORAGE_KEYS.DEPOSIT_REQUESTS ||
+              key === STORAGE_KEYS.WALLET_TRANSACTIONS ||
+              key === STORAGE_KEYS.APPROVAL_LETTERS ||
+              key === STORAGE_KEYS.INSTALLMENTS
+            ) {
+              try {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed)) {
+                  const clean = parsed.filter((item) => !isDummyRecord(item));
+                  val = JSON.stringify(clean);
+                  st.setItem(key, val);
+                }
+              } catch {}
+            } else if (
+              key === STORAGE_KEYS.CUSTOMER_FIXED_DEPOSITS ||
+              key === STORAGE_KEYS.CUSTOMER_REVIEWS ||
+              key === STORAGE_KEYS.GENERATED_DOCUMENTS ||
+              key === STORAGE_KEYS.STAFF_ID_CARDS ||
+              key === STORAGE_KEYS.PROMOTION_MEDIA
+            ) {
+              // Clean empty arrays for demo collections
+              val = JSON.stringify([]);
+              st.setItem(key, val);
+            } else if (key === STORAGE_KEYS.CURRENT_USER) {
+              try {
+                const parsedUser = JSON.parse(val);
+                if (isDummyRecord(parsedUser)) {
+                  st.removeItem(key);
+                  continue;
+                }
+              } catch {}
+            }
+            inMemoryStore.set(key, val);
           }
-          inMemoryStore.set(key, val);
         }
       }
     }
@@ -718,7 +719,7 @@ const memoryStorage = {
     let val = inMemoryStore.get(key) ?? null;
     if (val === null && typeof window !== 'undefined') {
       try {
-        val = window.sessionStorage?.getItem(key) ?? null;
+        val = window.localStorage?.getItem(key) ?? window.sessionStorage?.getItem(key) ?? null;
         if (val !== null) inMemoryStore.set(key, val);
       } catch {}
     }
@@ -1507,19 +1508,43 @@ class LoanStorageService {
   }
 
   getUserByPhone(phone: string): CustomerUser | undefined {
+    if (!phone) return undefined;
     const cleanPhone = normalizePhone(phone);
+    const inputDigits = phone.toString().replace(/\D/g, '');
+    const cleanDigits = cleanPhone.replace(/\D/g, '');
     const users = this.getUsers();
+
     return users.find((u) => {
+      if (!u.phone) return false;
       const uPhone = normalizePhone(u.phone);
-      if (uPhone === cleanPhone) return true;
-      const uDigits = uPhone.replace(/\D/g, '');
-      const cleanDigits = cleanPhone.replace(/\D/g, '');
-      if (uDigits && cleanDigits) {
-        if (uDigits === cleanDigits) return true;
-        if (uDigits.length >= 8 && cleanDigits.length >= 8) {
-          if (uDigits.endsWith(cleanDigits) || cleanDigits.endsWith(uDigits)) return true;
+      if (uPhone === cleanPhone || u.phone === phone) return true;
+
+      const uRawDigits = u.phone.toString().replace(/\D/g, '');
+      const uCleanDigits = uPhone.replace(/\D/g, '');
+
+      // Direct exact match of any digits
+      if (uCleanDigits === cleanDigits || uRawDigits === inputDigits) return true;
+
+      // Extract significant core phone digits (ignoring country codes / leading zeros, last 8-10 digits)
+      const uCore = uRawDigits.replace(/^0+/, '');
+      const inCore = inputDigits.replace(/^0+/, '');
+
+      if (uCore && inCore) {
+        if (uCore === inCore) return true;
+
+        // Compare last 9 digits (BD mobile core e.g. 1712345678 is 10 digits, last 9 is 712345678)
+        const minLen = Math.min(uCore.length, inCore.length);
+        if (minLen >= 8) {
+          const uLast8 = uCore.slice(-8);
+          const inLast8 = inCore.slice(-8);
+          if (uLast8 === inLast8) {
+            // Also check if one ends with the other
+            if (uCore.endsWith(inCore) || inCore.endsWith(uCore)) return true;
+            if (uRawDigits.endsWith(inputDigits) || inputDigits.endsWith(uRawDigits)) return true;
+          }
         }
       }
+
       return false;
     });
   }
@@ -1596,7 +1621,7 @@ class LoanStorageService {
 
   loginUser(phone: string, password?: string): { success: boolean; user?: CustomerUser; message: string } {
     const cleanPhone = normalizePhone(phone);
-    const user = this.getUserByPhone(cleanPhone);
+    const user = this.getUserByPhone(cleanPhone) || this.getUserByPhone(phone);
 
     if (!user) {
       return { success: false, message: 'এই মোবাইল নম্বরের কোনো গ্রাহক অ্যাকাউন্ট খুঁজে পাওয়া যায়নি।' };
@@ -1614,14 +1639,68 @@ class LoanStorageService {
     return { success: true, user, message: 'সফলভাবে লগইন হয়েছে!' };
   }
 
+  async loginUserAsync(phone: string, password?: string): Promise<{ success: boolean; user?: CustomerUser; message: string }> {
+    // 1. Try local check first
+    const localRes = this.loginUser(phone, password);
+    if (localRes.success) return localRes;
+
+    // If error was wrong password or suspended, return immediately
+    if (localRes.message !== 'এই মোবাইল নম্বরের কোনো গ্রাহক অ্যাকাউন্ট খুঁজে পাওয়া যায়নি।') {
+      return localRes;
+    }
+
+    // 2. Not found locally, attempt to fetch from Supabase Cloud
+    try {
+      const cloudUser = await supabaseSync.findUserByPhoneInCloud(phone);
+      if (cloudUser) {
+        // Save and merge user locally
+        this.mergeUserFromCloud(cloudUser, false);
+        const users = this.getUsers();
+        if (!users.some(u => u.phone === cloudUser.phone || u.id === cloudUser.id)) {
+          users.push(cloudUser);
+          if (this.isBrowser()) {
+            memoryStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+          }
+        }
+
+        // Now authenticate with the fetched cloud user
+        if (password && cloudUser.password && cloudUser.password !== password) {
+          return { success: false, message: 'ভুল পাসওয়ার্ড দিয়েছেন! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।' };
+        }
+
+        if (cloudUser.status === 'suspended') {
+          return { success: false, message: 'আপনার অ্যাকাউন্ট সাময়িকভাবে স্থগিত করা হয়েছে। অনুগ্রহ করে হেল্পলাইনে যোগাযোগ করুন।' };
+        }
+
+        this.setCurrentUser(cloudUser);
+        return { success: true, user: cloudUser, message: 'সফলভাবে লগইন হয়েছে!' };
+      }
+    } catch (e) {
+      console.warn('Cloud login lookup error:', e);
+    }
+
+    return { success: false, message: 'এই মোবাইল নম্বরের কোনো গ্রাহক অ্যাকাউন্ট খুঁজে পাওয়া যায়নি।' };
+  }
+
   getCurrentUser(): CustomerUser | null {
     if (!this.isBrowser()) return null;
     try {
       const parsed = memoryStorage.getParsed<CustomerUser>(STORAGE_KEYS.CURRENT_USER);
-      if (!parsed) {
-        return null; // Return null so guest visitor lands on Login/Register
+      if (parsed) return parsed;
+      // Fallback check directly in window storage in case memory cache was clean
+      if (typeof window !== 'undefined') {
+        const raw = window.localStorage?.getItem(STORAGE_KEYS.CURRENT_USER) || window.sessionStorage?.getItem(STORAGE_KEYS.CURRENT_USER);
+        if (raw) {
+          try {
+            const user = JSON.parse(raw) as CustomerUser;
+            if (user && !isDummyRecord(user)) {
+              memoryStorage.setItem(STORAGE_KEYS.CURRENT_USER, raw);
+              return user;
+            }
+          } catch {}
+        }
       }
-      return parsed;
+      return null;
     } catch {
       return null;
     }
@@ -1630,9 +1709,18 @@ class LoanStorageService {
   setCurrentUser(user: CustomerUser | null): void {
     if (!this.isBrowser()) return;
     if (user) {
-      memoryStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+      const serialized = JSON.stringify(user);
+      memoryStorage.setItem(STORAGE_KEYS.CURRENT_USER, serialized);
+      try {
+        window.localStorage?.setItem(STORAGE_KEYS.CURRENT_USER, serialized);
+        window.sessionStorage?.setItem(STORAGE_KEYS.CURRENT_USER, serialized);
+      } catch {}
     } else {
       memoryStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      try {
+        window.localStorage?.removeItem(STORAGE_KEYS.CURRENT_USER);
+        window.sessionStorage?.removeItem(STORAGE_KEYS.CURRENT_USER);
+      } catch {}
     }
   }
 

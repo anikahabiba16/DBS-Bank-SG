@@ -66,7 +66,7 @@ interface LoanContextType {
   refreshUsers: () => void;
   currentUser: CustomerUser | null;
   registerUser: (data: { name: string; phone: string; password?: string; email?: string; nidNumber?: string; accountNumber?: string; accountType?: any }) => { success: boolean; user?: CustomerUser; message: string };
-  loginUser: (phone: string, password?: string) => { success: boolean; user?: CustomerUser; message: string };
+  loginUser: (phone: string, password?: string) => Promise<{ success: boolean; user?: CustomerUser; message: string }>;
   logout: () => void;
   
   // Admin Auth (Strict: Molla0506 / Mdroton126799@ & Sub-Admins)
@@ -509,8 +509,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return result;
   };
 
-  const loginUser = (phone: string, password?: string) => {
-    const result = loanStorage.loginUser(phone, password);
+  const loginUser = async (phone: string, password?: string) => {
+    const result = await loanStorage.loginUserAsync(phone, password);
     if (result.success && result.user) {
       setCurrentUserState(result.user);
       refreshUsers();

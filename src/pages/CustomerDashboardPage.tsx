@@ -640,8 +640,12 @@ export const CustomerDashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Android 8-Grid Touch Services */}
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 pt-4 mt-3 border-t border-border/60">
+          {/* Android Quick Services Grid */}
+          <div
+            className={`grid grid-cols-4 ${
+              currentUser?.canViewLoanAgreement ? 'sm:grid-cols-8' : 'sm:grid-cols-7'
+            } gap-2 pt-4 mt-3 border-t border-border/60`}
+          >
             <Link to="/apply" className="flex flex-col items-center text-center group p-1.5 rounded-xl hover:bg-muted/50 transition-colors">
               <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
                 <PlusCircle className="w-5 h-5" />
@@ -688,23 +692,25 @@ export const CustomerDashboardPage: React.FC = () => {
               <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">স্ট্যাটাস ট্র্যাক</span>
             </Link>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (contractPapers && contractPapers.length > 0) {
-                  setSelectedContract(contractPapers[0]);
-                  setContractModalOpen(true);
-                } else {
-                  toast.info('আপনার কোনো সক্রিয় চুক্তিপত্র পাওয়া যায়নি');
-                }
-              }}
-              className="flex flex-col items-center text-center group p-1.5 rounded-xl hover:bg-muted/50 transition-colors"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                <Scale className="w-5 h-5" />
-              </div>
-              <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">চুক্তিপত্র পেপার</span>
-            </button>
+            {currentUser?.canViewLoanAgreement && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (contractPapers && contractPapers.length > 0) {
+                    setSelectedContract(contractPapers[0]);
+                    setContractModalOpen(true);
+                  } else {
+                    toast.info('আপনার কোনো সক্রিয় চুক্তিপত্র পাওয়া যায়নি');
+                  }
+                }}
+                className="flex flex-col items-center text-center group p-1.5 rounded-xl hover:bg-muted/50 transition-colors"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">চুক্তিপত্র পেপার</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -755,23 +761,44 @@ export const CustomerDashboardPage: React.FC = () => {
         </div>
 
         <Tabs defaultValue="loans" className="space-y-6 w-full max-w-full min-w-0">
-          <div className="w-full max-w-full overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 scrollbar-none">
-            <TabsList className="inline-flex h-auto p-1 bg-muted/80 w-auto min-w-full justify-start sm:justify-center gap-1 rounded-xl">
-              <TabsTrigger value="loans" className="font-bold text-xs sm:text-sm py-2 px-3 whitespace-nowrap rounded-lg">
+          <div className="w-full">
+            <TabsList
+              className={`w-full h-auto p-1 bg-muted/80 rounded-xl grid ${
+                currentUser?.canViewLoanAgreement ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
+              } gap-1`}
+            >
+              <TabsTrigger
+                value="loans"
+                className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
+              >
                 লোন ও কিস্তিসমূহ
               </TabsTrigger>
-              <TabsTrigger value="card" className="font-bold text-xs sm:text-sm py-2 px-3 whitespace-nowrap rounded-lg">
+              <TabsTrigger
+                value="card"
+                className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
+              >
                 ভার্চুয়াল কার্ড
               </TabsTrigger>
-              <TabsTrigger value="wallet" className="font-bold text-xs sm:text-sm py-2 px-3 whitespace-nowrap rounded-lg">
+              <TabsTrigger
+                value="wallet"
+                className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
+              >
                 উইথড্র ও লেনদেন
               </TabsTrigger>
-              <TabsTrigger value="letters" className="font-bold text-xs sm:text-sm py-2 px-3 whitespace-nowrap rounded-lg">
+              <TabsTrigger
+                value="letters"
+                className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
+              >
                 লেটার সনদ (PDF)
               </TabsTrigger>
-              <TabsTrigger value="contracts" className="font-bold text-xs sm:text-sm py-2 px-3 whitespace-nowrap rounded-lg">
-                চুক্তিপত্র
-              </TabsTrigger>
+              {currentUser?.canViewLoanAgreement && (
+                <TabsTrigger
+                  value="contracts"
+                  className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
+                >
+                  চুক্তিপত্র
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
@@ -1284,97 +1311,99 @@ export const CustomerDashboardPage: React.FC = () => {
 
           {/* TAB 5: CONTRACT AGREEMENT PAPERS */}
           {/* TAB 5: OFFICIAL CONTRACTS (AGREEMENT PAPER) */}
-          <TabsContent value="contracts" className="space-y-6">
-            <Card className="border shadow-sm bg-card">
-              <CardHeader className="p-5 border-b">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-foreground">
-                      <Scale className="w-5 h-5 text-primary" />
-                      দ্বিপাক্ষিক আইনি ঋণ চুক্তিপত্র (Official Agreement Contract)
-                    </CardTitle>
-                    <CardDescription className="text-xs text-muted-foreground mt-1">
-                      অ্যাডমিন কর্তৃক প্রস্তুতকৃত ও ইস্যুকৃত অফিসিয়াল আইনি চুক্তিপত্র দেখুন, যাচাই করুন এবং প্রিন্ট/পিডিএফ ডাউনলোড করুন
-                    </CardDescription>
+          {currentUser?.canViewLoanAgreement && (
+            <TabsContent value="contracts" className="space-y-6">
+              <Card className="border shadow-sm bg-card">
+                <CardHeader className="p-5 border-b">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-foreground">
+                        <Scale className="w-5 h-5 text-primary" />
+                        দ্বিপাক্ষিক আইনি ঋণ চুক্তিপত্র (Official Agreement Contract)
+                      </CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground mt-1">
+                        অ্যাডমিন কর্তৃক প্রস্তুতকৃত ও ইস্যুকৃত অফিসিয়াল আইনি চুক্তিপত্র দেখুন, যাচাই করুন এবং প্রিন্ট/পিডিএফ ডাউনলোড করুন
+                      </CardDescription>
+                    </div>
+                    <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 bg-emerald-500/10 text-xs font-bold gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>DBS Bank SG অনুমোদিত</span>
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 bg-emerald-500/10 text-xs font-bold gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>DBS Bank SG অনুমোদিত</span>
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="p-5">
-                {(() => {
-                  const approvedCustomerContracts = contractPapers.filter(
-                    (c) => (c.userId === currentUser?.id || c.phone === currentUser?.phone) && c.status === 'sent'
-                  );
-
-                  if (approvedCustomerContracts.length === 0) {
-                    return (
-                      <div className="p-8 sm:p-12 text-center space-y-3">
-                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground/50">
-                          <Scale className="w-6 h-6" />
-                        </div>
-                        <div className="space-y-1">
-                          <h4 className="text-sm font-bold text-foreground">
-                            আপনার জন্য কোনো অনুমোদিত চুক্তিপত্র প্রস্তুত করা হয়নি
-                          </h4>
-                          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                            অ্যাডমিন প্যানেল থেকে অনুমোদন ও সেন্ড না করা পর্যন্ত গ্রাহক কোনো চুক্তিপত্র দেখতে পাবে না। অ্যাডমিন অনুমোদন সম্পন্ন করলে চুক্তিপত্রটি এখানে রিয়েল-টাইমে দেখতে পাবেন।
-                          </p>
-                        </div>
-                      </div>
+                </CardHeader>
+                <CardContent className="p-5">
+                  {(() => {
+                    const approvedCustomerContracts = contractPapers.filter(
+                      (c) => (c.userId === currentUser?.id || c.phone === currentUser?.phone) && c.status === 'sent'
                     );
-                  }
 
-                  return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {approvedCustomerContracts.map((c) => (
-                        <div
-                          key={c.id}
-                          className="p-5 rounded-2xl border bg-muted/20 hover:bg-muted/40 transition-colors space-y-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-mono text-xs font-bold text-primary">
-                              {c.contractNumber}
-                            </span>
-                            <div className="flex items-center gap-1.5">
-                              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                                অনুমোদিত চুক্তিপত্র
-                              </Badge>
-                              <Badge variant="outline" className="text-[10px] font-bold border-amber-500/40 text-amber-600 dark:text-amber-400">
-                                {toBengaliNumber(c.stampAmount || 100)} টাকার স্ট্যাম্প
-                              </Badge>
-                            </div>
+                    if (approvedCustomerContracts.length === 0) {
+                      return (
+                        <div className="p-8 sm:p-12 text-center space-y-3">
+                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground/50">
+                            <Scale className="w-6 h-6" />
                           </div>
-                          <div>
-                            <h4 className="font-bold text-sm text-foreground">{c.contractSubjectBn}</h4>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              ঋণের পরিমাণ: <strong className="text-foreground">{formatTaka(c.loanAmount)}</strong> | মেয়াদ: {toBengaliNumber(c.durationMonths)} মাস | কিস্তি: {formatTaka(c.monthlyEMI)}
+                          <div className="space-y-1">
+                            <h4 className="text-sm font-bold text-foreground">
+                              আপনার জন্য কোনো অনুমোদিত চুক্তিপত্র প্রস্তুত করা হয়নি
+                            </h4>
+                            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                              অ্যাডমিন প্যানেল থেকে অনুমোদন ও সেন্ড না করা পর্যন্ত গ্রাহক কোনো চুক্তিপত্র দেখতে পাবে না। অ্যাডমিন অনুমোদন সম্পন্ন করলে চুক্তিপত্রটি এখানে রিয়েল-টাইমে দেখতে পাবেন।
                             </p>
                           </div>
-                          <div className="pt-2 flex items-center justify-between border-t">
-                            <span className="text-[11px] text-muted-foreground">তারিখ: {c.issueDate}</span>
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                setSelectedContract(c);
-                                setContractModalOpen(true);
-                              }}
-                              className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
-                            >
-                              <FileText className="w-3.5 h-3.5" />
-                              চুক্তিপত্র দেখুন
-                            </Button>
-                          </div>
                         </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      );
+                    }
+
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {approvedCustomerContracts.map((c) => (
+                          <div
+                            key={c.id}
+                            className="p-5 rounded-2xl border bg-muted/20 hover:bg-muted/40 transition-colors space-y-3"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-xs font-bold text-primary">
+                                {c.contractNumber}
+                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                                  অনুমোদিত চুক্তিপত্র
+                                </Badge>
+                                <Badge variant="outline" className="text-[10px] font-bold border-amber-500/40 text-amber-600 dark:text-amber-400">
+                                  {toBengaliNumber(c.stampAmount || 100)} টাকার স্ট্যাম্প
+                                </Badge>
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-sm text-foreground">{c.contractSubjectBn}</h4>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                ঋণের পরিমাণ: <strong className="text-foreground">{formatTaka(c.loanAmount)}</strong> | মেয়াদ: {toBengaliNumber(c.durationMonths)} মাস | কিস্তি: {formatTaka(c.monthlyEMI)}
+                              </p>
+                            </div>
+                            <div className="pt-2 flex items-center justify-between border-t">
+                              <span className="text-[11px] text-muted-foreground">তারিখ: {c.issueDate}</span>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedContract(c);
+                                  setContractModalOpen(true);
+                                }}
+                                className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                চুক্তিপত্র দেখুন
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 

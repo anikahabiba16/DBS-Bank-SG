@@ -509,6 +509,44 @@ class SupabaseSyncService {
     }
   }
 
+  // 2.1 Fetch Specific User By Phone from Cloud
+  public async findUserByPhoneInCloud(phone: string): Promise<CustomerUser | null> {
+    if (!isSupabaseConfigured || !phone) return null;
+    try {
+      const inputDigits = phone.toString().replace(/\D/g, '');
+      const inputCore = inputDigits.replace(/^0+/, '');
+
+      // First try exact / raw phone matches
+      const { data, error } = await supabase
+        .from('site_users')
+        .select('*')
+        .limit(200);
+
+      if (error || !data || data.length === 0) return null;
+
+      for (const row of data) {
+        const u = row.data as CustomerUser;
+        if (!u || !u.phone) continue;
+
+        const uRawDigits = u.phone.toString().replace(/\D/g, '');
+        const uCore = uRawDigits.replace(/^0+/, '');
+
+        if (u.phone === phone || uRawDigits === inputDigits) return u;
+        if (inputCore && uCore) {
+          if (uCore === inputCore) return u;
+          if (uCore.endsWith(inputCore) || inputCore.endsWith(uCore)) return u;
+          if (inputCore.length >= 8 && uCore.length >= 8) {
+            if (uCore.slice(-8) === inputCore.slice(-8)) return u;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      console.warn('findUserByPhoneInCloud error:', e);
+      return null;
+    }
+  }
+
   // 3. Sync Loan Application
   // Do not report/broadcast a successful submission until Supabase confirms the write.
   public async syncApplicationToCloud(app: LoanApplication): Promise<void> {

@@ -150,67 +150,67 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         {/* Quick Management Shortcuts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link to="/admin/customers">
-            <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between group shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-primary text-primary-foreground shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+          <Link to="/admin/customers" className="h-full block">
+            <div className="h-full min-h-[82px] p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between group shadow-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 rounded-lg bg-primary text-primary-foreground shadow-sm shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h4 className="font-bold text-sm text-foreground">সকল ইউজার অ্যাকাউন্ট</h4>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h4 className="font-bold text-sm text-foreground truncate">সকল ইউজার অ্যাকাউন্ট</h4>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-semibold">{toBengaliNumber(users.length)} জন নিবন্ধিত গ্রাহক</p>
+                  <p className="text-xs text-muted-foreground font-semibold truncate">{toBengaliNumber(users.length)} জন নিবন্ধিত গ্রাহক</p>
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
             </div>
           </Link>
 
-          <Link to="/admin/applications">
-            <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-muted text-accent">
+          <Link to="/admin/applications" className="h-full block">
+            <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <FileSpreadsheet className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm text-foreground">লোন আবেদন যাচাই</h4>
-                  <p className="text-xs text-muted-foreground">{toBengaliNumber(pendingApps.length)} টি পেন্ডিং আবেদন</p>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-sm text-foreground truncate">লোন আবেদন যাচাই</h4>
+                  <p className="text-xs text-muted-foreground truncate">{toBengaliNumber(pendingApps.length)} টি পেন্ডিং আবেদন</p>
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all shrink-0 ml-2" />
             </div>
           </Link>
 
-          <Link to="/admin/packages">
-            <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-muted text-accent">
+          <Link to="/admin/packages" className="h-full block">
+            <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm text-foreground">লোন স্কিম ও সুদের হার</h4>
-                  <p className="text-xs text-muted-foreground">প্যাকেজ যোগ ও বিদ্যমান এডিট</p>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-sm text-foreground truncate">লোন স্কিম ও সুদের হার</h4>
+                  <p className="text-xs text-muted-foreground truncate">প্যাকেজ যোগ ও বিদ্যমান এডিট</p>
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all shrink-0 ml-2" />
             </div>
           </Link>
 
-          <Link to="/admin/settings">
-            <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-muted text-accent">
+          <Link to="/admin/settings" className="h-full block">
+            <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <Settings className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm text-foreground">সাইট কনটেন্ট এডিটর</h4>
-                  <p className="text-xs text-muted-foreground">ব্যানার, নোটিশ ও প্ল্যাটফর্ম ইনফো</p>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-sm text-foreground truncate">সাইট কনটেন্ট এডিটর</h4>
+                  <p className="text-xs text-muted-foreground truncate">ব্যানার, নোটিশ ও প্ল্যাটফর্ম ইনফো</p>
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all shrink-0 ml-2" />
             </div>
           </Link>
         </div>

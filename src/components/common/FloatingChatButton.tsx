@@ -126,7 +126,7 @@ export const FloatingChatButton: React.FC = () => {
 
     const deltaX = Math.abs(e.clientX - (posRef.current?.x ?? 0) - dragStartRef.current.x);
     const deltaY = Math.abs(e.clientY - (posRef.current?.y ?? 0) - dragStartRef.current.y);
-    if (deltaX > 2 || deltaY > 2) {
+    if (deltaX > 8 || deltaY > 8) {
       hasDraggedRef.current = true;
     }
 
@@ -218,44 +218,25 @@ export const FloatingChatButton: React.FC = () => {
 
   // ──────────────────────────────────────────────────────────────
 
+  // Do not render inside admin pages or when already on the messages page
   if (location.pathname.startsWith('/admin') || location.pathname === '/messages') return null;
-
-  const isFormPage = location.pathname.startsWith('/apply') || location.pathname.startsWith('/calculator');
-
-  // If user has a saved custom position, render absolutely positioned (draggable)
-  // Otherwise fall back to the default fixed-corner position.
-  const hasCustomPos = pos !== null;
-
-  const defaultClasses = isFormPage ? 'hidden md:flex' : 'flex';
 
   return (
     <div
-      ref={btnRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerCancel}
-      style={
-        hasCustomPos
-          ? { position: 'fixed', left: `${pos.x}px`, top: `${pos.y}px`, zIndex: 9999 }
-          : undefined
-      }
-      className={`fixed ${hasCustomPos ? 'flex' : `${defaultClasses} bottom-20 md:bottom-6 right-3 sm:right-6`} z-50 touch-none select-none cursor-grab active:cursor-grabbing`}
+      className="hidden md:block fixed md:bottom-6 right-6 z-50 select-none pointer-events-auto"
     >
-      <Link
-        to="/messages"
-        draggable={false}
-        onClick={(e) => {
-          // If user dragged, don't navigate
-          if (hasDraggedRef.current) e.preventDefault();
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/messages');
         }}
-        className={`${hasCustomPos ? 'flex' : defaultClasses} items-center gap-2 bg-primary text-primary-foreground px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full shadow-2xl hover:bg-primary/95 group border-2 border-white/20`}
-        title={language === 'bn' ? 'সাপোর্ট ও লাইভ চ্যাট করুন — ধরে টেনে সরান' : 'Live Support — drag to move'}
+        className="flex items-center gap-2 bg-gradient-to-r from-sky-500 via-primary to-blue-600 text-white px-3.5 sm:px-4 py-2.5 rounded-xl shadow-[0_8px_25px_rgba(2,132,199,0.38)] hover:scale-105 active:scale-95 transition-all group border border-white/40 cursor-pointer"
+        title={language === 'bn' ? 'সাপোর্ট' : 'Support'}
       >
-        <div className="relative">
-          <Headphones className="w-5 h-5" />
+        <div className="relative flex items-center justify-center">
+          <Headphones className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse shrink-0" />
           {unreadCount > 0 ? (
-            <span className="absolute -top-2 -right-2 min-w-5 h-5 px-1 bg-red-600 text-white rounded-full text-[10px] font-black flex items-center justify-center animate-bounce shadow-md">
+            <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 px-1 bg-red-600 text-white rounded-full text-[10px] font-black flex items-center justify-center animate-bounce shadow-md">
               {unreadCount}
             </span>
           ) : (
@@ -265,10 +246,10 @@ export const FloatingChatButton: React.FC = () => {
             </>
           )}
         </div>
-        <span className="text-xs font-bold tracking-wide">
-          {language === 'bn' ? 'মেসেজ ও সাপোর্ট' : 'Live Support'}
+        <span className="text-xs sm:text-sm font-extrabold tracking-wide whitespace-nowrap">
+          {language === 'bn' ? 'সাপোর্ট' : 'Support'}
         </span>
-      </Link>
+      </button>
     </div>
   );
 };

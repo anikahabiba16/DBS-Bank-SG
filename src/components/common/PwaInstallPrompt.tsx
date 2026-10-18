@@ -45,22 +45,6 @@ export function PwaInstallPrompt() {
     const isApple = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isApple);
 
-    // Check if user has already permanently dismissed the prompt
-    const isPermanentlyDismissed = (() => {
-      try {
-        return sessionStorage.getItem('dbs_pwa_install_dismissed_permanently') === 'true';
-      } catch {
-        return false;
-      }
-    })();
-
-    if (isApp || isPermanentlyDismissed) return;
-
-    // Do not attach PWA install prompts on admin portal pages
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
-      return;
-    }
-
     // Capture beforeinstallprompt event cleanly without unprompted console warnings
     const handleBeforeInstallPrompt = (e: Event) => {
       try {
@@ -75,6 +59,7 @@ export function PwaInstallPrompt() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Listen for custom trigger event (e.g. user manually taps Install App in header or banner)
+    // ALWAYS open regardless of prior dismissals
     const handleCustomOpen = () => {
       setOpen(true);
     };
