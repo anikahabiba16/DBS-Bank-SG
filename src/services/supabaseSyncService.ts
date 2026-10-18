@@ -513,14 +513,36 @@ class SupabaseSyncService {
   public async findUserByPhoneInCloud(phone: string): Promise<CustomerUser | null> {
     if (!isSupabaseConfigured || !phone) return null;
     try {
-      const inputDigits = phone.toString().replace(/\D/g, '');
+      const cleanPhone = phone.toString().trim();
+      const inputDigits = cleanPhone.replace(/\D/g, '');
       const inputCore = inputDigits.replace(/^0+/, '');
 
-      // First try exact / raw phone matches
+      // 1. Check all phone variants in a SINGLE parallel batch query (super fast, ~100-200ms)
+      const directQueries = Array.from(new Set([
+        cleanPhone,
+        inputDigits,
+        inputCore ? `0${inputCore}` : '',
+        inputCore ? `+880${inputCore}` : '',
+        inputCore ? `880${inputCore}` : ''
+      ].filter(Boolean)));
+
+      const { data: matchedRows, error: directErr } = await supabase
+        .from('site_users')
+        .select('*')
+        .in('phone', directQueries)
+        .limit(1);
+
+      if (!directErr && matchedRows && matchedRows.length > 0) {
+        const u = matchedRows[0].data as CustomerUser;
+        if (u) return u;
+      }
+
+      // 2. Fallback: only if direct match fails, query the latest 100 users
       const { data, error } = await supabase
         .from('site_users')
         .select('*')
-        .limit(200);
+        .order('updated_at', { ascending: false })
+        .limit(100);
 
       if (error || !data || data.length === 0) return null;
 
@@ -531,7 +553,7 @@ class SupabaseSyncService {
         const uRawDigits = u.phone.toString().replace(/\D/g, '');
         const uCore = uRawDigits.replace(/^0+/, '');
 
-        if (u.phone === phone || uRawDigits === inputDigits) return u;
+        if (u.phone === cleanPhone || uRawDigits === inputDigits) return u;
         if (inputCore && uCore) {
           if (uCore === inputCore) return u;
           if (uCore.endsWith(inputCore) || inputCore.endsWith(uCore)) return u;

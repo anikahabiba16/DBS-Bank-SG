@@ -10,11 +10,7 @@ const PageLoader: React.FC = () => (
   </div>
 );
 
-const withSuspense = (Component: React.ComponentType) => (
-  <Suspense fallback={<PageLoader />}>
-    <Component />
-  </Suspense>
-);
+const withSuspense = (Component: React.ComponentType) => <Component />;
 
 import { HomePage } from './pages/HomePage';
 import { PackagesPage } from './pages/PackagesPage';
@@ -24,28 +20,28 @@ import { TrackPage } from './pages/TrackPage';
 import { LoginPage, RegisterPage } from './pages/AuthPages';
 
 import { CustomerDashboardPage } from './pages/CustomerDashboardPage';
-const CustomerMessagesPage = lazy(() => import('./pages/CustomerMessagesPage'));
+import CustomerMessagesPage from './pages/CustomerMessagesPage';
 
-// Admin Pages - Lazy loaded on demand so customer portal never downloads admin bundles
-const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })));
-const AdminApplicationsPage = lazy(() => import('./pages/admin/AdminApplicationsPage').then((m) => ({ default: m.AdminApplicationsPage })));
-const AdminPackagesPage = lazy(() => import('./pages/admin/AdminPackagesPage').then((m) => ({ default: m.AdminPackagesPage })));
-const AdminCustomersPage = lazy(() => import('./pages/admin/AdminCustomersPage').then((m) => ({ default: m.AdminCustomersPage })));
-const AdminInstallmentsPage = lazy(() => import('./pages/admin/AdminInstallmentsPage').then((m) => ({ default: m.AdminInstallmentsPage })));
-const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })));
-const AdminWalletsPage = lazy(() => import('./pages/admin/AdminWalletsPage').then((m) => ({ default: m.AdminWalletsPage })));
-const AdminWithdrawalsPage = lazy(() => import('./pages/admin/AdminWithdrawalsPage').then((m) => ({ default: m.AdminWithdrawalsPage })));
-const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage').then((m) => ({ default: m.AdminNotificationsPage })));
-const AdminLettersPage = lazy(() => import('./pages/admin/AdminLettersPage').then((m) => ({ default: m.AdminLettersPage })));
-const AdminDepositsPage = lazy(() => import('./pages/admin/AdminDepositsPage').then((m) => ({ default: m.AdminDepositsPage })));
-const AdminContractsPage = lazy(() => import('./pages/admin/AdminContractsPage').then((m) => ({ default: m.AdminContractsPage })));
-const AdminSupportPartnersPage = lazy(() => import('./pages/admin/AdminSupportPartnersPage').then((m) => ({ default: m.AdminSupportPartnersPage })));
-const AdminOfficialDocumentGeneratorPage = lazy(() => import('./pages/admin/AdminOfficialDocumentGeneratorPage').then((m) => ({ default: m.AdminOfficialDocumentGeneratorPage })));
-const AdminStaffIdCardsPage = lazy(() => import('./pages/admin/AdminStaffIdCardsPage').then((m) => ({ default: m.AdminStaffIdCardsPage })));
-const AdminMediaGalleryPage = lazy(() => import('./pages/admin/AdminMediaGalleryPage').then((m) => ({ default: m.AdminMediaGalleryPage })));
-const AdminVirtualCardsPage = lazy(() => import('./pages/admin/AdminVirtualCardsPage').then((m) => ({ default: m.AdminVirtualCardsPage })));
-const AdminMessagesPage = lazy(() => import('./pages/admin/AdminMessagesPage'));
-const AdminSubAdminsPage = lazy(() => import('./pages/admin/AdminSubAdminsPage'));
+// Admin Pages - Direct imported for 100% instant navigation & zero chunk loading errors
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { AdminApplicationsPage } from './pages/admin/AdminApplicationsPage';
+import { AdminPackagesPage } from './pages/admin/AdminPackagesPage';
+import { AdminCustomersPage } from './pages/admin/AdminCustomersPage';
+import { AdminInstallmentsPage } from './pages/admin/AdminInstallmentsPage';
+import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
+import { AdminWalletsPage } from './pages/admin/AdminWalletsPage';
+import { AdminWithdrawalsPage } from './pages/admin/AdminWithdrawalsPage';
+import { AdminNotificationsPage } from './pages/admin/AdminNotificationsPage';
+import { AdminLettersPage } from './pages/admin/AdminLettersPage';
+import { AdminDepositsPage } from './pages/admin/AdminDepositsPage';
+import { AdminContractsPage } from './pages/admin/AdminContractsPage';
+import { AdminSupportPartnersPage } from './pages/admin/AdminSupportPartnersPage';
+import { AdminOfficialDocumentGeneratorPage } from './pages/admin/AdminOfficialDocumentGeneratorPage';
+import { AdminStaffIdCardsPage } from './pages/admin/AdminStaffIdCardsPage';
+import { AdminMediaGalleryPage } from './pages/admin/AdminMediaGalleryPage';
+import { AdminVirtualCardsPage } from './pages/admin/AdminVirtualCardsPage';
+import AdminMessagesPage from './pages/admin/AdminMessagesPage';
+import AdminSubAdminsPage from './pages/admin/AdminSubAdminsPage';
 
 export interface RouteConfig {
   name: string;

@@ -1652,10 +1652,10 @@ class LoanStorageService {
       return localRes;
     }
 
-    // 2. Not found locally, attempt to fetch from Supabase Cloud with a fast 1.5-second timeout
+    // 2. Not found locally, attempt to fetch from Supabase Cloud with an optimized 2-second timeout
     try {
       const cloudLookupPromise = supabaseSync.findUserByPhoneInCloud(phone);
-      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500));
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
       const cloudUser = await Promise.race([cloudLookupPromise, timeoutPromise]);
 
       if (cloudUser) {
