@@ -152,8 +152,8 @@ export const CustomerDepositModal: React.FC<CustomerDepositModalProps> = ({ open
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-xl p-4 sm:p-6 bg-card rounded-2xl shadow-2xl border max-h-[85dvh] overflow-y-auto">
-        <DialogHeader className="text-left pb-3 border-b pr-4">
+      <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-2xl p-5 sm:p-7 bg-card rounded-2xl shadow-2xl border max-h-[88dvh] overflow-y-auto">
+        <DialogHeader className="text-left pb-3 border-b">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
               <ArrowDownCircle className="w-5 h-5" />

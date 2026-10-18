@@ -1410,8 +1410,8 @@ export const CustomerDashboardPage: React.FC = () => {
 
       {/* WITHDRAWAL DIALOG WITH CONDITIONAL NOTICE & FEE - Mobile Optimized */}
       <Dialog open={withdrawModalOpen} onOpenChange={setWithdrawModalOpen}>
-        <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-md p-4 sm:p-6 bg-card max-h-[90dvh] flex flex-col rounded-2xl shadow-2xl overflow-hidden">
-          <DialogHeader className="text-left pb-2 border-b shrink-0 pr-4">
+        <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-xl p-5 sm:p-7 bg-card max-h-[90dvh] flex flex-col rounded-2xl shadow-2xl overflow-hidden">
+          <DialogHeader className="text-left pb-2 border-b shrink-0">
             <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
               <ArrowDownToLine className="w-5 h-5 text-emerald-600 shrink-0" />
               <span>টাকা উইথড্র করুন (Withdraw Money)</span>
@@ -1421,7 +1421,7 @@ export const CustomerDashboardPage: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto flex-1 min-h-0 pr-2.5 pb-3 space-y-3.5 mt-2">
+          <div className="overflow-y-auto flex-1 min-h-0 py-2 space-y-3.5 mt-1">
           {/* Conditional Notice / Gating Warning Banner */}
           {isWithdrawalBlocked ? (
             <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-amber-50 to-amber-100 border-2 border-amber-500 space-y-3 shadow-md">
@@ -1744,7 +1744,7 @@ export const CustomerDashboardPage: React.FC = () => {
       {/* Approval Letter Modal */}
       {currentApprovalLetter && (
         <Dialog open={letterModalOpen} onOpenChange={setLetterModalOpen}>
-          <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-4xl p-4 sm:p-6 bg-card max-h-[88dvh] overflow-y-auto rounded-2xl shadow-2xl">
+          <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-5xl p-5 sm:p-7 bg-card max-h-[90dvh] overflow-y-auto rounded-2xl shadow-2xl">
             <DialogHeader className="sr-only">
               <DialogTitle>অফিসিয়াল লোন অনুমোদন পত্র</DialogTitle>
             </DialogHeader>

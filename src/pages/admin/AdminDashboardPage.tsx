@@ -48,6 +48,30 @@ export const AdminDashboardPage: React.FC = () => {
     refreshApplications();
     refreshUsers();
     refreshInstallments();
+
+    // Silently sync from cloud in background on mount so new registrations show immediately
+    void (async () => {
+      try {
+        const [cloudApps, cloudUsers] = await Promise.all([
+          supabaseSync.fetchApplicationsFromCloud(),
+          supabaseSync.fetchUsersFromCloud()
+        ]);
+        let changed = false;
+        if (cloudApps && cloudApps.length > 0) {
+          loanStorage.saveApplicationsFromCloud(cloudApps, false);
+          changed = true;
+        }
+        if (cloudUsers && cloudUsers.length > 0) {
+          loanStorage.saveUsersFromCloud(cloudUsers, false);
+          changed = true;
+        }
+        if (changed) {
+          refreshApplications();
+          refreshUsers();
+          refreshInstallments();
+        }
+      } catch {}
+    })();
   }, [refreshApplications, refreshUsers, refreshInstallments]);
 
   const handleManualSync = async () => {
@@ -158,7 +182,7 @@ export const AdminDashboardPage: React.FC = () => {
       }
     });
 
-    return Array.from(map.values());
+    return Array.from(map.values()).reverse();
   }, [users, applications]);
 
   const scopedUsers = assignedCustomerIds !== null
@@ -394,7 +418,7 @@ export const AdminDashboardPage: React.FC = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    scopedUsers.slice(0, 6).map((u) => {
+                    scopedUsers.slice(0, 25).map((u) => {
                       const boundMethods = [];
                       if (u.boundWithdrawalAccounts?.bKash) boundMethods.push('বিকাশ');
                       if (u.boundWithdrawalAccounts?.Nagad) boundMethods.push('নগদ');
