@@ -176,8 +176,12 @@ export const LoginPage: React.FC = () => {
           aria-hidden="true"
         >
           <img
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=95&w=3840&auto=format&fit=crop"
-            alt="DBS Bank Singapore Financial District 4K"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=768&auto=format&fit=crop 768w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop 1920w"
+            sizes="100vw"
+            alt="DBS Bank Singapore Financial District"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.97] contrast-[1.05] scale-100 transform"
           />
           {/* Crystal Clear Light Overlay with Soft Cool Slate & Ocean Glass Tint */}
