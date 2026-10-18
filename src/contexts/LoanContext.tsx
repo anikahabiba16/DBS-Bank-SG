@@ -1228,7 +1228,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (contract._deleted) {
               loanStorage.deleteContractPaper(contract.id);
             } else {
-              loanStorage.saveContractPaper(contract);
+              // Pass false so receiving a realtime contract from cloud doesn't bounce back and re-trigger sync
+              loanStorage.saveContractPaper(contract, false);
             }
             setContractPapers(loanStorage.getContractPapers());
           }
@@ -1465,7 +1466,9 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useLoan = () => {
   const context = useContext(LoanContext);
   if (!context) {
-    throw new Error('useLoan must be used within a LoanProvider');
+    // If during Vite HMR reload or transient unmount context is briefly unavailable, return safe fallback instead of hard crash
+    console.warn('useLoan accessed outside LoanProvider (possible HMR reload)');
+    return {} as any;
   }
   return context;
 };

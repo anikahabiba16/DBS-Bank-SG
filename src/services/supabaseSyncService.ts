@@ -1209,23 +1209,36 @@ class SupabaseSyncService {
 
   // --- Site Contracts (Official Legal Agreements) Sync ---
   public async syncContractToCloud(paper: any): Promise<void> {
+    if (!paper) return;
     this.broadcastEvent('CONTRACT_UPDATED', paper);
     if (!isSupabaseConfigured) return;
     try {
+      const contractId = String(paper.id || paper.loanId ? `ctr-${paper.loanId}` : `ctr-${Date.now()}`);
+      const loanId = paper.loanId ? String(paper.loanId) : null;
+      const userPhone = paper.phone || paper.userPhone ? String(paper.phone || paper.userPhone) : null;
+      const status = paper.status ? String(paper.status) : 'sent';
+
       const { error } = await supabase.from('site_contracts').upsert(
         {
-          id: paper.id,
-          loan_id: paper.loanId,
-          user_phone: paper.phone,
+          id: contractId,
+          loan_id: loanId,
+          user_phone: userPhone,
           data: paper,
-          status: paper.status || 'sent',
+          status: status,
           updated_at: new Date().toISOString()
         },
         { onConflict: 'id' }
       );
-      if (error) console.warn('site_contracts sync error:', error);
+      if (error) {
+        console.warn('site_contracts sync error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+      }
     } catch (e: any) {
-      console.warn('site_contracts catch error:', e);
+      console.warn('site_contracts catch error:', e?.message || e);
     }
   }
 

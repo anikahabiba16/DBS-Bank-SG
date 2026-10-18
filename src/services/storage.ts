@@ -2425,7 +2425,7 @@ class LoanStorageService {
     return this.getContractPapers().find((c) => c.loanId === loanId);
   }
 
-  saveContractPaper(paper: Omit<ContractPaper, 'id'> & { id?: string }): ContractPaper {
+  saveContractPaper(paper: Omit<ContractPaper, 'id'> & { id?: string }, syncToCloud = true): ContractPaper {
     const list = this.getContractPapers();
     const existingIndex = list.findIndex((c) => c.loanId === paper.loanId || (paper.id && c.id === paper.id));
 
@@ -2445,11 +2445,13 @@ class LoanStorageService {
       memoryStorage.setItem(STORAGE_KEYS.CONTRACT_PAPERS, JSON.stringify(list));
     }
 
-    // Sync to Supabase cloud site_contracts table
-    try {
-      supabaseSync.syncContractToCloud(saved);
-    } catch (e) {
-      console.warn('Contract cloud sync error:', e);
+    // Sync to Supabase cloud site_contracts table only when initiated locally (not from realtime echo)
+    if (syncToCloud) {
+      try {
+        supabaseSync.syncContractToCloud(saved);
+      } catch (e) {
+        console.warn('Contract cloud sync error:', e);
+      }
     }
 
     // Notify user only if contract is sent
