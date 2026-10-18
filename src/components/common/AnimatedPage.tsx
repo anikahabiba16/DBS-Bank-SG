@@ -8,8 +8,7 @@ import { useLocation } from 'react-router-dom';
  * on every route change. Uses a progress bar + logo + tagline.
  */
 
-const LOGO_URL =
-  'https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png';
+const LOGO_URL = '/images/logo/logo-128.png';
 
 // Route-based contextual messages
 const routeMessages: Record<string, { title: string; sub: string }> = {

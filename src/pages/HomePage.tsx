@@ -691,9 +691,9 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="p-8 sm:p-10 rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-card to-primary/5 shadow-xl shadow-primary/5 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left relative overflow-hidden">
             <div className="space-y-2.5 max-w-xl">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-foreground tracking-tight">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-foreground tracking-tight">
                 কোনো বিষয়ে সাহায্য বা পরামর্শ প্রয়োজন?
-              </h3>
+              </h2>
               <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                 আমাদের বিশেষজ্ঞ লোন অফিসাররা সপ্তাহের ৬ দিন সকাল ৯টা থেকে সন্ধ্যা ৬টা পর্যন্ত আপনার সেবায় নিয়োজিত।
               </p>

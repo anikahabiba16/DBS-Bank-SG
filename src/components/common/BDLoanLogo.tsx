@@ -28,9 +28,13 @@ export const BDLoanLogo: React.FC<BDLoanLogoProps> = ({
         className={`${iconSizeClasses} shrink-0 overflow-hidden bg-white shadow-md shadow-primary/20 border border-slate-200 flex items-center justify-center p-0.5`}
       >
         <img
-          src="https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png"
+          src="/images/logo/logo-64.png"
           alt="DBS Bank SG Logo"
+          width="48"
+          height="48"
           className="w-full h-full object-contain"
+          loading="eager"
+          decoding="async"
         />
       </div>
 

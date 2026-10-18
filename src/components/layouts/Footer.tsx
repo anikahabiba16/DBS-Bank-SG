@@ -36,7 +36,7 @@ export const Footer: React.FC = () => {
                 <ShieldCheck className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h5 className="text-xs font-bold text-foreground">২৫৬-বিট এনক্রিপশন</h5>
+                <h3 className="text-xs font-bold text-foreground">২৫৬-বিট এনক্রিপশন</h3>
                 <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">১০০% সুরক্ষিত ব্যাংকিং ডাটা</p>
               </div>
             </div>
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
-                <h5 className="text-xs font-bold text-foreground">স্বচ্ছ ও বৈধ ঋণ সেবা</h5>
+                <h3 className="text-xs font-bold text-foreground">স্বচ্ছ ও বৈধ ঋণ সেবা</h3>
                 <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">কোনো লুকানো বা অতিরিক্ত ফি নেই</p>
               </div>
             </div>
@@ -56,7 +56,7 @@ export const Footer: React.FC = () => {
                 <Headphones className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <h5 className="text-xs font-bold text-foreground">২৪/৭ অনলাইন সহায়তা</h5>
+                <h3 className="text-xs font-bold text-foreground">২৪/৭ অনলাইন সহায়তা</h3>
                 <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">বিশেষজ্ঞ লোন অফিসার সাপোর্ট</p>
               </div>
             </div>
@@ -66,7 +66,7 @@ export const Footer: React.FC = () => {
                 <Building2 className="w-5 h-5 text-sky-600" />
               </div>
               <div>
-                <h5 className="text-xs font-bold text-foreground">তফসিলি ব্যাংক নেটওয়ার্ক</h5>
+                <h3 className="text-xs font-bold text-foreground">তফসিলি ব্যাংক নেটওয়ার্ক</h3>
                 <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">সরাসরি ব্যাংক একাউন্টে ট্রান্সফার</p>
               </div>
             </div>
@@ -98,10 +98,10 @@ export const Footer: React.FC = () => {
 
           {/* Quick Links (Col span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
               প্রয়োজনীয় সার্ভিস
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               <li>
                 <Link to="/calculator" className="hover:text-primary transition-colors flex items-center justify-between group py-1">
@@ -138,10 +138,10 @@ export const Footer: React.FC = () => {
 
           {/* Loan Packages (Col span 2) */}
           <div className="lg:col-span-2 space-y-4">
-            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               ঋণ স্কিমসমূহ
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               {packages.slice(0, 5).map((pkg) => (
                 <li key={pkg.id}>
@@ -159,10 +159,10 @@ export const Footer: React.FC = () => {
 
           {/* Contact Details (Col span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider font-serif flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-amber-500" />
               যোগাযোগ ও সহায়তা
-            </h4>
+            </h3>
             <ul className="space-y-3 text-xs text-muted-foreground">
               <li className="flex items-start gap-2.5">
                 <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">

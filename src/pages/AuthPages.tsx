@@ -164,7 +164,7 @@ export const LoginPage: React.FC = () => {
 
   // প্ল্যাটফর্মের নাম ও লোগো
   const platformTitle = settings.companyNameBn || settings.platformName || 'DBS Bank SG';
-  const userPortalLogo = settings.userPortalLogoUrl || "https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png";
+  const userPortalLogo = settings.userPortalLogoUrl || "/images/logo/logo-128.png";
   const bgLogo = settings.loginBackgroundLogoUrl || userPortalLogo;
 
   return (
@@ -176,12 +176,14 @@ export const LoginPage: React.FC = () => {
           aria-hidden="true"
         >
           <img
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop"
-            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=768&auto=format&fit=crop 768w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop 1920w"
-            sizes="100vw"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1280&auto=format&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=640&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1080&auto=format&fit=crop 1080w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1280&auto=format&fit=crop 1280w"
+            sizes="(max-width: 768px) 100vw, 1280px"
             alt="DBS Bank Singapore Financial District"
             fetchPriority="high"
             decoding="async"
+            width="1280"
+            height="853"
             className="w-full h-full object-cover object-center filter brightness-[0.97] contrast-[1.05] scale-100 transform"
           />
           {/* Crystal Clear Light Overlay with Soft Cool Slate & Ocean Glass Tint */}
@@ -200,6 +202,8 @@ export const LoginPage: React.FC = () => {
               <img
                 src={userPortalLogo}
                 alt={`${platformTitle} Logo`}
+                width="64"
+                height="64"
                 className="w-full h-full object-contain"
               />
             </div>

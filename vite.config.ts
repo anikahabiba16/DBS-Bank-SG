@@ -28,4 +28,25 @@ export default defineConfig({
       "react/jsx-dev-runtime",
     ],
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("html2canvas")) {
+            return "vendor-html2canvas";
+          }
+          if (id.includes("@supabase")) {
+            return "vendor-supabase";
+          }
+          if (id.includes("lucide-react")) {
+            return "vendor-lucide";
+          }
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router")) {
+            return "vendor-react";
+          }
+        },
+      },
+    },
+  },
 });

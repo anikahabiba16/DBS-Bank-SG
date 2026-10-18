@@ -1,0 +1,11 @@
+# DBS Bank SG - AI & LLM Site Guide
+
+> DBS Bank SG (ডিজিটাল ব্যাংকিং ও লোন সেবা) - Official digital personal and business loan service platform in Bangladesh.
+
+## Core Features
+- [Home Page](https://dbs-bank-sg.vercel.app/): Overview of loan services, transparent rates, EMI estimates.
+- [Loan Packages](https://dbs-bank-sg.vercel.app/packages): Personal loans, SME business loans, agricultural loans, and urgent loans.
+- [EMI Loan Calculator](https://dbs-bank-sg.vercel.app/calculator): Calculate accurate monthly installments and duration.
+- [Apply Online](https://dbs-bank-sg.vercel.app/apply): Fast 5-minute online loan application form.
+- [Track Status](https://dbs-bank-sg.vercel.app/track): Real-time application tracking using mobile number or application ID.
+- [Customer Login](https://dbs-bank-sg.vercel.app/login): Access customer digital wallet and profile.

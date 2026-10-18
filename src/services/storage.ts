@@ -117,12 +117,12 @@ const DEFAULT_SITE_SETTINGS: SiteSettings = {
   videoGuideUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   videoDownloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   videoThumbnail: 'https://images.unsplash.com/photo-1556742049-0a67c555356b?w=800&auto=format&fit=crop&q=80',
-  loginBackgroundLogoUrl: 'https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png',
+  loginBackgroundLogoUrl: '/images/logo/logo-192.png',
   // Dynamic Logo & Theme Customization Defaults
   adminSidebarLogoUrl: '',
   adminSidebarLogoText: 'সহজ',
-  userPortalLogoUrl: 'https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png',
-  adminLoginLogoUrl: 'https://miaoda-conversation-file.s3cdn.medo.dev/user-f41zuf58vw1s/app-f421pi7auvb5/20261015/image_1792085759107.png',
+  userPortalLogoUrl: '/images/logo/logo-128.png',
+  adminLoginLogoUrl: '/images/logo/logo-128.png',
   adminLoginTheme: 'dark_navy',
   adminLoginWallpaperUrl: ''
 };
