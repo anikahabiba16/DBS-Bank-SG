@@ -182,7 +182,30 @@ export const AdminDashboardPage: React.FC = () => {
       }
     });
 
-    return Array.from(map.values()).reverse();
+    // Helper to calculate sort timestamp (newest first)
+    const getSortTimestamp = (item: any): number => {
+      if (item.registeredAt && item.registeredAt !== 'সম্প্রতি' && item.registeredAt !== 'আজ') {
+        const parsed = Date.parse(item.registeredAt);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+      if (item.user?.registeredAt) {
+        const parsed = Date.parse(item.user.registeredAt);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+      const match = (item.id || '').match(/(\d{10,14})/);
+      if (match) {
+        const parsed = parseInt(match[1], 10);
+        if (!isNaN(parsed) && parsed > 1000000000000) return parsed;
+      }
+      return 0;
+    };
+
+    return Array.from(map.values()).sort((a, b) => {
+      const timeA = getSortTimestamp(a);
+      const timeB = getSortTimestamp(b);
+      if (timeB !== timeA) return timeB - timeA;
+      return (b.id || '').localeCompare(a.id || '');
+    });
   }, [users, applications]);
 
   const scopedUsers = assignedCustomerIds !== null

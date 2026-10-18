@@ -73,7 +73,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     logoutAdmin,
     withdrawals,
     depositRequests,
-    users
+    users,
+    refreshUsers,
+    refreshApplications
   } = useLoan();
 
   const location = useLocation();
@@ -216,6 +218,41 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       unsub();
     };
   }, [isAdmin, adminRole, currentSubAdmin]);
+
+  // Real-time synchronization for customer registrations and applications in sidebar
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    // Refresh immediately on mount
+    refreshUsers();
+    refreshApplications();
+
+    const handleDataChange = () => {
+      refreshUsers();
+      refreshApplications();
+    };
+
+    window.addEventListener('loan_user_registered', handleDataChange);
+    window.addEventListener('loan_data_updated', handleDataChange);
+    window.addEventListener('storage', handleDataChange);
+    window.addEventListener('users_updated', handleDataChange);
+    window.addEventListener('applications_updated', handleDataChange);
+
+    // Also periodic poll every 15s to catch cloud background syncs
+    const pollInterval = setInterval(() => {
+      refreshUsers();
+      refreshApplications();
+    }, 15000);
+
+    return () => {
+      window.removeEventListener('loan_user_registered', handleDataChange);
+      window.removeEventListener('loan_data_updated', handleDataChange);
+      window.removeEventListener('storage', handleDataChange);
+      window.removeEventListener('users_updated', handleDataChange);
+      window.removeEventListener('applications_updated', handleDataChange);
+      clearInterval(pollInterval);
+    };
+  }, [isAdmin, refreshUsers, refreshApplications]);
 
   // Fully dynamic customer account count matching unified customer logic
   const totalCustomersCount = React.useMemo(() => {
