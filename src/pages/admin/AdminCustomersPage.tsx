@@ -57,7 +57,8 @@ import {
   List,
   RefreshCw,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Scale
 } from 'lucide-react';
 import { CustomerDocumentInspectorModal } from '@/components/common/CustomerDocumentInspectorModal';
 import { toast } from 'sonner';
@@ -647,6 +648,19 @@ export const AdminCustomersPage: React.FC = () => {
       setAccountModalOpen(false);
     } else {
       toast.error('অ্যাকাউন্ট তথ্য আপডেট করা সম্ভব হয়নি');
+    }
+  };
+
+  const handleToggleAgreementAccess = (c: CustomerListItem) => {
+    const nextState = !c.canViewLoanAgreement;
+    const res = updateCustomerAccount(c.id || c.phone, { canViewLoanAgreement: nextState });
+    if (res) {
+      if (nextState) {
+        toast.success(`গ্রাহক "${c.name}"-কে চুক্তিপত্র দেখার অনুমতি দেওয়া হয়েছে!`);
+      } else {
+        toast.info(`গ্রাহক "${c.name}"-এর চুক্তিপত্র দেখার অনুমতি প্রত্যাহার করা হয়েছে!`);
+      }
+      refreshUsers();
     }
   };
 
@@ -1465,6 +1479,21 @@ export const AdminCustomersPage: React.FC = () => {
                             <FileText className="w-3.5 h-3.5" />
                             <span>কাগজপত্র ({toBengaliNumber(c.documents.length)})</span>
                           </Button>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleAgreementAccess(c)}
+                            className={`h-8 text-xs gap-1 font-semibold ${
+                              c.canViewLoanAgreement
+                                ? 'border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                                : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                            }`}
+                            title={c.canViewLoanAgreement ? 'চুক্তিপত্র অ্যাক্সেস চালু রয়েছে (ক্লিক করে বন্ধ করুন)' : 'চুক্তিপত্র অ্যাক্সেস বন্ধ রয়েছে (ক্লিক করে অনুমতি দিন)'}
+                          >
+                            <Scale className="w-3.5 h-3.5" />
+                            <span>চুক্তিপত্র: {c.canViewLoanAgreement ? 'অনুমোদিত ✓' : 'বন্ধ ✕'}</span>
+                          </Button>
                         </div>
 
                         <div className="flex items-center gap-1.5 ml-auto">
@@ -1706,6 +1735,20 @@ export const AdminCustomersPage: React.FC = () => {
                                 title="কাগজপত্র দেখুন"
                               >
                                 <FileText className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleToggleAgreementAccess(c)}
+                                className={`h-7 px-2 text-[10px] font-bold ${
+                                  c.canViewLoanAgreement
+                                    ? 'border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                                    : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                                }`}
+                                title={c.canViewLoanAgreement ? 'চুক্তিপত্র পেপার অ্যাক্সেস চালু রয়েছে (ক্লিক করে বন্ধ করুন)' : 'চুক্তিপত্র পেপার অ্যাক্সেস বন্ধ রয়েছে (ক্লিক করে অনুমতি দিন)'}
+                              >
+                                <Scale className="w-3 h-3 mr-1" />
+                                {c.canViewLoanAgreement ? 'অনুমোদিত' : 'চুক্তিপত্র'}
                               </Button>
                               <Button
                                 variant="outline"

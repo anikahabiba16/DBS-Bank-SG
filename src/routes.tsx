@@ -58,7 +58,7 @@ export interface RouteConfig {
 const RootEntryRoute: React.FC = () => {
   const { currentUser } = useLoan();
   if (currentUser) {
-    return <HomePage />;
+    return <Navigate to="/dashboard" replace />;
   }
   return <LoginPage />;
 };

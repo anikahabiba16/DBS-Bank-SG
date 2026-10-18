@@ -1339,6 +1339,7 @@ class LoanStorageService {
         if (!u.bankAccountNumber || !u.bankAccountNumber.startsWith('1602') || u.bankAccountNumber.replace(/\D/g, '').length !== 16) {
           u.bankAccountNumber = generate16DigitBankAccountNumber(u.phone || u.id);
         }
+        u.canViewLoanAgreement = Boolean(u.canViewLoanAgreement);
         return u;
       });
     } catch (error) {
@@ -1418,6 +1419,7 @@ class LoanStorageService {
           if (!user.bankAccountNumber || !user.bankAccountNumber.startsWith('1602') || user.bankAccountNumber.replace(/\D/g, '').length !== 16) {
             user.bankAccountNumber = generate16DigitBankAccountNumber(user.phone || user.id);
           }
+          user.canViewLoanAgreement = Boolean(user.canViewLoanAgreement === true);
           byIdentity.set(key, user);
         }
       });
@@ -1584,6 +1586,7 @@ class LoanStorageService {
       walletBalance: 0,
       status: 'active',
       isActive: true,
+      canViewLoanAgreement: false,
       kycVerified: false,
       registeredAt: new Date().toISOString().split('T')[0]
     };
@@ -1649,9 +1652,12 @@ class LoanStorageService {
       return localRes;
     }
 
-    // 2. Not found locally, attempt to fetch from Supabase Cloud
+    // 2. Not found locally, attempt to fetch from Supabase Cloud with a fast 1.5-second timeout
     try {
-      const cloudUser = await supabaseSync.findUserByPhoneInCloud(phone);
+      const cloudLookupPromise = supabaseSync.findUserByPhoneInCloud(phone);
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500));
+      const cloudUser = await Promise.race([cloudLookupPromise, timeoutPromise]);
+
       if (cloudUser) {
         // Save and merge user locally
         this.mergeUserFromCloud(cloudUser, false);
@@ -1694,7 +1700,8 @@ class LoanStorageService {
           try {
             const user = JSON.parse(raw) as CustomerUser;
             if (user && !isDummyRecord(user)) {
-              memoryStorage.setItem(STORAGE_KEYS.CURRENT_USER, raw);
+              user.canViewLoanAgreement = Boolean(user.canViewLoanAgreement);
+              memoryStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
               return user;
             }
           } catch {}
@@ -3164,6 +3171,7 @@ class LoanStorageService {
       avatarUrl?: string;
       profileImage?: string;
       boundWithdrawalAccounts?: Record<string, any>;
+      canViewLoanAgreement?: boolean;
     }
   ): CustomerUser | null {
     const users = this.getUsers();

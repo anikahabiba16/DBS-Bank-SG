@@ -342,7 +342,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           withdrawalCondition: cur.withdrawalCondition,
           virtualCard: cur.virtualCard,
           isActive: cur.isActive,
-          name: cur.name
+          name: cur.name,
+          canViewLoanAgreement: Boolean(cur.canViewLoanAgreement)
         });
         const refSerialized = JSON.stringify({
           id: refreshedCur.id,
@@ -352,7 +353,8 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           withdrawalCondition: refreshedCur.withdrawalCondition,
           virtualCard: refreshedCur.virtualCard,
           isActive: refreshedCur.isActive,
-          name: refreshedCur.name
+          name: refreshedCur.name,
+          canViewLoanAgreement: Boolean(refreshedCur.canViewLoanAgreement)
         });
 
         if (curSerialized !== refSerialized) {

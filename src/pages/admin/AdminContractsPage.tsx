@@ -45,7 +45,9 @@ export const AdminContractsPage: React.FC = () => {
     deleteContractPaper, 
     applications, 
     users,
-    settings 
+    settings,
+    updateCustomerAccount,
+    refreshUsers
   } = useLoan();
 
   const [editorDialogOpen, setEditorDialogOpen] = useState(false);
@@ -407,6 +409,58 @@ export const AdminContractsPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Contract Paper Access Permission Control Banner */}
+        <div className="p-3.5 sm:p-4 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 border-2 border-blue-400 rounded-xl flex items-center justify-between flex-wrap gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-900 flex items-center justify-center shrink-0">
+              <Scale className="w-5 h-5 text-blue-700" />
+            </div>
+            <div>
+              <div className="font-extrabold text-foreground text-xs sm:text-sm flex items-center gap-2">
+                <span>গ্রাহক ড্যাশবোর্ড চুক্তিপত্র প্রদর্শনী নিয়ন্ত্রণ (Customer Agreement Access)</span>
+                <Badge className="bg-blue-600 text-white text-[10px] font-bold">সিকিউরিটি কন্ট্রোল</Badge>
+              </div>
+              <p className="text-muted-foreground text-[11px] mt-0.5">
+                বাই-ডিফল্ট কোনো গ্রাহকের ড্যাশবোর্ডে চুক্তিপত্র প্রদর্শিত হয় না। এখান থেকে আপনি চাইলে সকল গ্রাহককে একসাথে চুক্তিপত্র দেখার অনুমতি দিতে পারেন, অথবা গ্রাহক তালিকা থেকে নির্দিষ্ট কাউকে অনুমতি দিতে পারেন।
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 ml-auto sm:ml-0 flex-wrap">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const count = users.length;
+                users.forEach((c) => {
+                  updateCustomerAccount(c.id || c.phone, { canViewLoanAgreement: true });
+                });
+                toast.success(`সকল (${count} জন) গ্রাহককে চুক্তিপত্র দেখার অনুমতি প্রদান করা হয়েছে!`);
+                refreshUsers();
+              }}
+              className="text-xs font-bold text-blue-700 border-blue-300 hover:bg-blue-50 h-8"
+            >
+              ✓ সবাইকে অনুমতি দিন (Grant All)
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const count = users.length;
+                users.forEach((c) => {
+                  updateCustomerAccount(c.id || c.phone, { canViewLoanAgreement: false });
+                });
+                toast.info(`সকল (${count} জন) গ্রাহকের চুক্তিপত্র দেখার অনুমতি বন্ধ করা হয়েছে!`);
+                refreshUsers();
+              }}
+              className="text-xs font-bold text-slate-700 border-slate-300 hover:bg-slate-100 h-8"
+            >
+              ✕ সবার অনুমতি বন্ধ করুন (Revoke All)
+            </Button>
+          </div>
         </div>
 
         {/* Contract Papers Cards Grid */}

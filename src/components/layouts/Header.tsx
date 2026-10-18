@@ -149,16 +149,21 @@ export const Header: React.FC = () => {
           </button>
 
           {currentUser ? (
-            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Link
                 to="/dashboard"
-                className="flex items-center gap-1 px-2 py-0.5 md:py-1 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors"
-                title="ওয়ালেট ব্যালেন্স"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-500/25 border border-emerald-400/40 hover:scale-105 active:scale-95 transition-all group shrink-0"
+                title="ওয়ালেট ব্যালেন্স (ক্লিক করে ড্যাশবোর্ডে প্রবেশ করুন)"
               >
-                <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
-                <span className="text-[11px] sm:text-xs font-extrabold whitespace-nowrap">
-                  {formatTaka(currentUser.walletBalance || 0)}
-                </span>
+                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Wallet className="w-3 h-3 text-white" />
+                </div>
+                <div className="flex flex-col text-left leading-none">
+                  <span className="text-[9px] text-emerald-100 font-semibold uppercase tracking-wider">ওয়ালেট</span>
+                  <span className="text-xs sm:text-sm font-black whitespace-nowrap text-white font-mono drop-shadow-xs">
+                    {formatTaka(currentUser.walletBalance || 0)}
+                  </span>
+                </div>
               </Link>
 
               {/* Interactive Profile Dropdown */}
@@ -219,13 +224,15 @@ export const Header: React.FC = () => {
               </DropdownMenu>
             </div>
           ) : (
-            <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Link
                 to="/dashboard"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all shadow-xs"
-                title="ড্যাশবোর্ডে প্রবেশ করুন"
+                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 border border-emerald-400/40 hover:scale-105 active:scale-95 shrink-0"
+                title="ড্যাশবোর্ড ও ওয়ালেটে প্রবেশ করুন"
               >
-                <Wallet className="w-3.5 h-3.5" />
+                <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Wallet className="w-2.5 h-2.5 text-white" />
+                </div>
                 <span>ড্যাশবোর্ড</span>
               </Link>
             </div>

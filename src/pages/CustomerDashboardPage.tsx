@@ -8,7 +8,8 @@ import {
   updateCustomerWithdrawalCondition, 
   format16DigitAccountNumber,
   updateCustomerProfileImage,
-  normalizePhone
+  normalizePhone,
+  loanStorage
 } from '@/services/storage';
 import { Installment, LoanApplication, PaymentChannel, ContractPaper } from '@/types/loan';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,7 @@ import { toast } from 'sonner';
 export const CustomerDashboardPage: React.FC = () => {
   const { 
     currentUser, 
+    users,
     applications, 
     getInstallmentsByLoanId, 
     payInstallment,
@@ -95,6 +97,18 @@ export const CustomerDashboardPage: React.FC = () => {
 
   const userPhone = currentUser?.phone || '';
   const userPhoneNorm = useMemo(() => normalizePhone(userPhone), [userPhone]);
+
+  // Find active customer record dynamically so administrative privilege toggles apply immediately
+  const activeUser = useMemo(() => {
+    if (!currentUser) return null;
+    const freshUsers = loanStorage.getUsers();
+    const fromFresh = freshUsers.find((u) => (currentUser.id && u.id === currentUser.id) || (userPhoneNorm && normalizePhone(u.phone) === userPhoneNorm));
+    if (fromFresh) return fromFresh;
+    const fromContext = users.find((u) => (currentUser.id && u.id === currentUser.id) || (userPhoneNorm && normalizePhone(u.phone) === userPhoneNorm));
+    return fromContext || currentUser;
+  }, [users, currentUser, userPhoneNorm]);
+
+  const canViewLoanAgreement = Boolean(activeUser?.canViewLoanAgreement === true);
   
   const userApplications = useMemo(() => {
     return applications.filter((a) => {
@@ -576,7 +590,7 @@ export const CustomerDashboardPage: React.FC = () => {
                     className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm h-11 px-4 shadow-lg shadow-emerald-950/60 rounded-xl flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.99] transition-all"
                   >
                     <ArrowDownCircle className="w-4 h-4 shrink-0 text-white" />
-                    <span>আমানত জমা</span>
+                    <span>জমা</span>
                   </Button>
                   <Button
                     onClick={() => {
@@ -626,7 +640,7 @@ export const CustomerDashboardPage: React.FC = () => {
                 className="flex-1 sm:flex-none h-9 px-4 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-1.5 shadow-xs"
               >
                 <ArrowDownCircle className="w-4 h-4" />
-                আমানত জমা (ডিপোজিট)
+                 জমা
               </Button>
               <Button
                 size="sm"
@@ -641,11 +655,7 @@ export const CustomerDashboardPage: React.FC = () => {
           </div>
 
           {/* Android Quick Services Grid */}
-          <div
-            className={`grid grid-cols-4 ${
-              currentUser?.canViewLoanAgreement ? 'sm:grid-cols-8' : 'sm:grid-cols-7'
-            } gap-2 pt-4 mt-3 border-t border-border/60`}
-          >
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 pt-4 mt-3 border-t border-border/60">
             <Link to="/apply" className="flex flex-col items-center text-center group p-1.5 rounded-xl hover:bg-muted/50 transition-colors">
               <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
                 <PlusCircle className="w-5 h-5" />
@@ -661,7 +671,7 @@ export const CustomerDashboardPage: React.FC = () => {
               <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
                 <ArrowDownCircle className="w-5 h-5" />
               </div>
-              <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">আমানত জমা</span>
+              <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">জমা</span>
             </button>
 
             <button
@@ -691,26 +701,6 @@ export const CustomerDashboardPage: React.FC = () => {
               </div>
               <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">স্ট্যাটাস ট্র্যাক</span>
             </Link>
-
-            {currentUser?.canViewLoanAgreement && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (contractPapers && contractPapers.length > 0) {
-                    setSelectedContract(contractPapers[0]);
-                    setContractModalOpen(true);
-                  } else {
-                    toast.info('আপনার কোনো সক্রিয় চুক্তিপত্র পাওয়া যায়নি');
-                  }
-                }}
-                className="flex flex-col items-center text-center group p-1.5 rounded-xl hover:bg-muted/50 transition-colors"
-              >
-                <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <span className="text-[11px] font-bold text-foreground mt-1.5 line-clamp-1">চুক্তিপত্র পেপার</span>
-              </button>
-            )}
 
             <button
               type="button"
@@ -764,7 +754,7 @@ export const CustomerDashboardPage: React.FC = () => {
           <div className="w-full">
             <TabsList
               className={`w-full h-auto p-1 bg-muted/80 rounded-xl grid ${
-                currentUser?.canViewLoanAgreement ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
+                canViewLoanAgreement ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
               } gap-1`}
             >
               <TabsTrigger
@@ -791,7 +781,7 @@ export const CustomerDashboardPage: React.FC = () => {
               >
                 লেটার সনদ (PDF)
               </TabsTrigger>
-              {currentUser?.canViewLoanAgreement && (
+              {canViewLoanAgreement && (
                 <TabsTrigger
                   value="contracts"
                   className="font-bold text-[11px] sm:text-xs md:text-sm py-2 px-1 text-center rounded-lg data-[state=active]:shadow-xs"
@@ -1311,7 +1301,7 @@ export const CustomerDashboardPage: React.FC = () => {
 
           {/* TAB 5: CONTRACT AGREEMENT PAPERS */}
           {/* TAB 5: OFFICIAL CONTRACTS (AGREEMENT PAPER) */}
-          {currentUser?.canViewLoanAgreement && (
+          {canViewLoanAgreement && (
             <TabsContent value="contracts" className="space-y-6">
               <Card className="border shadow-sm bg-card">
                 <CardHeader className="p-5 border-b">
