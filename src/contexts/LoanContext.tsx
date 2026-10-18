@@ -343,6 +343,7 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           virtualCard: cur.virtualCard,
           isActive: cur.isActive,
           name: cur.name,
+          avatarUrl: cur.avatarUrl || cur.profileImage || cur.photoUrl,
           canViewLoanAgreement: Boolean(cur.canViewLoanAgreement)
         });
         const refSerialized = JSON.stringify({
@@ -354,6 +355,7 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           virtualCard: refreshedCur.virtualCard,
           isActive: refreshedCur.isActive,
           name: refreshedCur.name,
+          avatarUrl: refreshedCur.avatarUrl || refreshedCur.profileImage || refreshedCur.photoUrl,
           canViewLoanAgreement: Boolean(refreshedCur.canViewLoanAgreement)
         });
 

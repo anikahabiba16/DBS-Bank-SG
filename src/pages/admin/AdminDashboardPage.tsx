@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLoan } from '@/contexts/LoanContext';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
-import { formatTaka, toBengaliNumber, normalizePhone } from '@/services/storage';
+import { formatTaka, toBengaliNumber, normalizePhone, loanStorage } from '@/services/storage';
+import { supabaseSync } from '@/services/supabaseSyncService';
 import { ApplicationStatus } from '@/types/loan';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,7 +28,51 @@ import {
 import { toast } from 'sonner';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { applications, packages, installments, updateApplicationStatus, users, adminRole, currentSubAdmin } = useLoan();
+  const { 
+    applications, 
+    packages, 
+    installments, 
+    updateApplicationStatus, 
+    users, 
+    adminRole, 
+    currentSubAdmin,
+    refreshApplications,
+    refreshUsers,
+    refreshInstallments
+  } = useLoan();
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Auto-refresh fresh local and cloud state on dashboard mount
+  React.useEffect(() => {
+    refreshApplications();
+    refreshUsers();
+    refreshInstallments();
+  }, [refreshApplications, refreshUsers, refreshInstallments]);
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      const [cloudApps, cloudUsers] = await Promise.all([
+        supabaseSync.fetchApplicationsFromCloud(),
+        supabaseSync.fetchUsersFromCloud()
+      ]);
+      if (cloudApps && cloudApps.length > 0) {
+        loanStorage.saveApplicationsFromCloud(cloudApps);
+      }
+      if (cloudUsers && cloudUsers.length > 0) {
+        loanStorage.saveUsersFromCloud(cloudUsers);
+      }
+      refreshApplications();
+      refreshUsers();
+      refreshInstallments();
+      toast.success('ক্লাউড থেকে সকল ডাটা সফলভাবে রিফ্রেশ হয়েছে!');
+    } catch {
+      toast.error('ক্লাউড সিঙ্ক করতে সমস্যা হয়েছে');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Scoped data for Sub-Admin isolation
   const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
@@ -42,13 +87,87 @@ export const AdminDashboardPage: React.FC = () => {
       )
     : applications;
 
+  // Unified registered customers (merges registered users and loan applicants)
+  const allRegisteredCustomers = React.useMemo(() => {
+    const map = new Map<string, any>();
+
+    // Index applications by normalized phone and userId
+    const appsByPhone = new Map<string, any[]>();
+    const appsByUserId = new Map<string, any[]>();
+    applications.forEach((app) => {
+      const pNorm = normalizePhone(app.phone);
+      if (pNorm) {
+        if (!appsByPhone.has(pNorm)) appsByPhone.set(pNorm, []);
+        appsByPhone.get(pNorm)!.push(app);
+      }
+      if (app.userId) {
+        if (!appsByUserId.has(app.userId)) appsByUserId.set(app.userId, []);
+        appsByUserId.get(app.userId)!.push(app);
+      }
+    });
+
+    // 1. Add all registered users
+    users.forEach((u) => {
+      const pNorm = normalizePhone(u.phone);
+      const matchedApps = [
+        ...(u.id && appsByUserId.has(u.id) ? appsByUserId.get(u.id)! : []),
+        ...(pNorm && appsByPhone.has(pNorm) ? appsByPhone.get(pNorm)! : [])
+      ];
+      const matchedApp = matchedApps[0];
+
+      map.set(u.id || u.phone, {
+        id: u.id || u.phone,
+        name: u.name || matchedApp?.applicantName || 'সম্মানিত গ্রাহক',
+        phone: u.phone,
+        password: u.password || 'Aa112233@',
+        walletBalance: u.walletBalance ?? (matchedApp?.status === 'disbursed' ? matchedApp.approvedAmount || matchedApp.loanAmount : 0),
+        boundWithdrawalAccounts: u.boundWithdrawalAccounts,
+        accountType: u.accountType,
+        registeredAt: u.registeredAt || matchedApp?.appliedDate || 'সম্প্রতি',
+        user: u
+      });
+    });
+
+    // 2. Add applicants who submitted applications so they also appear in live registered accounts
+    applications.forEach((app) => {
+      const pNorm = normalizePhone(app.phone);
+      let exists = false;
+      for (const item of map.values()) {
+        const itemNorm = normalizePhone(item.phone);
+        if (
+          (app.userId && item.id === app.userId) ||
+          (pNorm && itemNorm && itemNorm === pNorm)
+        ) {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        map.set(`applicant-${app.id}`, {
+          id: `applicant-${app.id}`,
+          name: app.applicantName,
+          phone: app.phone,
+          password: 'User@123456',
+          walletBalance: app.status === 'disbursed' ? app.approvedAmount || app.loanAmount : 0,
+          boundWithdrawalAccounts: undefined,
+          accountType: app.bankAccountNumber ? 'ব্যাংক' : 'বিকাশ',
+          registeredAt: app.appliedDate || 'সম্প্রতি',
+          user: null
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [users, applications]);
+
   const scopedUsers = assignedCustomerIds !== null
-    ? users.filter((u) =>
+    ? allRegisteredCustomers.filter((u) =>
         assignedCustomerIds.includes(u.id) ||
         assignedCustomerIds.includes(u.phone) ||
         assignedCustomerIds.includes(normalizePhone(u.phone))
       )
-    : users;
+    : allRegisteredCustomers;
 
   const totalApplications = scopedApplications.length;
   const pendingApps = scopedApplications.filter((a) => a.status === 'pending');
@@ -83,12 +202,24 @@ export const AdminDashboardPage: React.FC = () => {
       title="এডমিন ড্যাশবোর্ড"
       subtitle="লোন আবেদন, আর্থিক পরিসংখ্যান ও প্ল্যাটফর্ম নিয়ন্ত্রণের কেন্দ্রীয় সারসংক্ষেপ"
       actions={
-        <Link to="/admin/applications">
-          <Button size="sm" className="bg-foreground text-background hover:bg-accent hover:text-accent-foreground text-xs gap-1.5">
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>সকল আবেদন দেখুন</span>
+        <div className="flex items-center gap-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={handleManualSync}
+            disabled={isSyncing}
+            className="text-xs font-bold gap-1.5 h-8 bg-card shadow-xs"
+          >
+            <Clock className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'সিঙ্ক হচ্ছে...' : 'ডাটা রিফ্রেশ'}</span>
           </Button>
-        </Link>
+          <Link to="/admin/applications">
+            <Button size="sm" className="bg-foreground text-background hover:bg-accent hover:text-accent-foreground text-xs gap-1.5 h-8">
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>সকল আবেদন দেখুন</span>
+            </Button>
+          </Link>
+        </div>
       }
     >
       <div className="space-y-8">
@@ -236,7 +367,7 @@ export const AdminDashboardPage: React.FC = () => {
             <Link to="/admin/customers">
               <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold gap-1.5 shadow-sm">
                 <Users className="w-3.5 h-3.5" />
-                <span>সকল ইউজার অ্যাকাউন্ট দেখুন ({toBengaliNumber(users.length)} জন)</span>
+                <span>সকল ইউজার অ্যাকাউন্ট দেখুন ({toBengaliNumber(scopedUsers.length)} জন)</span>
               </Button>
             </Link>
           </div>
@@ -256,14 +387,14 @@ export const AdminDashboardPage: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.length === 0 ? (
+                  {scopedUsers.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
                         কোনো নিবন্ধিত গ্রাহক অ্যাকাউন্ট পাওয়া যায়নি। নতুন ইউজার রেজিস্ট্রেশন করলে এখানে তাৎক্ষণিক প্রদর্শিত হবে।
                       </TableCell>
                     </TableRow>
                   ) : (
-                    users.slice(0, 6).map((u) => {
+                    scopedUsers.slice(0, 6).map((u) => {
                       const boundMethods = [];
                       if (u.boundWithdrawalAccounts?.bKash) boundMethods.push('বিকাশ');
                       if (u.boundWithdrawalAccounts?.Nagad) boundMethods.push('নগদ');
@@ -354,38 +485,46 @@ export const AdminDashboardPage: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {applications.slice(0, 6).map((app) => (
-                    <TableRow key={app.id} className="hover:bg-muted/30">
-                      <TableCell className="whitespace-nowrap font-mono font-bold text-xs text-accent">
-                        {app.id}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-semibold text-xs">
-                        {app.applicantName}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
-                        {app.phone}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-xs">
-                        {app.packageName}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-mono font-bold text-xs">
-                        {formatTaka(app.loanAmount)}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
-                        {app.appliedDate}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {getStatusBadge(app.status)}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-right">
-                        <Link to={`/admin/applications?selected=${app.id}`}>
-                          <Button variant="outline" size="sm" className="h-7 text-xs">
-                            যাচাই করুন
-                          </Button>
-                        </Link>
+                  {scopedApplications.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-xs text-muted-foreground">
+                        কোনো লোন আবেদন পাওয়া যায়নি।
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    scopedApplications.slice(0, 6).map((app) => (
+                      <TableRow key={app.id} className="hover:bg-muted/30">
+                        <TableCell className="whitespace-nowrap font-mono font-bold text-xs text-accent">
+                          {app.id}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap font-semibold text-xs">
+                          {app.applicantName}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
+                          {app.phone}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">
+                          {app.packageName}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap font-mono font-bold text-xs">
+                          {formatTaka(app.loanAmount)}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
+                          {app.appliedDate}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {getStatusBadge(app.status)}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-right">
+                          <Link to={`/admin/applications?selected=${app.id}`}>
+                            <Button variant="outline" size="sm" className="h-7 text-xs">
+                              যাচাই করুন
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>

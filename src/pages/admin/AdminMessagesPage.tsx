@@ -768,7 +768,7 @@ export default function AdminMessagesPage() {
       title={language === 'bn' ? 'গ্রাহক মেসেজ হাব ও লাইভ সাপোর্ট' : 'Customer Message Hub & Live Support'}
       subtitle={language === 'bn' ? 'সরাসরি গ্রাহকদের সাথে টেক্সট ও ভয়েস বার্তা আদান-প্রদান করুন' : 'Real-time text and voice messaging with customers'}
     >
-      <div className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 h-[calc(100dvh-8rem)] md:h-[calc(100vh-10rem)]">
+      <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 md:gap-4 h-[calc(100dvh-5.5rem)] sm:h-[calc(100dvh-7rem)] md:h-[calc(100vh-10rem)] w-full">
         {/* Left Column: Customer Conversation List (Full width on mobile when mobileView === 'list') */}
         <div className={`md:col-span-5 lg:col-span-4 flex-col bg-card border border-border rounded-xl shadow-xs overflow-hidden h-full ${
           mobileView === 'chat' ? 'hidden md:flex' : 'flex'
@@ -1179,7 +1179,7 @@ export default function AdminMessagesPage() {
               </div>
 
               {/* Reply Input Bar */}
-              <div className="p-3 border-t border-border bg-card">
+              <div className="p-2 sm:p-3 border-t border-border bg-card">
                 {isRecording ? (
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 bg-red-500/10 border border-red-500/30 p-2 sm:p-2.5 rounded-xl">
                     <div className="flex items-center gap-2 min-w-0">
@@ -1227,8 +1227,8 @@ export default function AdminMessagesPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-1.5 w-full">
-                    <form onSubmit={handleSendText} className="flex items-end gap-2">
+                  <div className="flex flex-col gap-1 sm:gap-1.5 w-full">
+                    <form onSubmit={handleSendText} className="flex items-center gap-1.5 sm:gap-2">
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -1245,7 +1245,7 @@ export default function AdminMessagesPage() {
                         onClick={() => fileInputRef.current?.click()}
                         disabled={sending || isUploadingImage}
                         title="ছবি পাঠান"
-                        className="h-10 w-10 shrink-0 text-emerald-600 border-emerald-500/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-xl"
+                        className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 text-emerald-600 border-emerald-500/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-xl"
                       >
                         <ImageIcon className="w-4 h-4" />
                       </Button>
@@ -1258,7 +1258,7 @@ export default function AdminMessagesPage() {
                         onClick={startRecording}
                         disabled={sending || isUploadingImage}
                         title="ভয়েস রেকর্ড করে পাঠান"
-                        className="h-10 w-10 shrink-0 text-primary border-primary/30 hover:bg-primary/10 rounded-xl"
+                        className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 text-primary border-primary/30 hover:bg-primary/10 rounded-xl"
                       >
                         <Mic className="w-4 h-4" />
                       </Button>
@@ -1288,17 +1288,17 @@ export default function AdminMessagesPage() {
                           placeholder={
                             isUploadingImage
                               ? 'ছবি আপলোড হচ্ছে...'
-                              : 'গ্রাহকের জন্য উত্তর লিখুন... (Shift + Enter দিয়ে নতুন লাইন তৈরি করুন)'
+                              : 'উত্তর লিখুন...'
                           }
                           disabled={sending || isUploadingImage}
-                          className="w-full min-h-[42px] max-h-[150px] py-2.5 px-3 rounded-xl text-xs sm:text-sm bg-background border border-input focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed transition-all shadow-2xs"
+                          className="w-full min-h-[38px] sm:min-h-[40px] max-h-[120px] sm:max-h-[150px] py-2 px-2.5 sm:px-3 rounded-xl text-xs sm:text-sm bg-background border border-input focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed transition-all shadow-2xs block"
                         />
                       </div>
 
                       <Button
                         type="submit"
                         disabled={sending || isUploadingImage || !textInput.trim()}
-                        className="h-10 px-4 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs shrink-0 flex items-center gap-1.5"
+                        className="h-9 w-9 sm:h-10 sm:w-auto px-0 sm:px-4 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs shrink-0 flex items-center justify-center gap-1.5"
                       >
                         <Send className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">উত্তর পাঠান</span>
@@ -1306,7 +1306,7 @@ export default function AdminMessagesPage() {
                     </form>
 
                     {/* Bottom Helper Bar: Add Line Break Button & Shortcut Hint */}
-                    <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
+                    <div className="flex items-center justify-between px-1 text-[10px] sm:text-[11px] text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
@@ -1322,16 +1322,16 @@ export default function AdminMessagesPage() {
                               }, 10);
                             }
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted/70 hover:bg-muted text-foreground/80 hover:text-primary transition-colors font-medium border border-border/60 text-[10px]"
+                          className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md bg-muted/70 hover:bg-muted text-foreground/80 hover:text-primary transition-colors font-medium border border-border/60 text-[9px] sm:text-[10px]"
                           title="লাইনের নিচে নতুন লাইন যোগ করুন"
                         >
-                          <span>↵ নতুন লাইন (New Line)</span>
+                          <span>↵ নতুন লাইন</span>
                         </button>
-                        <span className="hidden sm:inline text-[10px] text-muted-foreground/80">
+                        <span className="hidden md:inline text-[10px] text-muted-foreground/80">
                           টিপস: <strong>Shift + Enter</strong> চেপে নতুন লাইন লিখুন, <strong>Enter</strong> চাপলে পাঠানো হবে।
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono opacity-70">
+                      <span className="text-[9px] sm:text-[10px] font-mono opacity-70">
                         {textInput.length > 0 ? `${textInput.length} অক্ষর` : ''}
                       </span>
                     </div>

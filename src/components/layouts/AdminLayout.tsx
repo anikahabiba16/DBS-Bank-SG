@@ -47,7 +47,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { toBengaliNumber } from '@/services/storage';
+import { toBengaliNumber, normalizePhone, loanStorage } from '@/services/storage';
 import { subscribeToMessages, getTotalUnreadMessagesCount } from '@/services/customerMessagingService';
 
 interface AdminLayoutProps {
@@ -217,6 +217,36 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     };
   }, [isAdmin, adminRole, currentSubAdmin]);
 
+  // Fully dynamic customer account count matching unified customer logic
+  const totalCustomersCount = React.useMemo(() => {
+    if (adminRole === 'sub_admin' && currentSubAdmin) {
+      return (currentSubAdmin.assigned_customer_ids || []).length;
+    }
+    const customerMap = new Map<string, any>();
+    const effectiveUsers = (users && users.length > 0) ? users : loanStorage.getUsers();
+    const effectiveApps = (applications && applications.length > 0) ? applications : loanStorage.getApplications();
+
+    effectiveUsers.forEach((u) => {
+      customerMap.set(u.id || u.phone, true);
+    });
+
+    effectiveApps.forEach((app) => {
+      const appPhoneNorm = normalizePhone(app.phone);
+      let exists = false;
+      for (const key of customerMap.keys()) {
+        if (key === app.userId || normalizePhone(key) === appPhoneNorm) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        customerMap.set(`applicant-${app.id}`, true);
+      }
+    });
+
+    return customerMap.size;
+  }, [adminRole, currentSubAdmin, users, applications]);
+
   const adminNav = [
     {
       name: 'ড্যাশবোর্ড',
@@ -229,9 +259,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       name: 'গ্রাহক অ্যাকাউন্ট',
       path: '/admin/customers',
       icon: Users,
-      badge: adminRole === 'sub_admin' && currentSubAdmin
-        ? `${(currentSubAdmin.assigned_customer_ids || []).length}`
-        : `${users.length}`,
+      badge: totalCustomersCount > 0 ? `${totalCustomersCount}` : null,
       badgeVariant: 'default' as const,
       moduleKey: 'customers'
     },

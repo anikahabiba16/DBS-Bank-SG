@@ -206,6 +206,20 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-foreground;
   }
+
+  /* Global Modal Padding Consistency for Admin & Customer Dashboards */
+  [data-radix-dialog-content],
+  div[role="dialog"] > div[class*="fixed"] {
+    padding-left: 0.85rem !important;
+    padding-right: 2rem !important;
+  }
+  @media (min-width: 640px) {
+    [data-radix-dialog-content],
+    div[role="dialog"] > div[class*="fixed"] {
+      padding-left: 1rem !important;
+      padding-right: 2.25rem !important;
+    }
+  }
 }
 
 /* 
@@ -303,4 +317,44 @@ body[data-scroll-locked] {
 
 .animate-partner-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Global Modal Width and Equal Horizontal Padding Guarantee */
+[role="dialog"][data-state="open"],
+div[data-radix-portal] [role="dialog"],
+div[data-state="open"].fixed.z-50 {
+  padding-left: clamp(1.25rem, 3.5vw, 2rem) !important;
+  padding-right: clamp(1.25rem, 3.5vw, 2rem) !important;
+  box-sizing: border-box !important;
+}
+
+/* Make sure admin and form modals have generous comfortable width */
+div[data-radix-portal] [role="dialog"].max-w-md,
+div[data-radix-portal] [role="dialog"][class*="max-w-md"] {
+  max-width: min(calc(100vw - 2rem), 34rem) !important;
+}
+
+div[data-radix-portal] [role="dialog"].max-w-lg,
+div[data-radix-portal] [role="dialog"][class*="max-w-lg"] {
+  max-width: min(calc(100vw - 2rem), 42rem) !important;
+}
+
+div[data-radix-portal] [role="dialog"].max-w-xl,
+div[data-radix-portal] [role="dialog"][class*="max-w-xl"] {
+  max-width: min(calc(100vw - 2rem), 46rem) !important;
+}
+
+div[data-radix-portal] [role="dialog"].max-w-2xl,
+div[data-radix-portal] [role="dialog"][class*="max-w-2xl"] {
+  max-width: min(calc(100vw - 2rem), 52rem) !important;
+}
+
+div[data-radix-portal] [role="dialog"].max-w-3xl,
+div[data-radix-portal] [role="dialog"][class*="max-w-3xl"] {
+  max-width: min(calc(100vw - 2rem), 58rem) !important;
+}
+
+div[data-radix-portal] [role="dialog"].max-w-4xl,
+div[data-radix-portal] [role="dialog"][class*="max-w-4xl"] {
+  max-width: min(calc(100vw - 2rem), 66rem) !important;
 }

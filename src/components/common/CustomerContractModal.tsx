@@ -102,7 +102,7 @@ export const CustomerContractModal: React.FC<CustomerContractModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-3xl p-4 sm:p-6 bg-card rounded-2xl shadow-2xl border max-h-[88dvh] overflow-y-auto">
-        <DialogHeader className="text-left pb-3 border-b flex flex-row items-center justify-between">
+        <DialogHeader className="text-left pb-3 border-b flex flex-row items-center justify-between pr-4">
           <div>
             <DialogTitle className="text-base font-black text-foreground flex items-center gap-2">
               <Scale className="w-5 h-5 text-primary" />

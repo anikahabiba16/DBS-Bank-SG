@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useLoan } from '@/contexts/LoanContext';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { formatTaka, toBengaliNumber } from '@/services/storage';
-import { ContractPaper } from '@/types/loan';
+import { ContractPaper, LoanApplication, CustomerUser } from '@/types/loan';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,7 +32,13 @@ import {
   Loader2,
   ImageIcon,
   Send,
-  Clock
+  Clock,
+  Users,
+  Search,
+  UserCheck,
+  XCircle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { AuthenticStampContractDocument } from '@/components/common/AuthenticStampContractDocument';
 import { toast } from 'sonner';
@@ -53,6 +59,12 @@ export const AdminContractsPage: React.FC = () => {
   const [editorDialogOpen, setEditorDialogOpen] = useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<ContractPaper | null>(null);
+
+  // Customer Permission Modal State
+  const [permissionModalOpen, setPermissionModalOpen] = useState(false);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [permSearchTerm, setPermSearchTerm] = useState('');
+  const [permFilter, setPermFilter] = useState<'all' | 'permitted' | 'not_permitted'>('all');
 
   // Editor Form Fields
   const [contractId, setContractId] = useState<string | undefined>(undefined);
@@ -162,8 +174,8 @@ export const AdminContractsPage: React.FC = () => {
 
   // Auto-Fill Details from Selected Customer
   const handleSelectCustomer = (phoneOrId: string) => {
-    const user = users.find((u) => u.phone === phoneOrId || u.id === phoneOrId);
-    const loan = applications.find((a) => a.phone === phoneOrId || a.id === phoneOrId);
+    const user = users.find((u: CustomerUser) => u.phone === phoneOrId || u.id === phoneOrId);
+    const loan = applications.find((a: LoanApplication) => a.phone === phoneOrId || a.id === phoneOrId);
 
     const cName = user?.name || loan?.applicantName || '';
     const cPhone = user?.phone || loan?.phone || phoneOrId;
@@ -428,6 +440,19 @@ export const AdminContractsPage: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 ml-auto sm:ml-0 flex-wrap">
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={() => {
+                setSelectedUserIds([]);
+                setPermissionModalOpen(true);
+              }}
+              className="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white h-8 shadow-xs gap-1.5"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>নির্দিষ্ট গ্রাহক নির্বাচন ও অনুমতি</span>
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -976,6 +1001,302 @@ export const AdminContractsPage: React.FC = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Specific Customer Permission Control Modal */}
+      <Dialog open={permissionModalOpen} onOpenChange={setPermissionModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-4 sm:p-6 overflow-hidden">
+          <DialogHeader className="pb-3 border-b">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-base sm:text-lg font-bold">
+                  গ্রাহকভিত্তিক চুক্তিপত্র দেখার অনুমতি নিয়ন্ত্রণ
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                  নির্দিষ্ট একজন বা একাধিক গ্রাহক সিলেক্ট করে চুক্তিপত্র দেখার অনুমতি (Permission) দিন অথবা অনুমতি বাতিল (Undo) করুন।
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {/* Search and Filters */}
+          <div className="pt-3 pb-2 space-y-2.5">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="নাম বা মোবাইল নম্বর দিয়ে গ্রাহক খুঁজুন..."
+                value={permSearchTerm}
+                onChange={(e) => setPermSearchTerm(e.target.value)}
+                className="pl-9 h-9 text-xs"
+              />
+              {permSearchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setPermSearchTerm('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setPermFilter('all')}
+                  className={`px-2.5 py-1 rounded-md font-medium text-xs transition-colors ${
+                    permFilter === 'all'
+                      ? 'bg-background shadow-xs text-foreground font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  সকল ({users.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPermFilter('permitted')}
+                  className={`px-2.5 py-1 rounded-md font-medium text-xs transition-colors ${
+                    permFilter === 'permitted'
+                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  অনুমতিপ্রাপ্ত ({users.filter((u) => u.canViewLoanAgreement === true).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPermFilter('not_permitted')}
+                  className={`px-2.5 py-1 rounded-md font-medium text-xs transition-colors ${
+                    permFilter === 'not_permitted'
+                      ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  অনুমতিহীন ({users.filter((u) => !u.canViewLoanAgreement).length})
+                </button>
+              </div>
+
+              {/* Select All / Deselect All */}
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const filtered = users.filter((u) => {
+                      const matchesSearch =
+                        (u.name || '').toLowerCase().includes(permSearchTerm.toLowerCase()) ||
+                        (u.phone || '').includes(permSearchTerm);
+                      const matchesFilter =
+                        permFilter === 'all' ||
+                        (permFilter === 'permitted' && u.canViewLoanAgreement === true) ||
+                        (permFilter === 'not_permitted' && !u.canViewLoanAgreement);
+                      return matchesSearch && matchesFilter;
+                    });
+                    const allFilteredIds = filtered.map((u) => u.id || u.phone);
+                    const allSelected = allFilteredIds.every((id) => selectedUserIds.includes(id));
+                    if (allSelected) {
+                      setSelectedUserIds(selectedUserIds.filter((id) => !allFilteredIds.includes(id)));
+                    } else {
+                      const merged = Array.from(new Set([...selectedUserIds, ...allFilteredIds]));
+                      setSelectedUserIds(merged);
+                    }
+                  }}
+                  className="h-7 text-xs font-semibold px-2 text-primary"
+                >
+                  {users.length > 0 && selectedUserIds.length > 0 ? 'সব আনসিলেক্ট করুন' : 'সব সিলেক্ট করুন'}
+                </Button>
+                {selectedUserIds.length > 0 && (
+                  <Badge variant="secondary" className="text-[11px] font-bold">
+                    {toBengaliNumber(selectedUserIds.length)} জন নির্বাচিত
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* User List Scroll Area */}
+          <div className="flex-1 overflow-y-auto border rounded-xl divide-y bg-card min-h-[240px] max-h-[380px]">
+            {(() => {
+              const filteredUsers = users.filter((u) => {
+                const matchesSearch =
+                  (u.name || '').toLowerCase().includes(permSearchTerm.toLowerCase()) ||
+                  (u.phone || '').includes(permSearchTerm);
+                const matchesFilter =
+                  permFilter === 'all' ||
+                  (permFilter === 'permitted' && u.canViewLoanAgreement === true) ||
+                  (permFilter === 'not_permitted' && !u.canViewLoanAgreement);
+                return matchesSearch && matchesFilter;
+              });
+
+              if (filteredUsers.length === 0) {
+                return (
+                  <div className="p-8 text-center text-muted-foreground text-xs">
+                    কোনো গ্রাহক পাওয়া যায়নি।
+                  </div>
+                );
+              }
+
+              return filteredUsers.map((user) => {
+                const userKey = user.id || user.phone;
+                const isSelected = selectedUserIds.includes(userKey);
+                const isPermitted = user.canViewLoanAgreement === true;
+
+                return (
+                  <div
+                    key={userKey}
+                    className={`p-3 flex items-center justify-between gap-3 transition-colors hover:bg-muted/40 cursor-pointer ${
+                      isSelected ? 'bg-blue-50/70 dark:bg-blue-950/20' : ''
+                    }`}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedUserIds(selectedUserIds.filter((id) => id !== userKey));
+                      } else {
+                        setSelectedUserIds([...selectedUserIds, userKey]);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}} // Controlled by outer div onClick
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        aria-label={`Select ${user.name || user.phone}`}
+                      />
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        {(user.name || user.phone || 'U').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-xs sm:text-sm text-foreground truncate">
+                          {user.name || 'নাম নেই'}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+                          <span>{user.phone}</span>
+                          {user.nidNumber && (
+                            <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                              NID: {user.nidNumber}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {isPermitted ? (
+                        <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-semibold gap-1">
+                          <Eye className="w-3 h-3" />
+                          <span>অনুমতি চালু</span>
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-slate-500 text-[10px] font-medium gap-1">
+                          <EyeOff className="w-3 h-3" />
+                          <span>অনুমতি বন্ধ</span>
+                        </Badge>
+                      )}
+
+                      {/* Quick Individual Toggle */}
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={isPermitted ? "ghost" : "outline"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newStatus = !isPermitted;
+                          updateCustomerAccount(userKey, { canViewLoanAgreement: newStatus });
+                          toast.success(
+                            `${user.name || user.phone}-এর চুক্তিপত্র দেখার অনুমতি ${
+                              newStatus ? 'চালু করা হয়েছে' : 'বন্ধ করা হয়েছে'
+                            }!`
+                          );
+                          refreshUsers();
+                        }}
+                        className={`h-7 px-2 text-[11px] font-bold ${
+                          isPermitted
+                            ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-700'
+                            : 'text-emerald-700 border-emerald-300 hover:bg-emerald-50'
+                        }`}
+                      >
+                        {isPermitted ? 'বন্ধ করুন' : 'অনুমতি দিন'}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+
+          {/* Batch Actions Footer */}
+          <div className="pt-3 border-t mt-3 flex items-center justify-between flex-wrap gap-2">
+            <div className="text-xs text-muted-foreground">
+              {selectedUserIds.length > 0 ? (
+                <span className="font-semibold text-foreground">
+                  {toBengaliNumber(selectedUserIds.length)} জন গ্রাহক নির্বাচিত
+                </span>
+              ) : (
+                <span>উপরে চেকবক্সে এক বা একাধিক গ্রাহক নির্বাচন করুন</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPermissionModalOpen(false)}
+                className="h-8 text-xs"
+              >
+                বন্ধ করুন
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={selectedUserIds.length === 0}
+                onClick={() => {
+                  if (selectedUserIds.length === 0) return;
+                  selectedUserIds.forEach((id) => {
+                    updateCustomerAccount(id, { canViewLoanAgreement: false });
+                  });
+                  toast.info(
+                    `নির্বাচিত ${selectedUserIds.length} জন গ্রাহকের চুক্তিপত্র দেখার অনুমতি বন্ধ করা হয়েছে!`
+                  );
+                  refreshUsers();
+                  setSelectedUserIds([]);
+                }}
+                className="h-8 text-xs font-bold text-rose-700 border-rose-300 hover:bg-rose-50 disabled:opacity-50"
+              >
+                ✕ নির্বাচিতদের অনুমতি বন্ধ (Undo)
+              </Button>
+
+              <Button
+                type="button"
+                size="sm"
+                disabled={selectedUserIds.length === 0}
+                onClick={() => {
+                  if (selectedUserIds.length === 0) return;
+                  selectedUserIds.forEach((id) => {
+                    updateCustomerAccount(id, { canViewLoanAgreement: true });
+                  });
+                  toast.success(
+                    `নির্বাচিত ${selectedUserIds.length} জন গ্রাহককে চুক্তিপত্র দেখার অনুমতি দেওয়া হয়েছে!`
+                  );
+                  refreshUsers();
+                  setSelectedUserIds([]);
+                }}
+                className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+              >
+                ✓ নির্বাচিতদের অনুমতি দিন (Grant)
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>

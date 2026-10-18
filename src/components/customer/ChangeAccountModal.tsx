@@ -183,7 +183,7 @@ export const ChangeAccountModal: React.FC<ChangeAccountModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-xl p-4 sm:p-6 bg-card max-h-[88dvh] overflow-y-auto rounded-2xl shadow-2xl">
-        <DialogHeader className="text-left pb-2 border-b">
+        <DialogHeader className="text-left pb-2 border-b pr-4">
           <DialogTitle className="text-lg font-bold flex items-center gap-2 text-foreground">
             <CreditCard className="w-5 h-5 text-primary" />
             উইথড্রয়াল অ্যাকাউন্ট ও ওয়ালেট ব্যবস্থাপনা

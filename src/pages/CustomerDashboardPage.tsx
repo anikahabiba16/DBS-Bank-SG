@@ -151,15 +151,26 @@ export const CustomerDashboardPage: React.FC = () => {
     if (!file || !currentUser) return;
     if (file.size > 5 * 1024 * 1024) {
       toast.error('ছবির সাইজ সর্বোচ্চ ৫ মেগাবাইট হতে পারবে');
+      if (e.target) e.target.value = '';
       return;
     }
     const reader = new FileReader();
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string;
       if (dataUrl) {
-        updateCustomerProfileImage(currentUser.phone || currentUser.id, dataUrl);
+        const userIdentifier = currentUser.phone || currentUser.id;
+        updateCustomerProfileImage(userIdentifier, dataUrl);
         refreshUsers();
         toast.success('প্রোফাইল ছবি সফলভাবে আপডেট করা হয়েছে!');
+      }
+      if (profileInputRef.current) {
+        profileInputRef.current.value = '';
+      }
+    };
+    reader.onerror = () => {
+      toast.error('ছবি লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      if (profileInputRef.current) {
+        profileInputRef.current.value = '';
       }
     };
     reader.readAsDataURL(file);
@@ -449,10 +460,10 @@ export const CustomerDashboardPage: React.FC = () => {
                 title="গ্যালারি থেকে প্রোফাইল ছবি পরিবর্তন করতে ক্লিক করুন"
               >
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 border-2 border-primary/20 overflow-hidden flex items-center justify-center font-bold text-xl relative shadow-xs">
-                  {currentUser?.profileImage || currentUser?.avatarUrl || currentUser?.photoUrl ? (
+                  {activeUser?.profileImage || activeUser?.avatarUrl || activeUser?.photoUrl || currentUser?.profileImage || currentUser?.avatarUrl || currentUser?.photoUrl ? (
                     <img
-                      src={currentUser.profileImage || currentUser.avatarUrl || currentUser.photoUrl}
-                      alt={currentUser.name}
+                      src={activeUser?.profileImage || activeUser?.avatarUrl || activeUser?.photoUrl || currentUser?.profileImage || currentUser?.avatarUrl || currentUser?.photoUrl}
+                      alt={activeUser?.name || currentUser?.name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -1400,7 +1411,7 @@ export const CustomerDashboardPage: React.FC = () => {
       {/* WITHDRAWAL DIALOG WITH CONDITIONAL NOTICE & FEE - Mobile Optimized */}
       <Dialog open={withdrawModalOpen} onOpenChange={setWithdrawModalOpen}>
         <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-md p-4 sm:p-6 bg-card max-h-[90dvh] flex flex-col rounded-2xl shadow-2xl overflow-hidden">
-          <DialogHeader className="text-left pb-2 border-b shrink-0">
+          <DialogHeader className="text-left pb-2 border-b shrink-0 pr-4">
             <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
               <ArrowDownToLine className="w-5 h-5 text-emerald-600 shrink-0" />
               <span>টাকা উইথড্র করুন (Withdraw Money)</span>
@@ -1410,7 +1421,7 @@ export const CustomerDashboardPage: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto flex-1 min-h-0 pr-1 pb-3 space-y-3.5 mt-2">
+          <div className="overflow-y-auto flex-1 min-h-0 pr-2.5 pb-3 space-y-3.5 mt-2">
           {/* Conditional Notice / Gating Warning Banner */}
           {isWithdrawalBlocked ? (
             <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-amber-50 to-amber-100 border-2 border-amber-500 space-y-3 shadow-md">

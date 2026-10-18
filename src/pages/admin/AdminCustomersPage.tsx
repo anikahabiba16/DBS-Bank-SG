@@ -276,17 +276,19 @@ export const AdminCustomersPage: React.FC = () => {
         }
       }
 
+      const primaryApp = userApps[0];
+
       customerMap.set(u.id, {
         id: u.id,
         userId: u.id,
-        name: u.name,
-        phone: u.phone,
-        email: u.email || `${u.phone}@client.com`,
-        nidNumber: u.nidNumber || 'প্রক্রিয়াধীন',
-        profession: u.profession || 'বেসরকারি চাকরিজীবী',
-        monthlyIncome: 45000,
-        address: u.address || 'ঢাকা, বাংলাদেশ',
-        registeredAt: userRegDate || '2025-01-01',
+        name: u.name || primaryApp?.applicantName || 'সম্মানিত গ্রাহক',
+        phone: u.phone || primaryApp?.phone || '',
+        email: u.email || primaryApp?.email || `${u.phone}@client.com`,
+        nidNumber: u.nidNumber || primaryApp?.nidNumber || 'প্রক্রিয়াধীন',
+        profession: u.profession || primaryApp?.profession || 'বেসরকারি চাকরিজীবী',
+        monthlyIncome: u.monthlyIncome || primaryApp?.monthlyIncome || 45000,
+        address: u.address || primaryApp?.presentAddress || 'ঢাকা, বাংলাদেশ',
+        registeredAt: userRegDate || primaryApp?.appliedDate || '2025-01-01',
         walletBalance: u.walletBalance || 0,
         kycVerified: u.kycVerified ?? true,
         totalApplications: userApps.length,
@@ -294,10 +296,10 @@ export const AdminCustomersPage: React.FC = () => {
         totalBorrowed,
         isRegisteredUser: true,
         isActive: u.isActive !== false,
-        accountType: u.accountType,
-        accountNumber: u.accountNumber,
-        accountHolderName: u.accountHolderName || u.name,
-        bankName: u.bankName,
+        accountType: u.accountType || (primaryApp?.bankAccountNumber ? 'Bank' : 'bKash'),
+        accountNumber: u.accountNumber || primaryApp?.bankAccountNumber || u.phone,
+        accountHolderName: u.accountHolderName || primaryApp?.applicantName || u.name,
+        bankName: u.bankName || primaryApp?.bankName,
         branchName: u.branchName,
         boundWithdrawalAccounts: u.boundWithdrawalAccounts,
         password: u.password || 'Aa112233@',
@@ -313,10 +315,10 @@ export const AdminCustomersPage: React.FC = () => {
       let isAlreadyInList = false;
 
       for (const existing of customerMap.values()) {
+        const existingNorm = normalizePhone(existing.phone);
         if (
           (app.userId && existing.userId === app.userId) ||
-          normalizePhone(existing.phone) === appPhoneNorm ||
-          existing.name.toLowerCase().trim() === app.applicantName.toLowerCase().trim()
+          (appPhoneNorm && existingNorm && existingNorm === appPhoneNorm)
         ) {
           isAlreadyInList = true;
           break;

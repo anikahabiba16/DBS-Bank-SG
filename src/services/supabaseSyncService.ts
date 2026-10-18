@@ -17,7 +17,7 @@ import {
 } from '@/types/loan';
 import { toast } from 'sonner';
 
-export const withQueryTimeout = <T>(promise: PromiseLike<T>, ms = 2500, fallback: any): Promise<T> => {
+export const withQueryTimeout = <T>(promise: PromiseLike<T>, ms = 7000, fallback: any): Promise<T> => {
   return Promise.race([
     Promise.resolve(promise),
     new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
