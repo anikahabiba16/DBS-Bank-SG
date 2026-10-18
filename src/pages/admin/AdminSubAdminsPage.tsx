@@ -348,36 +348,13 @@ export default function AdminSubAdminsPage() {
               <RotateCcw className="w-3.5 h-3.5" />
               <span>রিফ্রেশ</span>
             </Button>
-
-            <Button
-              type="button"
-              onClick={handleOpenAdd}
-              className="h-10 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-xs"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>+ নতুন সাব-এডমিন তৈরি করুন</span>
-            </Button>
           </div>
         </div>
 
-        {/* Sub-Admins Table */}
-        <Card className="border shadow-xs overflow-hidden">
-          <CardHeader className="bg-muted/30 border-b py-3 px-4 sm:px-6 flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-primary" />
-                নিবন্ধিত সাব-এডমিন তালিকা ও অ্যাক্সেস লেভেল
-              </CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
-                যেকোনো সাব-এডমিনের পারমিশন বা লাইভ চ্যাটের অ্যাসাইনকৃত গ্রাহক যে কোনো সময় পরিবর্তন করতে পারেন
-              </CardDescription>
-            </div>
-            <Badge variant="outline" className="text-xs bg-card">
-              মোট: {toBengaliNumber(filteredSubAdmins.length)} জন
-            </Badge>
-          </CardHeader>
-
-          <div className="w-full max-w-full overflow-x-auto bg-card">
+        {/* Sub-Admins Table Card */}
+        <Card className="border shadow-sm overflow-hidden bg-card">
+          {/* Desktop Table View */}
+          <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
             <Table className="w-full min-w-[950px] text-xs [&>div]:max-w-full">
               <TableHeader>
                 <TableRow className="bg-muted/40 font-bold text-xs">
@@ -492,6 +469,105 @@ export default function AdminSubAdminsPage() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Organized Card View (No Horizontal Scroll) */}
+          <div className="block md:hidden divide-y divide-border bg-card">
+            {filteredSubAdmins.length === 0 ? (
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                {loading ? 'লোড হচ্ছে...' : 'কোনো সাব-এডমিন পাওয়া যায়নি। উপরে "+ নতুন সাব-এডমিন তৈরি করুন" বাটনে ক্লিক করে যুক্ত করুন।'}
+              </div>
+            ) : (
+              filteredSubAdmins.map((sa) => (
+                <div key={sa.id} className="p-3.5 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-bold text-xs text-foreground">{sa.name}</div>
+                      {sa.phone && (
+                        <div className="text-[11px] text-muted-foreground font-mono flex items-center gap-1 mt-0.5">
+                          <Phone className="w-3 h-3" /> {sa.phone}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {sa.is_active ? (
+                        <Badge className="bg-emerald-600 text-white font-bold text-[10px]">সক্রিয়</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-red-700 bg-red-50 border-red-300 font-bold text-[10px]">নিষ্ক্রিয়</Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px] bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">ইউজারনেম:</span>
+                      <span className="font-mono font-bold text-primary">{sa.username}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">পাসওয়ার্ড:</span>
+                      <span className="font-mono font-semibold text-foreground">{sa.password || '••••••••'}</span>
+                    </div>
+                  </div>
+
+                  {/* Permissions */}
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-[10px] block font-semibold">অনুমোদিত মডিউল:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {sa.permissions.map((pk) => {
+                        const mod = ALL_ADMIN_MODULES.find((m) => m.key === pk);
+                        return (
+                          <Badge key={pk} variant="secondary" className="text-[10px] px-1.5 py-0 font-medium">
+                            {mod?.labelBn || pk}
+                          </Badge>
+                        );
+                      })}
+                      {sa.can_delete_messages && (
+                        <Badge className="bg-red-500/15 text-red-700 border border-red-300 font-bold text-[10px] gap-1">
+                          <Trash2 className="w-2.5 h-2.5" /> মেসেজ ডিলিট
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Customer Assignment Button & Actions */}
+                  <div className="pt-1 space-y-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenAssignCustomers(sa)}
+                      className="w-full h-8 text-xs font-bold gap-1.5 bg-blue-50/80 text-blue-700 hover:bg-blue-100 border-blue-200"
+                    >
+                      <Users className="w-3.5 h-3.5 text-blue-600" />
+                      <span>লাইভ চ্যাট গ্রাহক নির্বাচন ({toBengaliNumber(sa.assigned_customer_ids?.length || 0)})</span>
+                    </Button>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleOpenEdit(sa)}
+                        className="flex-1 h-8 text-xs font-bold gap-1 border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>তথ্য ও পারমিশন এডিট</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => {
+                          setTargetDeleteId(sa.id);
+                          setDeleteConfirmOpen(true);
+                        }}
+                        className="h-8 px-3 text-xs font-bold gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>মুছুন</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </Card>
       </div>

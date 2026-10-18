@@ -7,36 +7,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { 
   FileText, 
-  FileCheck, 
+ 
   Plus, 
   Edit3, 
   Trash2, 
-  Printer, 
+ 
   Download, 
   Stamp, 
   ShieldCheck, 
   Scale,
-  Calendar,
-  User,
-  Phone,
-  CreditCard,
-  Building2,
+ 
   CheckCircle2,
   Copy,
   Check,
   Loader2,
-  ImageIcon,
+  
   Send,
   Clock,
   Users,
   Search,
   UserCheck,
-  XCircle,
+ 
   Eye,
   EyeOff
 } from 'lucide-react';
@@ -51,7 +47,7 @@ export const AdminContractsPage: React.FC = () => {
     deleteContractPaper, 
     applications, 
     users,
-    settings,
+    
     updateCustomerAccount,
     refreshUsers
   } = useLoan();

@@ -1208,9 +1208,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         {/* Top Navbar */}
         <header className="h-16 border-b border-border bg-card/95 backdrop-blur px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 max-w-[55%] sm:max-w-none">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
 
-            {/* Mobile Sidebar Trigger */}
+            {/* Mobile Sidebar Trigger - Always visible on small devices */}
             <Sheet
               open={mobileSidebarOpen}
               onOpenChange={setMobileSidebarOpen}
@@ -1219,7 +1219,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden shrink-0 h-9 w-9"
+                  className="md:hidden shrink-0 h-9 w-9 text-foreground hover:bg-muted"
+                  aria-label="মেনু খুলুন"
                 >
                   <Menu className="w-5 h-5" />
                 </Button>
@@ -1230,7 +1231,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </SheetContent>
             </Sheet>
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h1 className="text-sm sm:text-lg font-bold truncate text-foreground leading-tight">
                 {title}
               </h1>
@@ -1244,7 +1245,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </div>
 
           {/* Action Tools / Header Controls */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
 
             {/* Live Real-time Sync Status Indicator */}
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-xs font-semibold shadow-xs">
@@ -1259,7 +1260,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             {/* Language Switcher */}
             <LanguageSwitcher />
 
-            {actions}
+            {/* Actions: on mobile keep compact/hidden if wide so hamburger is never pushed */}
+            {actions && (
+              <div className="hidden sm:flex items-center gap-2">
+                {actions}
+              </div>
+            )}
 
             <Link to="/">
               <Button
@@ -1289,7 +1295,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
+        <main className={`flex-1 max-w-7xl w-full mx-auto ${location.pathname === '/admin/messages' ? 'p-1 sm:p-2 md:p-6 lg:p-8 overflow-hidden' : 'p-4 sm:p-6 md:p-8'}`}>
           {children}
         </main>
       </div>

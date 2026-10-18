@@ -207,6 +207,18 @@ export const AdminMediaGalleryPage: React.FC = () => {
       }
     >
       <div className="space-y-6">
+        {/* Mobile Quick Action Bar */}
+        <div className="flex sm:hidden items-center gap-2 bg-card p-3 rounded-xl border border-border shadow-xs">
+          <Button variant="outline" size="sm" onClick={handleResetDefaults} className="gap-1.5 text-xs flex-1 h-9">
+            <RotateCcw className="w-3.5 h-3.5" />
+            ডিফল্ট রিস্টোর
+          </Button>
+          <Button onClick={handleOpenAdd} size="sm" className="gap-1.5 text-xs flex-1 h-9">
+            <Plus className="w-4 h-4" />
+            নতুন ছবি যোগ
+          </Button>
+        </div>
+
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-card">

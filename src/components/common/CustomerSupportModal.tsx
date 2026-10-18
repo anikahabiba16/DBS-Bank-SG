@@ -166,28 +166,31 @@ export const CustomerSupportModal: React.FC<CustomerSupportModalProps> = ({ open
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-xl p-5 sm:p-7 bg-card rounded-2xl shadow-2xl border max-h-[88dvh] overflow-y-auto">
-        <DialogHeader className="text-left pb-3 border-b">
+      <DialogContent 
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="max-w-[calc(100%-1.25rem)] sm:max-w-md md:max-w-xl p-3.5 sm:p-6 md:p-7 bg-card rounded-2xl shadow-2xl border max-h-[92dvh] overflow-y-auto [&::-webkit-scrollbar]:hidden"
+      >
+        <DialogHeader className="text-left pb-2.5 sm:pb-3 border-b">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <Headphones className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
+              <Headphones className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <DialogTitle className="text-base font-black text-foreground">
+              <DialogTitle className="text-sm sm:text-base font-black text-foreground">
                 কাস্টমার সার্ভিস ও সহায়তা কেন্দ্র
               </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                <Clock className="w-3.5 h-3.5 text-primary" />
+              <DialogDescription className="text-[11px] sm:text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
                 <span>{customerSupport.availableHoursBn || '২৪/৭ নিরবচ্ছিন্ন গ্রাহক সেবা'}</span>
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="space-y-3.5 mt-2 text-xs">
+        <div className="space-y-2 sm:space-y-3 mt-1.5 sm:mt-2 text-xs">
           {customerSupport.noticeBn && (
-            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-foreground text-xs leading-relaxed flex items-start gap-2">
-              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="p-2.5 sm:p-3 rounded-xl bg-primary/5 border border-primary/20 text-foreground text-[11px] sm:text-xs leading-relaxed flex items-start gap-2">
+              <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0 mt-0.5" />
               <span>{customerSupport.noticeBn}</span>
             </div>
           )}
@@ -198,33 +201,33 @@ export const CustomerSupportModal: React.FC<CustomerSupportModalProps> = ({ open
             return (
               <div 
                 key={ch.id} 
-                className="p-3.5 rounded-xl border bg-muted/30 hover:border-primary/40 transition-colors flex items-center justify-between gap-3"
+                className="p-2.5 sm:p-3.5 rounded-xl border bg-muted/30 hover:border-primary/40 transition-colors flex items-center justify-between gap-2 sm:gap-3"
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                   {renderChannelIcon(ch.type)}
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm text-foreground truncate">{ch.titleBn}</h4>
-                    <p className="text-xs font-mono text-muted-foreground truncate">{ch.accountNumber}</p>
+                    <h4 className="font-bold text-xs sm:text-sm text-foreground truncate">{ch.titleBn}</h4>
+                    <p className="text-[11px] sm:text-xs font-mono text-muted-foreground truncate">{ch.accountNumber}</p>
                     {ch.extraNote && (
-                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{ch.extraNote}</p>
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{ch.extraNote}</p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => copyToClipboard(ch.accountNumber, ch.id, ch.titleBn)}
-                    className="h-8 px-2 text-xs"
+                    className="h-7 sm:h-8 px-1.5 sm:px-2 text-xs"
                     title="কপি করুন"
                   >
-                    {copiedKey === ch.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedKey === ch.id ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" /> : <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
                   </Button>
                   <a href={action.href} target={action.isCall ? '_self' : '_blank'} rel="noopener noreferrer">
                     <Button 
                       size="sm" 
-                      className={`h-8 px-3 text-xs font-bold gap-1 ${
+                      className={`h-7 sm:h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold gap-1 ${
                         ch.type === 'imo'
                           ? 'bg-sky-500 hover:bg-sky-600 text-white'
                           : ch.type === 'whatsapp'
@@ -235,7 +238,7 @@ export const CustomerSupportModal: React.FC<CustomerSupportModalProps> = ({ open
                       }`}
                     >
                       {action.label}
-                      {action.isCall ? <PhoneCall className="w-3 h-3" /> : <ExternalLink className="w-3 h-3" />}
+                      {action.isCall ? <PhoneCall className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> : <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
                     </Button>
                   </a>
                 </div>
@@ -244,7 +247,7 @@ export const CustomerSupportModal: React.FC<CustomerSupportModalProps> = ({ open
           })}
         </div>
 
-        <div className="pt-2 text-center text-[11px] text-muted-foreground border-t mt-2">
+        <div className="pt-2 text-center text-[10px] sm:text-[11px] text-muted-foreground border-t mt-1 sm:mt-2">
           আমাদের প্রতিনিধিবৃন্দ আপনার যেকোনো প্রশ্ন ও লোন সহায়তায় প্রস্তুত রয়েছেন
         </div>
       </DialogContent>

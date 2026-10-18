@@ -87,6 +87,33 @@ export const AdminStaffIdCardsPage: React.FC = () => {
   const [formData, setFormData] = useState<StaffIdCard>(currentCard);
   const [viewSide, setViewSide] = useState<"front" | "back" | "both">("both");
   const [isDownloading, setIsDownloading] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [cardScale, setCardScale] = useState<number>(1);
+
+  // Auto-fit scale listener for mobile devices
+  React.useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const availableWidth = containerRef.current.clientWidth - 16;
+        if (availableWidth > 0 && availableWidth < 560) {
+          setCardScale(Math.min(1, Math.max(0.48, availableWidth / 560)));
+        } else {
+          setCardScale(1);
+        }
+      } else {
+        const screenWidth = window.innerWidth - 32;
+        if (screenWidth < 560) {
+          setCardScale(Math.min(1, Math.max(0.48, screenWidth / 560)));
+        } else {
+          setCardScale(1);
+        }
+      }
+    };
+
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, []);
 
   // File input refs
   const photoInputRef = useRef<HTMLInputElement | null>(null);
@@ -284,6 +311,28 @@ export const AdminStaffIdCardsPage: React.FC = () => {
         </div>
       }
     >
+      {/* Mobile Quick Action Bar */}
+      <div className="flex sm:hidden items-center gap-2 mb-4 bg-card p-3 rounded-xl border border-border shadow-xs">
+        <Button
+          onClick={handleCreateNewStaff}
+          size="sm"
+          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 text-xs font-semibold gap-1.5 h-9"
+        >
+          <Plus className="w-4 h-4" />
+          নতুন স্টাফ যোগ
+        </Button>
+
+        <Button
+          onClick={handlePrint}
+          variant="outline"
+          size="sm"
+          className="text-xs font-semibold gap-1.5 border-border h-9 px-3"
+        >
+          <Printer className="w-4 h-4 text-primary" />
+          প্রিন্ট
+        </Button>
+      </div>
+
       {/* STAFF LIST BAR */}
       <div className="mb-6 bg-card border border-border rounded-xl p-3.5 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
@@ -393,14 +442,17 @@ export const AdminStaffIdCardsPage: React.FC = () => {
               </div>
             </CardHeader>
 
-            <CardContent className="p-4 sm:p-6 bg-slate-100/70 dark:bg-slate-900/40 flex flex-col items-center justify-center min-h-[380px] overflow-x-auto">
+            <CardContent ref={containerRef} className="p-2 sm:p-6 bg-slate-100/70 dark:bg-slate-900/40 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[380px] overflow-hidden">
               {/* Scale Container */}
-              <div className="flex flex-col items-center gap-6 max-w-full">
+              <div className="flex flex-col items-center gap-6 w-full max-w-full">
                 {/* FRONT CARD */}
                 {(viewSide === "front" || viewSide === "both") && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span className="font-bold flex items-center gap-1.5 text-foreground">
+                  <div className="space-y-2 w-full flex flex-col items-center">
+                    <div
+                      style={{ width: `${Math.round(560 * cardScale)}px` }}
+                      className="flex items-center justify-between px-1 text-xs text-muted-foreground max-w-full"
+                    >
+                      <span className="font-bold flex items-center gap-1.5 text-foreground text-[11px] sm:text-xs">
                         <span className="w-2 h-2 rounded-full bg-emerald-500" />
                         সামনের পিঠ (Front Side)
                       </span>
@@ -416,21 +468,40 @@ export const AdminStaffIdCardsPage: React.FC = () => {
                       </Button>
                     </div>
 
-                    <div className="overflow-hidden rounded-sm shadow-xl border border-slate-300">
-                      <RealisticStaffIdCard
-                        id="nid-staff-card-front"
-                        card={formData}
-                        side="front"
-                      />
+                    {/* Responsive Outer Shell that scales down on mobile without cutting */}
+                    <div
+                      style={{
+                        width: `${Math.round(560 * cardScale)}px`,
+                        height: `${Math.round(354 * cardScale)}px`
+                      }}
+                      className="relative overflow-hidden rounded-sm shadow-xl border border-slate-300 bg-white"
+                    >
+                      <div
+                        style={{
+                          transform: `scale(${cardScale})`,
+                          transformOrigin: "top left",
+                          width: "560px",
+                          height: "354px"
+                        }}
+                      >
+                        <RealisticStaffIdCard
+                          id="nid-staff-card-front"
+                          card={formData}
+                          side="front"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* BACK CARD */}
                 {(viewSide === "back" || viewSide === "both") && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span className="font-bold flex items-center gap-1.5 text-foreground">
+                  <div className="space-y-2 w-full flex flex-col items-center">
+                    <div
+                      style={{ width: `${Math.round(560 * cardScale)}px` }}
+                      className="flex items-center justify-between px-1 text-xs text-muted-foreground max-w-full"
+                    >
+                      <span className="font-bold flex items-center gap-1.5 text-foreground text-[11px] sm:text-xs">
                         <span className="w-2 h-2 rounded-full bg-blue-500" />
                         পেছনের পিঠ (Back Side)
                       </span>
@@ -446,12 +517,28 @@ export const AdminStaffIdCardsPage: React.FC = () => {
                       </Button>
                     </div>
 
-                    <div className="overflow-hidden rounded-sm shadow-xl border border-slate-300">
-                      <RealisticStaffIdCard
-                        id="nid-staff-card-back"
-                        card={formData}
-                        side="back"
-                      />
+                    {/* Responsive Outer Shell that scales down on mobile without cutting */}
+                    <div
+                      style={{
+                        width: `${Math.round(560 * cardScale)}px`,
+                        height: `${Math.round(354 * cardScale)}px`
+                      }}
+                      className="relative overflow-hidden rounded-sm shadow-xl border border-slate-300 bg-white"
+                    >
+                      <div
+                        style={{
+                          transform: `scale(${cardScale})`,
+                          transformOrigin: "top left",
+                          width: "560px",
+                          height: "354px"
+                        }}
+                      >
+                        <RealisticStaffIdCard
+                          id="nid-staff-card-back"
+                          card={formData}
+                          side="back"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}

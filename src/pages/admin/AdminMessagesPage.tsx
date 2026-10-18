@@ -768,7 +768,7 @@ export default function AdminMessagesPage() {
       title={language === 'bn' ? 'গ্রাহক মেসেজ হাব ও লাইভ সাপোর্ট' : 'Customer Message Hub & Live Support'}
       subtitle={language === 'bn' ? 'সরাসরি গ্রাহকদের সাথে টেক্সট ও ভয়েস বার্তা আদান-প্রদান করুন' : 'Real-time text and voice messaging with customers'}
     >
-      <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 md:gap-4 h-[calc(100dvh-5.5rem)] sm:h-[calc(100dvh-7rem)] md:h-[calc(100vh-10rem)] w-full">
+      <div className="flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 md:gap-4 h-[calc(100dvh-4.75rem)] sm:h-[calc(100dvh-5.5rem)] md:h-[calc(100vh-10rem)] w-full overflow-hidden">
         {/* Left Column: Customer Conversation List (Full width on mobile when mobileView === 'list') */}
         <div className={`md:col-span-5 lg:col-span-4 flex-col bg-card border border-border rounded-xl shadow-xs overflow-hidden h-full ${
           mobileView === 'chat' ? 'hidden md:flex' : 'flex'

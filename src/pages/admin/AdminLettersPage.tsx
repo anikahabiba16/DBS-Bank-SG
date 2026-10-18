@@ -134,7 +134,8 @@ export const AdminLettersPage: React.FC = () => {
           </CardHeader>
 
           <CardContent className="p-0">
-            <div className="w-full max-w-full overflow-x-auto bg-card">
+            {/* Desktop Table View */}
+            <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
               <table className="w-full text-xs text-left">
                 <thead className="bg-muted/50 text-muted-foreground border-b text-[11px] font-semibold uppercase">
                   <tr>
@@ -205,6 +206,69 @@ export const AdminLettersPage: React.FC = () => {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Organized Card View (No Horizontal Scroll) */}
+            <div className="block md:hidden divide-y divide-border bg-card">
+              {applications.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted-foreground">
+                  কোনো লোন আবেদন পাওয়া যায়নি।
+                </div>
+              ) : (
+                applications.map((app) => {
+                  const hasLetter = !!getApprovalLetterByLoanId(app.id);
+                  return (
+                    <div key={app.id} className="p-3.5 space-y-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono font-bold text-xs text-foreground">{app.id}</span>
+                            <span className="text-[10px] text-muted-foreground font-medium">• {app.packageName}</span>
+                          </div>
+                          <div className="font-bold text-xs text-foreground mt-0.5">{app.applicantName}</div>
+                          <div className="text-[11px] text-muted-foreground font-mono">{app.phone}</div>
+                        </div>
+                        <div className="text-right">
+                          {hasLetter ? (
+                            <Badge className="bg-emerald-600 text-white font-bold text-[10px] gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> প্রস্তুত
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-muted-foreground text-[10px]">
+                              তৈরি হয়নি
+                            </Badge>
+                          )}
+                          <div className="font-mono font-bold text-sm text-foreground mt-1">
+                            {formatTaka(app.approvedAmount || app.loanAmount)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-1">
+                        {hasLetter && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handlePreviewDirect(app)}
+                            className="flex-1 h-8 text-xs font-bold gap-1 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border-emerald-200"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>দেখুন ও প্রিন্ট</span>
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={() => handleOpenEditor(app)}
+                          className="flex-1 h-8 text-xs font-bold gap-1 bg-primary text-primary-foreground"
+                        >
+                          <FileEdit className="w-3.5 h-3.5" />
+                          <span>{hasLetter ? 'এডিট করুন' : 'লেটার তৈরি করুন'}</span>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </CardContent>
         </Card>

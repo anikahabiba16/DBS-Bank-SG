@@ -13,7 +13,7 @@ export const CustomerLayout: React.FC<{ children: ReactNode }> = ({ children }) 
       {/* Subtle luxury ambient tint */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] max-w-full h-[320px] bg-gradient-to-b from-primary/6 via-accent/4 to-transparent blur-3xl pointer-events-none z-0" />
       <Header />
-      <main className={`flex-1 w-full min-w-0 max-w-full relative z-10 ${isMessagesPage ? 'flex flex-col h-[calc(100dvh-4rem)] min-h-0 overflow-hidden' : ''}`}>{children}</main>
+      <main className={`flex-1 w-full min-w-0 max-w-full relative z-10 ${isMessagesPage ? 'flex flex-col h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] min-h-0 overflow-hidden' : ''}`}>{children}</main>
       {!isMessagesPage && <Footer />}
       {!isMessagesPage && <MobileBottomNav />}
     </div>

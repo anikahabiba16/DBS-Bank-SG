@@ -43,18 +43,23 @@ export const AdminApplicationsPage: React.FC = () => {
   const selectedParam = searchParams.get('selected');
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // Safe fallback to loanStorage if context array is empty
+  const effectiveApplications = (applications && applications.length > 0) ? applications : loanStorage.getApplications();
+
   // Sub-Admin Isolation: only show assigned customers' applications
-  const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
-    ? (currentSubAdmin.assigned_customer_ids || [])
+  const isSubAdmin = adminRole === 'sub_admin';
+  const assignedCustomerIds = (isSubAdmin && currentSubAdmin && Array.isArray(currentSubAdmin.assigned_customer_ids) && currentSubAdmin.assigned_customer_ids.length > 0)
+    ? currentSubAdmin.assigned_customer_ids
     : null;
 
   const scopedApplications = assignedCustomerIds !== null
-    ? applications.filter((a) =>
+    ? effectiveApplications.filter((a) =>
+        assignedCustomerIds.includes(a.id || '') ||
         assignedCustomerIds.includes(a.userId || '') ||
         assignedCustomerIds.includes(a.phone) ||
         assignedCustomerIds.includes(normalizePhone(a.phone))
       )
-    : applications;
+    : effectiveApplications;
 
   useEffect(() => {
     refreshApplications();
@@ -250,7 +255,8 @@ export const AdminApplicationsPage: React.FC = () => {
 
         {/* Applications Master Table */}
         <Card className="ed-card border-border overflow-hidden">
-          <div className="w-full max-w-full overflow-x-auto bg-card">
+          {/* Desktop Table View */}
+          <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
             <Table className="[&>div]:max-w-full min-w-[850px]">
               <TableHeader>
                 <TableRow className="bg-muted/50">
@@ -324,6 +330,74 @@ export const AdminApplicationsPage: React.FC = () => {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Organized Card View (No Horizontal Scroll) */}
+          <div className="block md:hidden divide-y divide-border bg-card">
+            {filteredApplications.length === 0 ? (
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                কোনো আবেদন পাওয়া যায়নি।
+              </div>
+            ) : (
+              filteredApplications.map((app) => (
+                <div key={app.id} className="p-3.5 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-xs text-accent">{app.id}</span>
+                        <span className="text-[10px] text-muted-foreground font-mono">• {app.appliedDate}</span>
+                      </div>
+                      <div className="font-bold text-xs text-foreground mt-0.5">{app.applicantName}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{app.phone}</div>
+                    </div>
+                    <div className="text-right">
+                      <div>{getStatusBadge(app.status)}</div>
+                      <div className="font-mono font-extrabold text-sm text-foreground mt-1">
+                        {formatTaka(app.loanAmount)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px] bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">প্যাকেজ:</span>
+                      <span className="font-semibold text-foreground">{app.packageName}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">মেয়াদ ও কিস্তি:</span>
+                      <span className="font-mono font-medium text-foreground">
+                        {toBengaliNumber(app.durationMonths)} মাস ({formatTaka(app.monthlyEMI)}/মাস)
+                      </span>
+                    </div>
+                    <div className="col-span-2 pt-1 border-t border-border/40 flex justify-between items-center">
+                      <span className="text-muted-foreground text-[10px]">মাসিক আয়:</span>
+                      <span className="font-mono font-bold text-foreground">{formatTaka(app.monthlyIncome)}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedApp(app)}
+                      className="flex-1 h-8 text-xs font-bold gap-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>বিস্তারিত পর্যালোচনা</span>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => void handleCancelApplication(app)}
+                      className="h-8 px-3 text-xs font-bold gap-1 shadow-xs"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>সরান</span>
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </Card>
 

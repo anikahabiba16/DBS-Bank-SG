@@ -224,7 +224,8 @@ export const AdminWalletsPage: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="w-full max-w-full overflow-x-auto bg-card">
+            {/* Desktop Table View */}
+            <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
               <table className="w-full text-xs text-left">
                 <thead className="bg-muted/50 text-muted-foreground border-b uppercase font-semibold text-[11px]">
                   <tr>
@@ -291,6 +292,56 @@ export const AdminWalletsPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Organized Card View (No Horizontal Scroll) */}
+            <div className="block md:hidden divide-y divide-border bg-card">
+              {filteredUsers.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted-foreground">
+                  কোনো গ্রাহক পাওয়া যায়নি
+                </div>
+              ) : (
+                filteredUsers.map((u) => (
+                  <div key={u.id} className="p-3.5 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-xs text-foreground">{u.name}</div>
+                        <div className="text-[11px] text-muted-foreground font-mono flex items-center gap-1 mt-0.5">
+                          <Phone className="w-3 h-3 text-primary" /> {u.phone}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                          {u.status === 'active' ? 'সক্রিয়' : 'স্থগিত'}
+                        </Badge>
+                        <div className="font-mono font-bold text-xs text-emerald-700 mt-1">
+                          {formatTaka(u.walletBalance || 0)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        onClick={() => handleOpenModal(u, 'add')}
+                        className="flex-1 h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1 shadow-xs"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>টাকা যোগ</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleOpenModal(u, 'deduct')}
+                        className="flex-1 h-8 text-xs font-bold border-red-300 text-red-600 hover:bg-red-50 gap-1 shadow-xs"
+                      >
+                        <MinusCircle className="w-3.5 h-3.5" />
+                        <span>টাকা কর্তন</span>
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -303,7 +354,8 @@ export const AdminWalletsPage: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="w-full max-w-full overflow-x-auto bg-card">
+            {/* Desktop Table View */}
+            <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
               <table className="w-full text-xs text-left">
                 <thead className="bg-muted/50 text-muted-foreground border-b text-[11px] font-semibold">
                   <tr>
@@ -349,6 +401,43 @@ export const AdminWalletsPage: React.FC = () => {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Organized Card View (No Horizontal Scroll) */}
+            <div className="block md:hidden divide-y divide-border bg-card">
+              {transactions.slice(0, 15).map((tx) => {
+                const isCredit = tx.type === 'credit' || tx.type === 'loan_disbursement';
+                return (
+                  <div key={tx.id} className="p-3.5 space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-xs text-foreground">{tx.title}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{tx.date} • আইডি: {tx.userId}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`font-mono font-bold text-xs ${isCredit ? 'text-emerald-600' : 'text-red-600'}`}>
+                          {isCredit ? `+ ${formatTaka(tx.amount)}` : `- ${formatTaka(tx.amount)}`}
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`text-[9px] mt-0.5 ${
+                            isCredit
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-red-50 text-red-700 border-red-200'
+                          }`}
+                        >
+                          {isCredit ? 'যোগ' : 'কর্তন'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] bg-muted/30 p-2 rounded-lg border border-border/50">
+                      <span className="text-muted-foreground truncate max-w-[65%]">{tx.description}</span>
+                      <span className="font-mono text-foreground font-semibold">অবশিষ্ট: {formatTaka(tx.balanceAfter)}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

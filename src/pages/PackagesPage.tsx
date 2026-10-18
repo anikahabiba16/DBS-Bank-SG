@@ -82,21 +82,21 @@ export const PackagesPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         {/* Category Tabs - High Contrast, Crisp Typography and Mobile Horizontal Scroll */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 sm:mb-8">
-          <div className="w-full sm:w-auto overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="w-full sm:w-auto">
             <Tabs
               value={activeCategory}
               onValueChange={(val) => {
                 setActiveCategory(val);
                 setSearchParams(val === 'all' ? {} : { category: val });
               }}
-              className="w-auto"
+              className="w-full sm:w-auto"
             >
-              <TabsList className="bg-card/90 backdrop-blur-md border border-border/80 shadow-md p-1.5 h-auto flex flex-nowrap sm:flex-wrap items-center gap-2 rounded-2xl w-max">
+              <TabsList className="bg-card/90 backdrop-blur-md border border-border/80 shadow-md p-1.5 h-auto grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 rounded-2xl w-full sm:w-max">
                 {categories.map((cat) => (
                   <TabsTrigger
                     key={cat.id}
                     value={cat.id}
-                    className="text-xs sm:text-sm px-4 py-2.5 rounded-xl font-bold transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary/30 border border-transparent data-[state=inactive]:text-foreground/90 data-[state=inactive]:hover:bg-muted/80 whitespace-nowrap"
+                    className="text-[11px] sm:text-xs md:text-sm px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary/30 border border-transparent data-[state=inactive]:text-foreground/90 data-[state=inactive]:hover:bg-muted/80 text-center whitespace-normal break-words sm:whitespace-nowrap"
                   >
                     {cat.label}
                   </TabsTrigger>
@@ -235,7 +235,7 @@ export const PackagesPage: React.FC = () => {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-5 sm:p-6 pt-0 border-t border-border flex flex-wrap items-center justify-between gap-3 bg-card">
+                <div className="p-5 sm:p-6 pt-4 sm:pt-5 border-t border-border flex flex-wrap items-center justify-between gap-3 bg-card">
                   <Button
                     variant="ghost"
                     size="sm"

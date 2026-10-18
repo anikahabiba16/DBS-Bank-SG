@@ -17,7 +17,7 @@ import {
 } from '@/types/loan';
 import { toast } from 'sonner';
 
-export const withQueryTimeout = <T>(promise: PromiseLike<T>, ms = 7000, fallback: any): Promise<T> => {
+export const withQueryTimeout = <T>(promise: PromiseLike<T>, ms = 8000, fallback: any): Promise<T> => {
   return Promise.race([
     Promise.resolve(promise),
     new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
@@ -500,7 +500,7 @@ class SupabaseSyncService {
     if (!isSupabaseConfigured) return null;
     try {
       const query = supabase.from('site_users').select('*').order('updated_at', { ascending: false });
-      const { data, error }: any = await withQueryTimeout(query, 2500, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
+      const { data, error }: any = await withQueryTimeout(query, 8000, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
       if (error || !data) return null;
 
       return data.map((row: any) => row.data as CustomerUser).filter(Boolean);
@@ -622,7 +622,7 @@ class SupabaseSyncService {
     if (!isSupabaseConfigured) return null;
     try {
       const query = supabase.from('site_loans').select('*').order('created_at', { ascending: false });
-      const { data, error }: any = await withQueryTimeout(query, 2500, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
+      const { data, error }: any = await withQueryTimeout(query, 8000, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
       if (error || !data) return null;
 
       return data.map((row: any) => row.data as LoanApplication).filter(Boolean);

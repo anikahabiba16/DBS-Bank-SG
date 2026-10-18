@@ -216,15 +216,15 @@ export const HomePage: React.FC = () => {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                <Link to="/apply">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-7 h-12 shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-95 transition-all rounded-xl gap-2 text-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 pt-2 w-full sm:w-auto">
+                <Link to="/apply" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-7 h-12 shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-95 transition-all rounded-xl gap-2 text-sm justify-center">
                     <span>এখনই লোন আবেদন করুন</span>
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link to="/packages">
-                  <Button variant="outline" size="lg" className="border-border hover:border-primary/40 text-foreground bg-card/60 backdrop-blur-md hover:bg-primary/5 hover:text-primary font-bold px-6 h-12 rounded-xl transition-all shadow-xs">
+                <Link to="/packages" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto border-border hover:border-primary/40 text-foreground bg-card/60 backdrop-blur-md hover:bg-primary/5 hover:text-primary font-bold px-6 h-12 rounded-xl transition-all shadow-xs justify-center">
                     সকল লোন প্যাকেজ দেখুন
                   </Button>
                 </Link>
@@ -465,9 +465,9 @@ export const HomePage: React.FC = () => {
       <PromotionMediaGallery />
 
       {/* 3 Step Process with Modern Stepper Flow */}
-      <section className="py-18 lg:py-24 bg-muted/20 border-b border-border/80 relative overflow-hidden">
+      <section className="py-12 sm:py-16 lg:py-24 bg-muted/20 border-b border-border/80 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-primary px-3 py-1 rounded-full bg-primary/10 border border-primary/20 inline-block">
               সহজ প্রক্রিয়া
             </span>
@@ -495,7 +495,7 @@ export const HomePage: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 sm:mt-12">
             <Link to="/apply">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-95 transition-all rounded-xl px-8 h-12 gap-2 text-sm">
                 <span>আজই আবেদন ফরম পূরণ করুন</span>
@@ -506,10 +506,10 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-18 lg:py-24 bg-background border-b border-border/80 relative">
+      {/* Why Choose Us (আমাদের অনন্য বৈশিষ্ট্য) */}
+      <section className="py-12 sm:py-16 lg:py-24 bg-background border-b border-border/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-2xl mx-auto text-center mb-14 space-y-3">
+          <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-14 space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-primary px-3 py-1 rounded-full bg-primary/10 border border-primary/20 inline-block">
               আমাদের অনন্য বৈশিষ্ট্য
             </span>
@@ -653,12 +653,12 @@ export const HomePage: React.FC = () => {
           )}
 
           {/* Fast Help Footnote Strip */}
-          <div className="mt-10 p-5 rounded-2xl bg-card border border-border/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
-            <div className="flex items-center gap-3 text-center sm:text-left">
+          <div className="mt-10 p-5 rounded-2xl bg-card border border-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+            <div className="flex items-center gap-3 text-left w-full sm:w-auto">
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <MessageCircle className="w-5 h-5" />
               </div>
-              <div>
+              <div className="text-left">
                 <p className="text-sm font-bold text-foreground">আরও কোনো প্রশ্ন আছে?</p>
                 <p className="text-xs text-muted-foreground">আমাদের গ্রাহক সেবা টিম সার্বক্ষণিক আপনার সহযোগিতায় প্রস্তুত।</p>
               </div>
@@ -698,17 +698,17 @@ export const HomePage: React.FC = () => {
                 আমাদের বিশেষজ্ঞ লোন অফিসাররা সপ্তাহের ৬ দিন সকাল ৯টা থেকে সন্ধ্যা ৬টা পর্যন্ত আপনার সেবায় নিয়োজিত।
               </p>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">
-              <a href={`tel:${(settings.supportPhone || '').replace(/[^\d+]/g, '')}`}>
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-95 rounded-xl gap-2 font-bold px-6 h-12 text-sm transition-all">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 w-full md:w-auto shrink-0">
+              <a href={`tel:${(settings.supportPhone || '').replace(/[^\d+]/g, '')}`} className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-95 rounded-xl gap-2 font-bold px-6 h-12 text-sm transition-all justify-center">
                   <PhoneCall className="w-4 h-4 animate-bounce" />
                   <span>
                     {(settings.supportPhone || '').replace(/^.*?(?:যোগাযোগ\s*নম্বর|মোবাইল|ফোন|হটলাইন|হেল্পলাইন)[:\s-]*/gi, '').trim() || settings.supportPhone}
                   </span>
                 </Button>
               </a>
-              <Link to="/calculator">
-                <Button variant="outline" size="lg" className="border-border hover:border-primary/40 text-foreground bg-card hover:bg-primary/5 hover:text-primary font-bold rounded-xl px-6 h-12 text-sm transition-all shadow-2xs">
+              <Link to="/calculator" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto border-border hover:border-primary/40 text-foreground bg-card hover:bg-primary/5 hover:text-primary font-bold rounded-xl px-6 h-12 text-sm transition-all shadow-2xs justify-center">
                   লোন ক্যালকুলেটর
                 </Button>
               </Link>

@@ -224,11 +224,14 @@ export const AdminCustomersPage: React.FC = () => {
   const allCustomers = useMemo(() => {
     const customerMap = new Map<string, CustomerListItem>();
 
+    const effectiveApplications = (applications && applications.length > 0) ? applications : loanStorage.getApplications();
+    const effectiveUsers = (users && users.length > 0) ? users : loanStorage.getUsers();
+
     // Pre-index applications by normalized phone and userId for O(1) lookups
     const appsByPhone = new Map<string, typeof applications>();
     const appsByUserId = new Map<string, typeof applications>();
 
-    applications.forEach((a) => {
+    effectiveApplications.forEach((a) => {
       const pNorm = normalizePhone(a.phone);
       if (pNorm) {
         if (!appsByPhone.has(pNorm)) appsByPhone.set(pNorm, []);
@@ -240,7 +243,7 @@ export const AdminCustomersPage: React.FC = () => {
       }
     });
 
-    users.forEach((u) => {
+    effectiveUsers.forEach((u) => {
       const userPhoneNorm = normalizePhone(u.phone);
       const matchedApps = [
         ...(u.id && appsByUserId.has(u.id) ? appsByUserId.get(u.id)! : []),
@@ -310,7 +313,7 @@ export const AdminCustomersPage: React.FC = () => {
       });
     });
 
-    applications.forEach((app) => {
+    effectiveApplications.forEach((app) => {
       const appPhoneNorm = normalizePhone(app.phone);
       let isAlreadyInList = false;
 
@@ -393,9 +396,10 @@ export const AdminCustomersPage: React.FC = () => {
       return 0;
     };
 
-    // Sub-Admin Isolation
-    const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
-      ? (currentSubAdmin.assigned_customer_ids || [])
+    // Sub-Admin Isolation (only active if sub_admin and has assigned customer list)
+    const isSubAdmin = adminRole === 'sub_admin';
+    const assignedCustomerIds = (isSubAdmin && currentSubAdmin && Array.isArray(currentSubAdmin.assigned_customer_ids) && currentSubAdmin.assigned_customer_ids.length > 0)
+      ? currentSubAdmin.assigned_customer_ids
       : null;
 
     const rawList = Array.from(customerMap.values()).filter((c) => {

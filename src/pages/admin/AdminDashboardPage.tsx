@@ -98,18 +98,24 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  // Scoped data for Sub-Admin isolation
-  const assignedCustomerIds = (adminRole === 'sub_admin' && currentSubAdmin)
-    ? (currentSubAdmin.assigned_customer_ids || [])
+  // Safe fallback to loanStorage if context arrays are empty or still loading
+  const effectiveApplications = (applications && applications.length > 0) ? applications : loanStorage.getApplications();
+  const effectiveUsers = (users && users.length > 0) ? users : loanStorage.getUsers();
+
+  // Scoped data for Sub-Admin isolation (only active if sub_admin and has assigned list)
+  const isSubAdmin = adminRole === 'sub_admin';
+  const assignedCustomerIds = (isSubAdmin && currentSubAdmin && Array.isArray(currentSubAdmin.assigned_customer_ids) && currentSubAdmin.assigned_customer_ids.length > 0)
+    ? currentSubAdmin.assigned_customer_ids
     : null;
 
   const scopedApplications = assignedCustomerIds !== null
-    ? applications.filter((a) => 
+    ? effectiveApplications.filter((a) => 
+        assignedCustomerIds.includes(a.id || '') ||
         assignedCustomerIds.includes(a.userId || '') ||
         assignedCustomerIds.includes(a.phone) ||
         assignedCustomerIds.includes(normalizePhone(a.phone))
       )
-    : applications;
+    : effectiveApplications;
 
   // Unified registered customers (merges registered users and loan applicants)
   const allRegisteredCustomers = React.useMemo(() => {
@@ -118,7 +124,7 @@ export const AdminDashboardPage: React.FC = () => {
     // Index applications by normalized phone and userId
     const appsByPhone = new Map<string, any[]>();
     const appsByUserId = new Map<string, any[]>();
-    applications.forEach((app) => {
+    effectiveApplications.forEach((app) => {
       const pNorm = normalizePhone(app.phone);
       if (pNorm) {
         if (!appsByPhone.has(pNorm)) appsByPhone.set(pNorm, []);
@@ -131,7 +137,7 @@ export const AdminDashboardPage: React.FC = () => {
     });
 
     // 1. Add all registered users
-    users.forEach((u) => {
+    effectiveUsers.forEach((u) => {
       const pNorm = normalizePhone(u.phone);
       const matchedApps = [
         ...(u.id && appsByUserId.has(u.id) ? appsByUserId.get(u.id)! : []),
@@ -153,7 +159,7 @@ export const AdminDashboardPage: React.FC = () => {
     });
 
     // 2. Add applicants who submitted applications so they also appear in live registered accounts
-    applications.forEach((app) => {
+    effectiveApplications.forEach((app) => {
       const pNorm = normalizePhone(app.phone);
       let exists = false;
       for (const item of map.values()) {
@@ -206,7 +212,7 @@ export const AdminDashboardPage: React.FC = () => {
       if (timeB !== timeA) return timeB - timeA;
       return (b.id || '').localeCompare(a.id || '');
     });
-  }, [users, applications]);
+  }, [effectiveUsers, effectiveApplications]);
 
   const scopedUsers = assignedCustomerIds !== null
     ? allRegisteredCustomers.filter((u) =>
@@ -420,7 +426,8 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
 
           <Card className="border border-border shadow-xs overflow-hidden">
-            <div className="w-full max-w-full overflow-x-auto bg-card">
+            {/* Desktop Table View */}
+            <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
               <Table className="[&>div]:max-w-full min-w-[750px]">
                 <TableHeader>
                   <TableRow className="bg-muted/50">
@@ -495,6 +502,74 @@ export const AdminDashboardPage: React.FC = () => {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile Organized Card View (No Horizontal Scroll) */}
+            <div className="block md:hidden divide-y divide-border bg-card">
+              {scopedUsers.length === 0 ? (
+                <div className="text-center py-8 px-4 text-xs text-muted-foreground">
+                  কোনো নিবন্ধিত গ্রাহক অ্যাকাউন্ট পাওয়া যায়নি।
+                </div>
+              ) : (
+                scopedUsers.slice(0, 25).map((u) => {
+                  const boundMethods = [];
+                  if (u.boundWithdrawalAccounts?.bKash) boundMethods.push('বিকাশ');
+                  if (u.boundWithdrawalAccounts?.Nagad) boundMethods.push('নগদ');
+                  if (u.boundWithdrawalAccounts?.Rocket) boundMethods.push('রকেট');
+                  if (u.boundWithdrawalAccounts?.Bank) boundMethods.push('ব্যাংক');
+                  if (boundMethods.length === 0 && u.accountType) boundMethods.push(u.accountType);
+
+                  return (
+                    <div key={u.id || u.phone} className="p-3.5 space-y-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-bold text-xs text-foreground">{u.name}</div>
+                          <div className="font-mono text-[11px] text-primary font-semibold">{u.phone}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] text-muted-foreground">ওয়ালেট ব্যালেন্স</div>
+                          <div className="font-bold text-xs text-emerald-600 font-mono">
+                            {formatTaka(u.walletBalance || 0)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-[11px] bg-muted/30 p-2 rounded-lg border border-border/50">
+                        <div>
+                          <span className="text-muted-foreground block text-[10px]">পাসওয়ার্ড:</span>
+                          <span className="font-mono font-semibold text-foreground">{u.password || 'Aa112233@'}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground block text-[10px]">তারিখ:</span>
+                          <span className="text-foreground">{u.registeredAt || 'আজ'}</span>
+                        </div>
+                        <div className="col-span-2 pt-1 border-t border-border/40">
+                          <span className="text-muted-foreground block text-[10px] mb-1">উইথড্র মেথড:</span>
+                          {boundMethods.length > 0 ? (
+                            <div className="flex gap-1 flex-wrap">
+                              {boundMethods.map((m) => (
+                                <Badge key={m} variant="secondary" className="text-[10px] px-1.5 py-0 font-medium">
+                                  {m}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground italic">যুক্ত হয়নি</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-1">
+                        <Link to="/admin/customers" className="w-full">
+                          <Button variant="outline" size="sm" className="w-full h-8 text-xs font-bold">
+                            গ্রাহক বিবরণ ও নিয়ন্ত্রণ
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </Card>
         </div>
 
@@ -517,7 +592,8 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
 
           <Card className="ed-card border-border overflow-hidden">
-            <div className="w-full max-w-full overflow-x-auto bg-card">
+            {/* Desktop Table View */}
+            <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
               <Table className="[&>div]:max-w-full min-w-[750px]">
                 <TableHeader>
                   <TableRow className="bg-muted/50">
@@ -574,6 +650,49 @@ export const AdminDashboardPage: React.FC = () => {
                   )}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Mobile Organized Card View (No Horizontal Scroll) */}
+            <div className="block md:hidden divide-y divide-border bg-card">
+              {scopedApplications.length === 0 ? (
+                <div className="text-center py-8 px-4 text-xs text-muted-foreground">
+                  কোনো লোন আবেদন পাওয়া যায়নি।
+                </div>
+              ) : (
+                scopedApplications.slice(0, 6).map((app) => (
+                  <div key={app.id} className="p-3.5 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-xs text-accent">{app.id}</span>
+                          <span className="text-[10px] text-muted-foreground font-mono">• {app.appliedDate}</span>
+                        </div>
+                        <div className="font-bold text-xs text-foreground mt-0.5">{app.applicantName}</div>
+                        <div className="font-mono text-[11px] text-muted-foreground">{app.phone}</div>
+                      </div>
+                      <div className="text-right">
+                        <div>{getStatusBadge(app.status)}</div>
+                        <div className="font-mono font-bold text-xs text-foreground mt-1">
+                          {formatTaka(app.loanAmount)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs bg-muted/30 px-3 py-1.5 rounded-lg border border-border/50">
+                      <span className="text-muted-foreground text-[11px]">লোন স্কিম:</span>
+                      <span className="font-medium text-foreground">{app.packageName}</span>
+                    </div>
+
+                    <div className="pt-1">
+                      <Link to={`/admin/applications?selected=${app.id}`} className="w-full">
+                        <Button variant="outline" size="sm" className="w-full h-8 text-xs font-bold">
+                          আবেদন যাচাই ও অনুমোদন
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </div>

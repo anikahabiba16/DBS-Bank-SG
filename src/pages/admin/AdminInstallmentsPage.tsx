@@ -134,7 +134,8 @@ export const AdminInstallmentsPage: React.FC = () => {
 
         {/* Installments Table */}
         <Card className="ed-card border-border overflow-hidden">
-          <div className="w-full max-w-full overflow-x-auto bg-card">
+          {/* Desktop Table View */}
+          <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
             <Table className="[&>div]:max-w-full min-w-[800px]">
               <TableHeader>
                 <TableRow className="bg-muted/50">
@@ -205,6 +206,66 @@ export const AdminInstallmentsPage: React.FC = () => {
                 })}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Organized Card View (No Horizontal Scroll) */}
+          <div className="block md:hidden divide-y divide-border bg-card">
+            {filteredInstallments.length === 0 ? (
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                কোনো কিস্তি রেকর্ড পাওয়া যায়নি।
+              </div>
+            ) : (
+              filteredInstallments.map((inst) => {
+                const loanApp = applications.find((a) => a.id === inst.loanId);
+                const isPaid = inst.status === 'paid';
+
+                return (
+                  <div key={inst.id} className="p-3.5 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-xs text-accent">{inst.loanId}</span>
+                          <span className="font-semibold text-xs text-foreground">• কিস্তি #{toBengaliNumber(inst.installmentNo)}</span>
+                        </div>
+                        <div className="font-bold text-xs text-foreground mt-0.5">{loanApp?.applicantName || 'গ্রাহক'}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">নির্ধারিত তারিখ: {inst.dueDate}</div>
+                      </div>
+                      <div className="text-right">
+                        {isPaid ? (
+                          <Badge className="bg-emerald-600 text-white text-[10px] gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> আদায় হয়েছে
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50 text-[10px] gap-1">
+                            <Clock className="w-3 h-3" /> বকেয়া
+                          </Badge>
+                        )}
+                        <div className="font-mono font-extrabold text-sm text-foreground mt-1">
+                          {formatTaka(inst.amount)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {isPaid && (
+                      <div className="p-2 rounded-lg bg-muted/30 border border-border/50 text-[11px] font-mono">
+                        <span className="text-muted-foreground">পদ্ধতি:</span> <strong>{inst.paymentMethod}</strong> • TrxID: {inst.transactionId}
+                      </div>
+                    )}
+
+                    <div className="pt-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenRecord(inst)}
+                        className="w-full h-8 text-xs font-bold"
+                      >
+                        {isPaid ? 'রেকর্ড পরিবর্তন করুন' : 'পেমেন্ট রিসিভ ও আপডেট করুন'}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </Card>
 

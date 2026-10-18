@@ -554,6 +554,41 @@ export const AdminOfficialDocumentGeneratorPage: React.FC = () => {
       }
     >
       <div className="space-y-6">
+        {/* Mobile Quick Action Buttons Bar */}
+        <div className="flex sm:hidden items-center gap-2 flex-wrap bg-card p-3 rounded-xl border border-border shadow-xs">
+          <Button
+            onClick={handleDownloadImage}
+            disabled={isCapturing}
+            size="sm"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-9 px-3 gap-1.5 shadow-sm"
+          >
+            {isCapturing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+            <span>ছবি ডাউনলোড (PNG)</span>
+          </Button>
+
+          <Button
+            onClick={handleCopyImage}
+            disabled={isCapturing}
+            size="sm"
+            variant="outline"
+            className="text-xs font-bold h-9 px-3 gap-1.5 border-blue-400 text-blue-700 hover:bg-blue-50"
+          >
+            {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-blue-600" />}
+            <span>{copySuccess ? "কপি সম্পন্ন!" : "ছবি কপি"}</span>
+          </Button>
+
+          <Button
+            onClick={handleOpenPreviewModal}
+            disabled={isCapturing}
+            size="sm"
+            variant="secondary"
+            className="text-xs font-semibold h-9 px-2.5 gap-1"
+          >
+            <Eye className="w-3.5 h-3.5 text-slate-700" />
+            <span>প্রিভিউ</span>
+          </Button>
+        </div>
+
         {/* Controls Card */}
         <Card className="border shadow-sm bg-card">
           <CardHeader className="p-4 sm:p-5 border-b">

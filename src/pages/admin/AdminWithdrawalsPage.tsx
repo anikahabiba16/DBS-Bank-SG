@@ -480,7 +480,8 @@ export const AdminWithdrawalsPage: React.FC = () => {
               </CardHeader>
 
               <CardContent className="p-0">
-                <div className="w-full max-w-full overflow-x-auto bg-card">
+                {/* Desktop Table View */}
+                <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="border-b bg-muted/40 text-muted-foreground font-semibold">
@@ -591,6 +592,104 @@ export const AdminWithdrawalsPage: React.FC = () => {
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Organized Card View (No Horizontal Scroll) */}
+                <div className="block md:hidden divide-y divide-border bg-card">
+                  {filteredWithdrawals.length === 0 ? (
+                    <div className="px-4 py-12 text-center text-xs text-muted-foreground">
+                      কোনো উইথড্রয়াল রিকোয়েস্ট পাওয়া যায়নি।
+                    </div>
+                  ) : (
+                    filteredWithdrawals.map((w) => {
+                      const isPending = w.status === 'pending';
+                      const isBank = w.method === 'Bank';
+                      return (
+                        <div key={w.id} className="p-3.5 space-y-2.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-xs text-foreground">{w.id}</span>
+                                <span className="text-[10px] text-muted-foreground font-mono">• {w.requestDate}</span>
+                              </div>
+                              <div className="font-bold text-xs text-foreground mt-0.5">{w.customerName}</div>
+                              <div className="text-[11px] text-muted-foreground font-mono">{w.phone}</div>
+                            </div>
+                            <div className="text-right">
+                              <Badge
+                                variant="outline"
+                                className={
+                                  w.status === 'approved'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]'
+                                    : w.status === 'rejected'
+                                    ? 'bg-red-50 text-red-700 border-red-200 text-[10px]'
+                                    : 'bg-amber-50 text-amber-700 border-amber-200 text-[10px] animate-pulse'
+                                }
+                              >
+                                {w.status === 'approved'
+                                  ? 'পরিশোধিত'
+                                  : w.status === 'rejected'
+                                  ? 'বাতিলকৃত'
+                                  : 'অপেক্ষমান'}
+                              </Badge>
+                              <div className="font-mono font-extrabold text-sm text-foreground mt-1">
+                                {formatTaka(w.amount)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50 text-[11px] space-y-1">
+                            <div className="flex items-center gap-1.5 font-bold text-foreground">
+                              {isBank ? (
+                                <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                              ) : (
+                                <Smartphone className="w-3.5 h-3.5 text-pink-600 shrink-0" />
+                              )}
+                              <span>{w.method}</span>
+                              <span className="font-mono text-primary font-bold">({w.accountNumber})</span>
+                            </div>
+                            {isBank && (
+                              <div className="text-[10px] text-muted-foreground">
+                                ব্যাংক: {w.bankName || 'N/A'}{w.branchName ? ` • ${w.branchName}` : ''}
+                                {w.accountHolderName && ` • হোল্ডার: ${w.accountHolderName}`}
+                              </div>
+                            )}
+                            {w.transactionProof && (
+                              <div className="text-[10px] text-muted-foreground font-mono pt-0.5 border-t border-border/40">
+                                ট্রানজেকশন প্রুফ: {w.transactionProof}
+                              </div>
+                            )}
+                          </div>
+
+                          {isPending ? (
+                            <div className="flex items-center gap-2 pt-1">
+                              <Button
+                                size="sm"
+                                onClick={() => handleOpenProcessModal(w, 'approved')}
+                                className="flex-1 h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1 shadow-xs"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>অনুমোদন ও পেআউট</span>
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleOpenProcessModal(w, 'rejected')}
+                                className="h-8 px-3 text-xs font-bold border-red-300 text-red-600 hover:bg-red-50 gap-1 shadow-xs"
+                              >
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span>বাতিল</span>
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="text-[11px] text-muted-foreground text-right pt-0.5">
+                              সম্পন্ন: {w.processedDate || w.requestDate}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </CardContent>
             </Card>

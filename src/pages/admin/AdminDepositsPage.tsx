@@ -382,7 +382,8 @@ export const AdminDepositsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="w-full max-w-full overflow-x-auto bg-card">
+                {/* Desktop Table View */}
+                <div className="hidden md:block w-full max-w-full overflow-x-auto bg-card">
                   <table className="w-full text-xs text-left">
                     <thead className="bg-muted/50 text-muted-foreground border-b text-[11px] font-semibold">
                       <tr>
@@ -500,6 +501,115 @@ export const AdminDepositsPage: React.FC = () => {
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Organized Card View (No Horizontal Scroll) */}
+                <div className="block md:hidden divide-y divide-border bg-card">
+                  {filteredDeposits.length === 0 ? (
+                    <div className="p-8 text-center text-xs text-muted-foreground">
+                      কোনো ডিপোজিট রিকোয়েস্ট পাওয়া যায়নি
+                    </div>
+                  ) : (
+                    filteredDeposits.map((dep) => {
+                      const isPending = dep.status === 'pending';
+                      return (
+                        <div key={dep.id} className="p-3.5 space-y-2.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-xs text-foreground">{dep.id}</span>
+                                <span className="text-[10px] text-muted-foreground font-mono">• {dep.requestDate}</span>
+                              </div>
+                              <div className="font-bold text-xs text-foreground mt-0.5">{dep.customerName}</div>
+                              <div className="text-[11px] text-muted-foreground font-mono">{dep.phone}</div>
+                            </div>
+                            <div className="text-right">
+                              <Badge
+                                className={
+                                  dep.status === 'approved'
+                                    ? 'bg-emerald-600 text-white font-bold text-[10px]'
+                                    : dep.status === 'rejected'
+                                    ? 'bg-red-600 text-white font-bold text-[10px]'
+                                    : 'bg-amber-500 text-white font-bold text-[10px] animate-pulse'
+                                }
+                              >
+                                {dep.status === 'approved'
+                                  ? 'অনুমোদিত'
+                                  : dep.status === 'rejected'
+                                  ? 'বাতিলকৃত'
+                                  : 'অপেক্ষমান'}
+                              </Badge>
+                              <div className="font-mono font-extrabold text-sm text-foreground mt-1">
+                                {formatTaka(dep.amount)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 text-[11px] bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                            <div>
+                              <span className="text-muted-foreground block text-[10px]">পেমেন্ট মেথড:</span>
+                              <Badge variant="outline" className="font-bold text-[10px] bg-card mt-0.5">
+                                {dep.methodName}
+                              </Badge>
+                              <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
+                                প্রেরক: {dep.senderNumber || dep.phone}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground block text-[10px]">TrxID:</span>
+                              <span className="font-mono font-bold text-primary block break-all text-[11px] mt-0.5">
+                                {dep.transactionId}
+                              </span>
+                              {dep.slipUrl && (
+                                <div className="text-[10px] text-emerald-600 flex items-center gap-1 font-medium mt-0.5">
+                                  <FileCheck className="w-3 h-3" /> স্লিপ আছে
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setViewingSlipsDeposit(dep);
+                                setCurrentSlipIndex(0);
+                                setSlipImgError(false);
+                                setSlipsModalOpen(true);
+                              }}
+                              className="flex-1 h-8 text-xs font-bold gap-1 text-primary border-primary/30 hover:bg-primary/5"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>স্লিপ ভিউ {((dep.slipUrls && dep.slipUrls.length) || (dep.slipUrl ? 1 : 0)) > 1 ? `(${dep.slipUrls?.length})` : ''}</span>
+                            </Button>
+
+                            {isPending && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleOpenDepositAction(dep, 'approve')}
+                                  className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 shadow-xs"
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span>অনুমোদন</span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleOpenDepositAction(dep, 'reject')}
+                                  className="h-8 px-2.5 text-xs font-bold gap-1 shadow-xs"
+                                >
+                                  <XCircle className="w-3.5 h-3.5" />
+                                  <span>বাতিল</span>
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -708,7 +818,8 @@ export const AdminDepositsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead className="bg-muted/50 border-b text-muted-foreground">
                       <tr>
@@ -750,6 +861,57 @@ export const AdminDepositsPage: React.FC = () => {
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Organized Card View (No Horizontal Scroll) */}
+                <div className="block md:hidden divide-y divide-border bg-card">
+                  {users.flatMap((user) =>
+                    Object.entries(user.boundWithdrawalAccounts || {}).map(([methodKey, account]: [string, any]) => ({ user, methodKey, account }))
+                  ).length === 0 ? (
+                    <div className="p-8 text-center text-xs text-muted-foreground">
+                      এখনো কোনো গ্রাহক উইথড্রয়াল অ্যাকাউন্ট যুক্ত করেনি।
+                    </div>
+                  ) : (
+                    users.flatMap((user) =>
+                      Object.entries(user.boundWithdrawalAccounts || {}).map(([methodKey, account]: [string, any]) => ({ user, methodKey, account }))
+                    ).map(({ user, methodKey, account }) => (
+                      <div key={`${user.id}-${methodKey}`} className="p-3.5 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="font-bold text-xs text-foreground">{user.name}</div>
+                            <div className="font-mono text-[11px] text-muted-foreground">{user.phone}</div>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Badge variant="outline" className="font-bold text-xs">
+                              {methodKey}
+                            </Badge>
+                            {account?.isLocked ? (
+                              <Badge className="bg-amber-500 text-white text-[10px] gap-1"><Lock className="w-3 h-3" /> লকড</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px]">সক্রিয়</Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50 text-[11px] space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground text-[10px]">অ্যাকাউন্ট নম্বর:</span>
+                            <span className="font-mono font-bold text-foreground">{account?.accountNumber || '—'}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground text-[10px]">অ্যাকাউন্ট হোল্ডার:</span>
+                            <span className="font-medium text-foreground">{account?.accountHolderName || user.name}</span>
+                          </div>
+                          {account?.bankName && (
+                            <div className="flex justify-between items-center text-[10px]">
+                              <span className="text-muted-foreground">ব্যাংক ও শাখা:</span>
+                              <span className="text-foreground">{account.bankName}{account.branchName ? ` (${account.branchName})` : ''}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
