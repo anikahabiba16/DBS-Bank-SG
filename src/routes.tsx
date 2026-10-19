@@ -4,9 +4,9 @@ import { useLoan } from '@/contexts/LoanContext';
 import { CustomerAuthGuard } from '@/components/auth/CustomerAuthGuard';
 
 const PageLoader: React.FC = () => (
-  <div className="flex flex-col items-center justify-center min-h-[60vh] w-full p-8 gap-3">
-    <div className="w-9 h-9 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-    <span className="text-xs font-semibold text-muted-foreground animate-pulse">লোড হচ্ছে...</span>
+  <div className="flex flex-col items-center justify-center min-h-[50vh] w-full p-6 gap-2">
+    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+    <span className="text-xs font-semibold text-muted-foreground">DBS Bank SG</span>
   </div>
 );
 

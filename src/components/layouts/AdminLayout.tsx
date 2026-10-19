@@ -723,8 +723,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           aria-hidden="true"
         >
           <img
-            src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=95&w=3840&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=75&w=1280&auto=format&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=75&w=640&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1563986768609-322da13575f3?q=75&w=1080&auto=format&fit=crop 1080w, https://images.unsplash.com/photo-1563986768609-322da13575f3?q=75&w=1280&auto=format&fit=crop 1280w"
+            sizes="(max-width: 768px) 100vw, 1280px"
             alt="DBS Bank Cyber & Operations Command Architecture"
+            width="1280"
+            height="853"
+            decoding="async"
+            fetchPriority="low"
             className="w-full h-full object-cover object-center filter brightness-[1.0] contrast-[1.05]"
           />
           {/* Elegant Matte Slate & Light Translucent Overlay (Low Opacity for Rich Architectural Visibility) */}
