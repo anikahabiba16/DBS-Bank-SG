@@ -1124,7 +1124,16 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       };
 
-      void runHydration();
+      // Non-blocking deferred hydration: allows initial paint (FCP/LCP) to occur instantly from local storage before heavy network sync
+      if (typeof window !== 'undefined') {
+        if ('requestIdleCallback' in window) {
+          (window as any).requestIdleCallback(() => { void runHydration(); }, { timeout: 1200 });
+        } else {
+          setTimeout(() => { void runHydration(); }, 200);
+        }
+      } else {
+        void runHydration();
+      }
 
       // Initialize Supabase Cloud Realtime & BroadcastChannel Listeners once
       supabaseSync.initRealtimeListeners({
