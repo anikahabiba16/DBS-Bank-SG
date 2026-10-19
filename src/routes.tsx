@@ -16,14 +16,15 @@ const withSuspense = (Component: React.ComponentType) => (
   </Suspense>
 );
 
-// Critical Customer Pages - kept direct or light
-import { HomePage } from './pages/HomePage';
-import { PackagesPage } from './pages/PackagesPage';
-import { CalculatorPage } from './pages/CalculatorPage';
-import { ApplyPage } from './pages/ApplyPage';
-import { TrackPage } from './pages/TrackPage';
-import { LoginPage, RegisterPage } from './pages/AuthPages';
-import { CustomerDashboardPage } from './pages/CustomerDashboardPage';
+// Lazy load Customer & Auth Pages to eliminate unused JavaScript
+const LoginPage = lazy(() => import('./pages/AuthPages').then(m => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import('./pages/AuthPages').then(m => ({ default: m.RegisterPage })));
+const HomePage = lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })));
+const PackagesPage = lazy(() => import('./pages/PackagesPage').then(m => ({ default: m.PackagesPage })));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage').then(m => ({ default: m.CalculatorPage })));
+const ApplyPage = lazy(() => import('./pages/ApplyPage').then(m => ({ default: m.ApplyPage })));
+const TrackPage = lazy(() => import('./pages/TrackPage').then(m => ({ default: m.TrackPage })));
+const CustomerDashboardPage = lazy(() => import('./pages/CustomerDashboardPage').then(m => ({ default: m.CustomerDashboardPage })));
 
 // Lazy load Customer Messages
 const CustomerMessagesPage = lazy(() => import('./pages/CustomerMessagesPage'));
@@ -60,9 +61,9 @@ export interface RouteConfig {
 const RootEntryRoute: React.FC = () => {
   const { currentUser } = useLoan();
   if (currentUser) {
-    return <HomePage />;
+    return withSuspense(HomePage);
   }
-  return <LoginPage />;
+  return withSuspense(LoginPage);
 };
 
 export const routes: RouteConfig[] = [
@@ -76,13 +77,13 @@ export const routes: RouteConfig[] = [
   {
     name: 'গ্রাহক লগইন',
     path: '/login',
-    element: <LoginPage />,
+    element: withSuspense(LoginPage),
     public: true,
   },
   {
     name: 'গ্রাহক নিবন্ধন',
     path: '/register',
-    element: <RegisterPage />,
+    element: withSuspense(RegisterPage),
     public: true,
   },
 
@@ -92,7 +93,7 @@ export const routes: RouteConfig[] = [
     path: '/home',
     element: (
       <CustomerAuthGuard>
-        <HomePage />
+        {withSuspense(HomePage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -102,7 +103,7 @@ export const routes: RouteConfig[] = [
     path: '/packages',
     element: (
       <CustomerAuthGuard>
-        <PackagesPage />
+        {withSuspense(PackagesPage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -112,7 +113,7 @@ export const routes: RouteConfig[] = [
     path: '/calculator',
     element: (
       <CustomerAuthGuard>
-        <CalculatorPage />
+        {withSuspense(CalculatorPage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -122,7 +123,7 @@ export const routes: RouteConfig[] = [
     path: '/apply',
     element: (
       <CustomerAuthGuard>
-        <ApplyPage />
+        {withSuspense(ApplyPage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -132,7 +133,7 @@ export const routes: RouteConfig[] = [
     path: '/track',
     element: (
       <CustomerAuthGuard>
-        <TrackPage />
+        {withSuspense(TrackPage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -142,7 +143,7 @@ export const routes: RouteConfig[] = [
     path: '/dashboard',
     element: (
       <CustomerAuthGuard>
-        <CustomerDashboardPage />
+        {withSuspense(CustomerDashboardPage)}
       </CustomerAuthGuard>
     ),
     public: false,
@@ -152,7 +153,7 @@ export const routes: RouteConfig[] = [
     path: '/wallet',
     element: (
       <CustomerAuthGuard>
-        <CustomerDashboardPage />
+        {withSuspense(CustomerDashboardPage)}
       </CustomerAuthGuard>
     ),
     public: false,

@@ -33,6 +33,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (id.includes("bilingualTranslations")) {
+            return "app-translations";
+          }
           if (id.includes("html2canvas")) {
             return "vendor-html2canvas";
           }
@@ -41,6 +44,9 @@ export default defineConfig({
           }
           if (id.includes("lucide-react")) {
             return "vendor-lucide";
+          }
+          if (id.includes("@sentry")) {
+            return "vendor-sentry";
           }
           if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router")) {
             return "vendor-react";
