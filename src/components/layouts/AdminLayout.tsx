@@ -1029,13 +1029,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </h2>
 
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`w-2 h-2 rounded-full ${adminRole === 'sub_admin' ? 'bg-blue-500' : 'bg-emerald-500'} animate-pulse`}></span>
+              <span className={`w-2 h-2 rounded-full ${adminRole === 'sub_admin' ? 'bg-blue-600' : 'bg-emerald-600'} animate-pulse shrink-0`}></span>
               {adminRole === 'sub_admin' ? (
-                <span className="text-[11px] font-bold text-blue-600 truncate">
+                <span className="text-[11px] font-bold text-blue-900 dark:text-blue-300 truncate">
                   সাব-এডমিন: {currentSubAdmin?.name || 'অফিসার'}
                 </span>
               ) : (
-                <span className="text-[11px] font-bold text-emerald-600">
+                <span className="text-[11px] font-bold text-[#065f46] dark:text-[#6ee7b7]">
                   সুপার এডমিন কন্ট্রোল
                 </span>
               )}
