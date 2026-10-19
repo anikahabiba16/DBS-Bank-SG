@@ -506,7 +506,7 @@ export const CustomerDashboardPage: React.FC = () => {
                   <h1 className="text-xl sm:text-2xl font-bold text-foreground">
                     {currentUser?.name || 'সম্মানিত গ্রাহক'}
                   </h1>
-                  <Badge className="bg-emerald-600 text-white text-xs font-semibold">
+                  <Badge className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold">
                     <ShieldCheck className="w-3.5 h-3.5 mr-1" /> সক্রিয় একাউন্ট
                   </Badge>
                 </div>
@@ -522,10 +522,10 @@ export const CustomerDashboardPage: React.FC = () => {
 
                 {/* 16-Digit Real DBS Bank Account Number */}
                 <div className="pt-1.5 w-full sm:w-auto">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/25 px-2.5 sm:px-3 py-1.5 rounded-xl shadow-xs max-w-full flex-wrap">
-                    <Building2 className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-[11px] sm:text-xs font-bold text-muted-foreground whitespace-nowrap">DBS BBANK SG account number:</span>
-                    <span className="font-mono font-black text-xs sm:text-sm text-primary tracking-wider break-all">
+                  <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl shadow-xs max-w-full flex-wrap">
+                    <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-300 whitespace-nowrap">DBS BANK SG account number:</span>
+                    <span className="font-mono font-black text-xs sm:text-sm text-emerald-300 tracking-wider break-all">
                       {format16DigitAccountNumber(currentUser?.bankAccountNumber || currentUser?.phone)}
                     </span>
                   </div>
@@ -644,9 +644,9 @@ export const CustomerDashboardPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <Wallet className="w-3.5 h-3.5 text-emerald-600" />
+                  <Wallet className="w-3.5 h-3.5 text-emerald-800" />
                   <span className="text-xs text-muted-foreground">ব্যালেন্স:</span>
-                  <span className="text-xs font-black text-emerald-600 font-mono">৳ {walletBalance.toLocaleString('bn-BD')}</span>
+                  <span className="text-xs font-black text-emerald-850 font-mono text-emerald-800">৳ {walletBalance.toLocaleString('bn-BD')}</span>
                 </div>
               </div>
             </div>
@@ -655,7 +655,7 @@ export const CustomerDashboardPage: React.FC = () => {
               <Button
                 size="sm"
                 onClick={() => setDepositModalOpen(true)}
-                className="flex-1 sm:flex-none h-9 px-4 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-1.5 shadow-xs"
+                className="flex-1 sm:flex-none h-9 px-4 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl gap-1.5 shadow-xs"
               >
                 <ArrowDownCircle className="w-4 h-4" />
                  জমা
