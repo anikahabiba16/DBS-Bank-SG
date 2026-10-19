@@ -1044,7 +1044,7 @@ export const AdminCustomersPage: React.FC = () => {
             <div>
               <div className="font-extrabold text-foreground text-xs sm:text-sm flex items-center gap-2">
                 <span>ইউজার সিলেক্ট করে কাস্টম উইথড্রয়াল শর্ত নির্ধারণ ও স্লিপ যাচাই</span>
-                <Badge className="bg-amber-600 text-white text-[10px] font-bold">কাস্টম শর্ত সিস্টেম</Badge>
+                <Badge className="bg-amber-800 text-white text-[10px] font-bold">কাস্টম শর্ত সিস্টেম</Badge>
               </div>
               <p className="text-muted-foreground text-[11px] mt-0.5">
                 যে কোনো ইউজার সিলেক্ট করে কিস্তি বাবদ টাকা জমার শর্ত (যেমন ২০০০ টাকা), বীমা ফি বা ভেরিফিকেশন ফি দিন। গ্রাহক স্লিপ জমা দিলে ভিউ করে Accept করুন এবং চাইলে পরবর্তী শর্ত যুক্ত করুন।
@@ -1058,7 +1058,7 @@ export const AdminCustomersPage: React.FC = () => {
                 handleOpenConditionModal(allCustomers[0]);
               }
             }}
-            className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs h-9 px-4 gap-1.5 shadow-sm ml-auto sm:ml-0"
+            className="bg-amber-800 hover:bg-amber-900 text-white font-extrabold text-xs h-9 px-4 gap-1.5 shadow-sm ml-auto sm:ml-0"
           >
            
             <span>⚡ ইউজার সিলেক্ট করে শর্ত দিন / পরিবর্তন করুন</span>
@@ -1148,7 +1148,7 @@ export const AdminCustomersPage: React.FC = () => {
                                 title="ক্লিক করে স্ট্যাটাস অন/অফ করুন"
                               >
                                 {c.isActive ? (
-                                  <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 text-[11px] gap-1 cursor-pointer">
+                                  <Badge className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-2 py-0.5 text-[11px] gap-1 cursor-pointer">
                                     <CheckCircle2 className="w-3 h-3" /> এক্টিভ (Active)
                                   </Badge>
                                 ) : (
@@ -1165,23 +1165,23 @@ export const AdminCustomersPage: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => copyToClipboard(c.phone, 'ফোন নম্বর')}
-                                  className="text-muted-foreground hover:text-foreground p-0.5"
+                                  className="text-muted-foreground hover:text-foreground p-1.5 min-w-[28px] min-h-[28px] inline-flex items-center justify-center rounded-md hover:bg-muted"
                                   title="ফোন নম্বর কপি করুন"
                                 >
-                                  <Copy className="w-2.5 h-2.5" />
+                                  <Copy className="w-3 h-3" />
                                 </button>
                               </span>
-                              <span className="flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-md font-bold text-[11px]">
-                                <Building2 className="w-3 h-3 shrink-0" />
-                                <span className="font-sans text-[10px] text-muted-foreground">DBS BBANK SG:</span>
-                                <span>{format16DigitAccountNumber(c.bankAccountNumber || c.phone)}</span>
+                              <span className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-0.5 rounded-md font-bold text-[11px]">
+                                <Building2 className="w-3 h-3 shrink-0 text-emerald-400" />
+                                <span className="font-sans text-[10px] text-slate-300">DBS BANK SG:</span>
+                                <span className="text-emerald-300">{format16DigitAccountNumber(c.bankAccountNumber || c.phone)}</span>
                                 <button
                                   type="button"
-                                  onClick={() => copyToClipboard(format16DigitAccountNumber(c.bankAccountNumber || c.phone), 'DBS BBANK SG একাউন্ট নম্বর')}
-                                  className="text-primary hover:text-primary/70 p-0.5 ml-0.5"
+                                  onClick={() => copyToClipboard(format16DigitAccountNumber(c.bankAccountNumber || c.phone), 'DBS BANK SG একাউন্ট নম্বর')}
+                                  className="text-emerald-400 hover:text-emerald-200 p-1.5 min-w-[28px] min-h-[28px] inline-flex items-center justify-center rounded-md hover:bg-slate-800 ml-0.5"
                                   title="একাউন্ট নম্বর কপি করুন"
                                 >
-                                  <Copy className="w-2.5 h-2.5" />
+                                  <Copy className="w-3 h-3" />
                                 </button>
                               </span>
                               <span className="text-[11px] font-sans text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded border">
@@ -1207,7 +1207,7 @@ export const AdminCustomersPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => togglePasswordVisibility(c.phone)}
-                              className="text-muted-foreground hover:text-foreground p-0.5"
+                              className="text-muted-foreground hover:text-foreground p-1.5 min-w-[28px] min-h-[28px] inline-flex items-center justify-center rounded-md hover:bg-muted"
                               title={visiblePasswords[c.phone] ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                             >
                               {visiblePasswords[c.phone] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
@@ -1215,7 +1215,7 @@ export const AdminCustomersPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => copyToClipboard(c.password || 'Aa112233@', 'পাসওয়ার্ড')}
-                              className="text-muted-foreground hover:text-foreground p-0.5"
+                              className="text-muted-foreground hover:text-foreground p-1.5 min-w-[28px] min-h-[28px] inline-flex items-center justify-center rounded-md hover:bg-muted"
                               title="পাসওয়ার্ড কপি করুন"
                             >
                               <Copy className="w-3 h-3" />
@@ -1339,12 +1339,12 @@ export const AdminCustomersPage: React.FC = () => {
                           ) : (
                             <div className="space-y-1.5">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <Badge className={cond.isApproved ? "bg-emerald-600 text-white text-[10px] font-bold" : "bg-amber-500 text-white text-[10px] font-bold"}>
+                                <Badge className={cond.isApproved ? "bg-emerald-700 text-white text-[10px] font-bold" : "bg-amber-600 text-white text-[10px] font-bold"}>
                                   {cond.isApproved ? "✓ শর্ত গৃহীত (Accepted)" : (cond.stageTitle || "প্রথম কিস্তি বাবদ")}
                                 </Badge>
 
                                 {cond.feeAmount > 0 && (
-                                  <span className="text-xs font-mono font-bold text-amber-900 bg-amber-100/70 px-1.5 py-0.5 rounded">
+                                  <span className="text-xs font-mono font-bold text-amber-950 bg-amber-100/90 px-1.5 py-0.5 rounded">
                                     ফি: {formatTaka(cond.feeAmount)}
                                   </span>
                                 )}
@@ -1354,7 +1354,7 @@ export const AdminCustomersPage: React.FC = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleOpenConditionModal(c, 'edit')}
-                                  className="h-6 text-[10px] px-2 font-bold bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-600 hover:text-white flex items-center gap-1 shadow-xs"
+                                  className="h-6 text-[10px] px-2 font-bold bg-amber-50 text-amber-950 border-amber-300 hover:bg-amber-700 hover:text-white flex items-center gap-1 shadow-xs"
                                   title="চলমান শর্ত এডিট করুন (নাম, ফি ও নির্দেশনা পরিবর্তন)"
                                 >
                                   <Edit className="w-3 h-3" />
@@ -1365,7 +1365,7 @@ export const AdminCustomersPage: React.FC = () => {
                                   <Button
                                     size="sm"
                                     onClick={() => handleAcceptCondition(c)}
-                                    className="h-6 text-[10px] px-2 font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
+                                    className="h-6 text-[10px] px-2 font-bold bg-emerald-700 text-white hover:bg-emerald-800 shadow-xs"
                                     title="শর্তটি Accept করে অনুমোদন করুন"
                                   >
                                     ✓ Accept

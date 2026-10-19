@@ -1148,7 +1148,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 min-w-[20px] text-center ${
                       isActive
-                        ? 'bg-primary-foreground/20 text-primary-foreground'
+                        ? 'bg-black/25 text-white font-extrabold'
                         : item.badgeVariant === 'destructive'
                           ? 'bg-red-500/15 text-red-600 font-extrabold'
                           : 'bg-muted text-muted-foreground'
