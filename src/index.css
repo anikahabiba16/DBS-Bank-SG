@@ -18,8 +18,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 50% 11%;
 
-    /* Primary - Vibrant Ocean Cyan / Electric Azure */
-    --primary: 199 89% 46%;
+    /* Primary - Vibrant Ocean Cyan / Electric Azure (Calibrated for WCAG AA 4.5:1+ contrast on white) */
+    --primary: 199 89% 36%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Prestigious Deep Maritime Navy */
