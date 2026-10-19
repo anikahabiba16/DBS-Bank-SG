@@ -399,8 +399,8 @@ export const AdminDashboardPage: React.FC = () => {
                 গ্রাহক রেজিস্ট্রেশন করার সাথে সাথে ব্রাউজার রিফ্রেশ ছাড়াই এই তালিকায় রিয়েল-টাইমে আপডেট হবে
               </p>
             </div>
-            <Link to="/admin/customers">
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold gap-1.5 shadow-sm">
+            <Link to="/admin/customers" aria-label={`সকল ইউজার অ্যাকাউন্ট দেখুন (${toBengaliNumber(scopedUsers.length)} জন)`}>
+              <Button size="sm" className="bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold gap-1.5 shadow-sm">
                 <Users className="w-3.5 h-3.5" />
                 <span>সকল ইউজার অ্যাকাউন্ট দেখুন ({toBengaliNumber(scopedUsers.length)} জন)</span>
               </Button>
@@ -599,7 +599,7 @@ export const AdminDashboardPage: React.FC = () => {
                   ) : (
                     scopedApplications.slice(0, 6).map((app) => (
                       <TableRow key={app.id} className="hover:bg-muted/30">
-                        <TableCell className="whitespace-nowrap font-mono font-bold text-xs text-accent">
+                        <TableCell className="whitespace-nowrap font-mono font-bold text-xs text-sky-800 dark:text-sky-300">
                           {app.id}
                         </TableCell>
                         <TableCell className="whitespace-nowrap font-semibold text-xs">
@@ -649,7 +649,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-xs text-accent">{app.id}</span>
+                          <span className="font-mono font-bold text-xs text-sky-800 dark:text-sky-300">{app.id}</span>
                           <span className="text-[10px] text-muted-foreground font-mono">• {app.appliedDate}</span>
                         </div>
                         <div className="font-bold text-xs text-foreground mt-0.5">{app.applicantName}</div>

@@ -1112,6 +1112,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
               <Link
                 to={item.path}
+                aria-label={item.name}
                 onClick={onItemClick}
                 onMouseEnter={handlePrefetch}
                 onTouchStart={handlePrefetch}
@@ -1267,7 +1268,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </div>
             )}
 
-            <Link to="/">
+            <Link to="/" aria-label="গ্রাহক ভিউ - মূল ওয়েবসাইটে ফিরে যান">
               <Button
                 variant="outline"
                 size="sm"
