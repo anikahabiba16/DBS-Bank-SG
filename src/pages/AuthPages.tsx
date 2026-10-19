@@ -183,15 +183,15 @@ export const LoginPage: React.FC = () => {
           aria-hidden="true"
         >
           <img
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=1080&auto=format&fit=crop"
-            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=640&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=960&auto=format&fit=crop 960w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=1080&auto=format&fit=crop 1080w"
-            sizes="(max-width: 768px) 100vw, 1080px"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=45&w=960&auto=format&fm=webp&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=45&w=640&auto=format&fm=webp&fit=crop 640w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=45&w=960&auto=format&fm=webp&fit=crop 960w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=45&w=1080&auto=format&fm=webp&fit=crop 1080w"
+            sizes="(max-width: 768px) 100vw, 960px"
             alt="DBS Bank Singapore Financial District"
             fetchPriority="high"
             loading="eager"
             decoding="async"
-            width="1080"
-            height="720"
+            width="960"
+            height="640"
             className="w-full h-full object-cover object-center filter brightness-[0.97] contrast-[1.05] scale-100 transform"
           />
           {/* Crystal Clear Light Overlay with Soft Cool Slate & Ocean Glass Tint */}
