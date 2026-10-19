@@ -3,6 +3,16 @@ import { Navigate } from 'react-router-dom';
 import { useLoan } from '@/contexts/LoanContext';
 import { CustomerAuthGuard } from '@/components/auth/CustomerAuthGuard';
 
+// Preload the requested route chunk immediately when initial script runs
+if (typeof window !== 'undefined' && window.location) {
+  const p = window.location.pathname;
+  if (p === '/' || p === '/login' || p === '/register') {
+    import('./pages/AuthPages').catch(() => {});
+  } else if (p.startsWith('/admin')) {
+    import('./pages/admin/AdminDashboardPage').catch(() => {});
+  }
+}
+
 const PageLoader: React.FC = () => (
   <div className="flex flex-col items-center justify-center min-h-[50vh] w-full p-6 gap-2">
     <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />

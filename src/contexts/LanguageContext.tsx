@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { translateTextToEnglish } from '@/services/bilingualTranslations';
+// Lazy loaded on demand only when user switches to English
+let dynamicTranslateFn: ((text: string) => string) | null = null;
+const loadTranslator = async () => {
+  if (!dynamicTranslateFn) {
+    const mod = await import('@/services/bilingualTranslations');
+    dynamicTranslateFn = mod.translateTextToEnglish;
+  }
+  return dynamicTranslateFn;
+};
 
 export type Language = 'bn' | 'en';
 
@@ -88,6 +96,7 @@ const originalTextMap = new WeakMap<Node, string>();
 const originalAttrMap = new WeakMap<Element, Record<string, string>>();
 
 function translateTextNode(node: Node) {
+  if (!dynamicTranslateFn) return;
   const parent = node.parentElement;
   if (!parent) return;
   const tag = parent.tagName.toLowerCase();
@@ -100,13 +109,14 @@ function translateTextNode(node: Node) {
   if (!originalTextMap.has(node)) {
     originalTextMap.set(node, val);
   }
-  const translated = translateTextToEnglish(val);
+  const translated = dynamicTranslateFn(val);
   if (translated !== val) {
     node.nodeValue = translated;
   }
 }
 
 function translateElementAttributes(el: Element) {
+  if (!dynamicTranslateFn) return;
   const attrs = ['placeholder', 'title', 'aria-label'];
   for (const attr of attrs) {
     const val = el.getAttribute(attr);
@@ -118,7 +128,7 @@ function translateElementAttributes(el: Element) {
       if (!(attr in map)) {
         map[attr] = val;
       }
-      el.setAttribute(attr, translateTextToEnglish(val));
+      el.setAttribute(attr, dynamicTranslateFn(val));
     }
   }
 }
@@ -224,7 +234,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return entry[language] || defaultText || key;
     }
     if (language === 'en') {
-      return translateTextToEnglish(defaultText || key);
+      return dynamicTranslateFn ? dynamicTranslateFn(defaultText || key) : (defaultText || key);
     }
     return defaultText || key;
   };
@@ -241,8 +251,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (idleHandleRef.current !== null) { clearTimeout(idleHandleRef.current); idleHandleRef.current = null; }
 
     if (language === 'en') {
-      // ── Phase 1: Collect all Bengali-containing nodes ────────────────────────
-      const nodesToProcess: Node[] = [];
+      // Ensure translator is loaded asynchronously first
+      loadTranslator().then(() => {
+        if ((window as any).__APP_LANGUAGE__ !== 'en') return;
+        // ── Phase 1: Collect all Bengali-containing nodes ────────────────────────
+        const nodesToProcess: Node[] = [];
 
       if (document.body) {
         // Text nodes
@@ -396,6 +409,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         obs.observe(document.body!, observerOpts);
         observerRef.current = obs;
       }
+      });
     } else {
       // ── Restore Bengali ──────────────────────────────────────────────────────
       if (document.body) restoreSubtree(document.body);
