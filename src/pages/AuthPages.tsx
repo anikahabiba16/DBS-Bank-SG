@@ -5,7 +5,6 @@ import { CustomerLayout } from '@/components/layouts/CustomerLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Phone,
   Lock,
@@ -222,7 +221,7 @@ export const LoginPage: React.FC = () => {
               {platformTitle}
             </h1>
 
-            <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto">
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-1.5 max-w-sm mx-auto font-medium">
               নিরাপদ, আধুনিক ও সহজ শর্তে ডিজিটাল ব্যাংকিং ও লোন সেবা
             </p>
           </div>
@@ -265,32 +264,36 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
-          {/* Login and registration tabs */}
-          <Tabs
-            value={activeTab}
-            onValueChange={(val) =>
-              setActiveTab(val as 'login' | 'register')
-            }
-            className="w-full"
-          >
-            <TabsList className="grid grid-cols-2 w-full mb-6 h-11 p-1 bg-muted/80 rounded-xl border border-border/60">
-              <TabsTrigger
-                value="login"
-                className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
+          {/* Login and registration tabs (Lightweight zero-overhead tabs to avoid main thread long-tasks) */}
+          <div className="w-full">
+            <div className="grid grid-cols-2 w-full mb-6 h-11 p-1 bg-muted/80 rounded-xl border border-border/60">
+              <button
+                type="button"
+                onClick={() => setActiveTab('login')}
+                className={`font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 rounded-lg transition-all cursor-pointer ${
+                  activeTab === 'login'
+                    ? 'bg-card text-primary shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 <LogIn className="w-4 h-4 shrink-0" /> <span>{isEn ? 'Login' : 'লগইন করুন'}</span>
-              </TabsTrigger>
+              </button>
 
-              <TabsTrigger
-                value="register"
-                className="font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
+              <button
+                type="button"
+                onClick={() => setActiveTab('register')}
+                className={`font-bangla font-bold text-xs md:text-sm flex items-center justify-center gap-2 py-2 rounded-lg transition-all cursor-pointer ${
+                  activeTab === 'register'
+                    ? 'bg-card text-primary shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 <UserPlus className="w-4 h-4 shrink-0" /> <span>{isEn ? 'Register' : 'নতুন নিবন্ধন'}</span>
-              </TabsTrigger>
-            </TabsList>
+              </button>
+            </div>
 
             {/* Login tab */}
-            <TabsContent value="login">
+            {activeTab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4" autoComplete="on">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
@@ -299,8 +302,8 @@ export const LoginPage: React.FC = () => {
                       {isEn ? 'Mobile Number (Select Country)' : 'মোবাইল নম্বর (দেশ নির্বাচন করুন)'}
                     </Label>
 
-                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                      <Globe className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-slate-600 dark:text-slate-300" />
                       {isEn ? 'International' : 'আন্তর্জাতিক'}
                     </span>
                   </div>
@@ -322,7 +325,7 @@ export const LoginPage: React.FC = () => {
                       {isEn ? 'Password' : 'পাসওয়ার্ড'}
                     </Label>
 
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
                       {isEn ? 'Default: 123456' : 'ডিফল্ট: 123456'}
                     </span>
                   </div>
@@ -362,10 +365,10 @@ export const LoginPage: React.FC = () => {
                   {loginLoading ? (isEn ? 'Verifying...' : 'যাচাই করা হচ্ছে...') : (isEn ? 'Login' : 'লগইন করুন')}
                 </Button>
               </form>
-            </TabsContent>
+            )}
 
             {/* Registration tab */}
-            <TabsContent value="register">
+            {activeTab === 'register' && (
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5" autoComplete="on">
                 <div className="space-y-1">
                   <Label htmlFor="reg-name" className="text-xs font-semibold flex items-center gap-1.5">
@@ -392,8 +395,8 @@ export const LoginPage: React.FC = () => {
                       {isEn ? 'Active Mobile Number (Any country)' : 'সক্রিয় মোবাইল নম্বর (যেকোনো দেশ)'}
                     </Label>
 
-                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                      <Globe className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-slate-600 dark:text-slate-300" />
                       {isEn ? 'International' : 'আন্তর্জাতিক সমর্থিত'}
                     </span>
                   </div>
@@ -496,8 +499,8 @@ export const LoginPage: React.FC = () => {
                     : (isEn ? 'Complete Registration' : 'নিবন্ধন সম্পন্ন করুন')}
                 </Button>
               </form>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
 
           {/* Quick 24/7 Customer Support & Helpdesk for visitors/guests */}
           <div className="mt-6 pt-5 border-t border-border/60 text-center">
