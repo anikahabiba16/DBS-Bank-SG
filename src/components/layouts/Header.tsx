@@ -74,10 +74,10 @@ export const Header: React.FC = () => {
     <header className="sticky top-0 z-50 w-full max-w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-xs">
       {/* Top Notice Bar */}
       {settings.noticeActive && settings.noticeBannerBn && (
-        <div className="bg-primary text-primary-foreground text-xs py-1.5 px-3 sm:px-4 text-center font-medium flex items-center justify-center gap-1.5 max-w-full overflow-hidden min-h-[30px] h-[30px]">
+        <div className="bg-primary text-primary-foreground text-xs px-3 sm:px-4 text-center font-medium flex items-center justify-center gap-1.5 max-w-full overflow-hidden h-[30px] min-h-[30px] max-h-[30px] leading-[30px]">
           <Bell className="w-3.5 h-3.5 shrink-0 animate-pulse text-amber-300" />
-          <span className="truncate max-w-[calc(100%-120px)] inline-block leading-none">{settings.noticeBannerBn}</span>
-          <Link to="/packages" className="underline font-bold text-[11px] ml-1 shrink-0 hover:text-white whitespace-nowrap leading-none">
+          <span className="truncate max-w-[calc(100%-120px)] inline-block leading-[30px]">{settings.noticeBannerBn}</span>
+          <Link to="/packages" className="underline font-bold text-[11px] ml-1 shrink-0 hover:text-white whitespace-nowrap leading-[30px]">
             বিস্তারিত দেখুন →
           </Link>
         </div>
@@ -122,7 +122,7 @@ export const Header: React.FC = () => {
         </nav>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0 min-h-[36px]">
           {/* Language Switcher */}
           <LanguageSwitcher className="hidden sm:inline-flex text-xs h-8" />
 
