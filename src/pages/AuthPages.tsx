@@ -23,6 +23,7 @@ import {
 import { toast } from 'sonner';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { useLanguage } from '@/contexts/LanguageContext';
+import PageMeta from '@/components/common/PageMeta';
 
 export const LoginPage: React.FC = () => {
   const { loginUser, registerUser, currentUser, settings } = useLoan();
@@ -169,6 +170,10 @@ export const LoginPage: React.FC = () => {
 
   return (
     <CustomerLayout>
+      <PageMeta
+        title={activeTab === 'login' ? `লগইন | ${platformTitle}` : `নতুন নিবন্ধন | ${platformTitle}`}
+        description="DBS Bank SG ডিজিটাল ব্যাংকিং ও লোন সার্ভিস পোর্টালে লগইন বা নতুন অ্যাকাউন্ট নিবন্ধন করুন।"
+      />
       <div className="relative py-10 md:py-20 px-4 min-h-[92vh] flex items-center justify-center overflow-hidden bg-slate-50">
         {/* Full-screen DBS Bank & Modern Financial District Ultra-High Resolution Crisp 4K Identity */}
         <div 
@@ -245,8 +250,9 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleDismissBanner}
-                  className="text-[11px] text-muted-foreground hover:text-foreground font-semibold px-2 py-1 rounded hover:bg-muted/50 transition-colors"
+                  className="text-[11px] text-muted-foreground hover:text-foreground font-semibold px-2 py-1 rounded hover:bg-muted/50 transition-colors cursor-pointer"
                   title="আর দেখাবেন না"
+                  aria-label="আর দেখাবেন না"
                 >
                   স্কিপ
                 </button>
@@ -280,10 +286,10 @@ export const LoginPage: React.FC = () => {
 
             {/* Login tab */}
             <TabsContent value="login">
-              <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <form onSubmit={handleLoginSubmit} className="space-y-4" autoComplete="on">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                    <Label htmlFor="login-phone" className="text-xs font-semibold flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
                       {isEn ? 'Mobile Number (Select Country)' : 'মোবাইল নম্বর (দেশ নির্বাচন করুন)'}
                     </Label>
@@ -295,16 +301,18 @@ export const LoginPage: React.FC = () => {
                   </div>
 
                   <InternationalPhoneInput
+                    id="login-phone"
                     value={loginPhone}
                     onChange={(phone) => setLoginPhone(phone)}
                     placeholder={isEn ? 'Enter mobile number' : 'মোবাইল নম্বর দিন'}
+                    autoComplete="tel"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                    <Label htmlFor="login-password" className="text-xs font-semibold flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5 text-primary" />
                       {isEn ? 'Password' : 'পাসওয়ার্ড'}
                     </Label>
@@ -316,7 +324,9 @@ export const LoginPage: React.FC = () => {
 
                   <div className="relative">
                     <Input
+                      id="login-password"
                       type={showLoginPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
                       placeholder={isEn ? 'Enter your password' : 'আপনার গোপন পাসওয়ার্ড দিন'}
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
@@ -326,8 +336,9 @@ export const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword((prev) => !prev)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors cursor-pointer"
                       title={showLoginPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
+                      aria-label={showLoginPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                     >
                       {showLoginPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -350,15 +361,17 @@ export const LoginPage: React.FC = () => {
 
             {/* Registration tab */}
             <TabsContent value="register">
-              <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+              <form onSubmit={handleRegisterSubmit} className="space-y-3.5" autoComplete="on">
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold flex items-center gap-1.5">
+                  <Label htmlFor="reg-name" className="text-xs font-semibold flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-primary" />
                     {isEn ? 'Full Name (As per NID/Passport)' : 'পূর্ণ নাম (NID অনুযায়ী)'}
                   </Label>
 
                   <Input
+                    id="reg-name"
                     type="text"
+                    autoComplete="name"
                     placeholder={isEn ? 'Enter your full name' : 'আপনার পূর্ণ নাম লিখুন'}
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
@@ -369,7 +382,7 @@ export const LoginPage: React.FC = () => {
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold flex items-center gap-1.5">
+                    <Label htmlFor="reg-phone" className="text-xs font-semibold flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
                       {isEn ? 'Active Mobile Number (Any country)' : 'সক্রিয় মোবাইল নম্বর (যেকোনো দেশ)'}
                     </Label>
@@ -381,9 +394,11 @@ export const LoginPage: React.FC = () => {
                   </div>
 
                   <InternationalPhoneInput
+                    id="reg-phone"
                     value={regPhone}
                     onChange={(phone) => setRegPhone(phone)}
                     placeholder={isEn ? 'Enter mobile number' : 'মোবাইল নম্বর দিন'}
+                    autoComplete="tel"
                     required
                   />
                 </div>
@@ -400,13 +415,15 @@ export const LoginPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold">
+                    <Label htmlFor="reg-password" className="text-xs font-semibold">
                       {isEn ? 'Password' : 'পাসওয়ার্ড'}
                     </Label>
 
                     <div className="relative">
                       <Input
+                        id="reg-password"
                         type={showRegPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
                         placeholder={isEn ? 'At least 6 characters' : 'কমপক্ষে ৬ অক্ষর'}
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
@@ -416,8 +433,9 @@ export const LoginPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowRegPassword((prev) => !prev)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors cursor-pointer"
                         title={showRegPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
+                        aria-label={showRegPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                       >
                         {showRegPassword ? (
                           <EyeOff className="w-3.5 h-3.5" />
@@ -429,13 +447,15 @@ export const LoginPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold">
+                    <Label htmlFor="reg-confirm-password" className="text-xs font-semibold">
                       {isEn ? 'Confirm Password' : 'পাসওয়ার্ড নিশ্চিত করুন'}
                     </Label>
 
                     <div className="relative">
                       <Input
+                        id="reg-confirm-password"
                         type={showRegConfirmPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
                         placeholder={isEn ? 'Re-enter password' : 'পুনরায় পাসওয়ার্ড দিন'}
                         value={regConfirmPassword}
                         onChange={(e) =>
@@ -447,8 +467,9 @@ export const LoginPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowRegConfirmPassword((prev) => !prev)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors cursor-pointer"
                         title={showRegConfirmPassword ? (isEn ? 'Hide password' : 'পাসওয়ার্ড লুকান') : (isEn ? 'Show password' : 'পাসওয়ার্ড দেখুন')}
+                        aria-label={showRegConfirmPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                       >
                         {showRegConfirmPassword ? (
                           <EyeOff className="w-3.5 h-3.5" />

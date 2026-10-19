@@ -105,6 +105,7 @@ interface InternationalPhoneInputProps {
   disabled?: boolean;
   className?: string;
   defaultCountry?: string;
+  autoComplete?: string;
 }
 
 export const InternationalPhoneInput: React.FC<InternationalPhoneInputProps> = ({
@@ -115,7 +116,8 @@ export const InternationalPhoneInput: React.FC<InternationalPhoneInputProps> = (
   required = false,
   disabled = false,
   className = '',
-  defaultCountry = 'BD'
+  defaultCountry = 'BD',
+  autoComplete = 'tel'
 }) => {
   const { language } = useLanguage();
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>(defaultCountry);
@@ -297,6 +299,7 @@ export const InternationalPhoneInput: React.FC<InternationalPhoneInputProps> = (
         <Input
           id={id}
           type="tel"
+          autoComplete={autoComplete}
           placeholder={placeholder || activeCountry.placeholder}
           value={phoneNumber}
           onChange={(e) => handleNumberChange(e.target.value)}

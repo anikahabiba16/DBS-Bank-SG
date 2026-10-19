@@ -65,38 +65,7 @@
         } catch(e) {}
       })();
     </script>
-    <script>
-      // Intercept and redirect 'unload' event listeners to 'pagehide' to prevent Chrome Permissions Policy violation
-      (function() {
-        try {
-          var origAdd = window.addEventListener;
-          window.addEventListener = function(type, listener, options) {
-            if (type === 'unload') {
-              return origAdd.call(window, 'pagehide', listener, options);
-            }
-            return origAdd.call(window, type, listener, options);
-          };
-          var origRemove = window.removeEventListener;
-          window.removeEventListener = function(type, listener, options) {
-            if (type === 'unload') {
-              return origRemove.call(window, 'pagehide', listener, options);
-            }
-            return origRemove.call(window, type, listener, options);
-          };
-          Object.defineProperty(window, 'onunload', {
-            get: function() { return null; },
-            set: function(fn) {
-              if (typeof fn === 'function') {
-                window.addEventListener('pagehide', fn);
-              }
-            },
-            configurable: true
-          });
-        } catch (e) {
-          // ignore
-        }
-      })();
-    </script>
+
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
