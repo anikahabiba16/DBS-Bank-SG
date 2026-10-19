@@ -132,6 +132,7 @@ export const Header: React.FC = () => {
             onClick={() => setTrackDialogOpen(true)}
             className="hidden sm:flex text-muted-foreground hover:text-foreground h-8 w-8 md:h-9 md:w-9"
             title="আবেদন খুঁজুন"
+            aria-label="আবেদন খুঁজুন"
           >
             <Search className="w-3.5 h-3.5 md:w-4 md:h-4" />
           </Button>
@@ -241,7 +242,7 @@ export const Header: React.FC = () => {
           {/* Mobile Navigation Drawer */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label="মেনু খুলুন">
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>

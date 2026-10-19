@@ -173,6 +173,7 @@ export const LoginPage: React.FC = () => {
       <PageMeta
         title={activeTab === 'login' ? `লগইন | ${platformTitle}` : `নতুন নিবন্ধন | ${platformTitle}`}
         description="DBS Bank SG ডিজিটাল ব্যাংকিং ও লোন সার্ভিস পোর্টালে লগইন বা নতুন অ্যাকাউন্ট নিবন্ধন করুন।"
+        canonical="https://dbs-bank-sg.vercel.app/login"
       />
       <div className="relative py-10 md:py-20 px-4 min-h-[92vh] flex items-center justify-center overflow-hidden bg-slate-50">
         {/* Full-screen DBS Bank & Modern Financial District Ultra-High Resolution Crisp 4K Identity */}
@@ -181,14 +182,15 @@ export const LoginPage: React.FC = () => {
           aria-hidden="true"
         >
           <img
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1280&auto=format&fit=crop"
-            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=640&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1080&auto=format&fit=crop 1080w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=75&w=1280&auto=format&fit=crop 1280w"
-            sizes="(max-width: 768px) 100vw, 1280px"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=1080&auto=format&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=640&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=960&auto=format&fit=crop 960w, https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=60&w=1080&auto=format&fit=crop 1080w"
+            sizes="(max-width: 768px) 100vw, 1080px"
             alt="DBS Bank Singapore Financial District"
             fetchPriority="high"
+            loading="eager"
             decoding="async"
-            width="1280"
-            height="853"
+            width="1080"
+            height="720"
             className="w-full h-full object-cover object-center filter brightness-[0.97] contrast-[1.05] scale-100 transform"
           />
           {/* Crystal Clear Light Overlay with Soft Cool Slate & Ocean Glass Tint */}
@@ -209,6 +211,8 @@ export const LoginPage: React.FC = () => {
                 alt={`${platformTitle} Logo`}
                 width="64"
                 height="64"
+                loading="eager"
+                decoding="async"
                 className="w-full h-full object-contain"
               />
             </div>

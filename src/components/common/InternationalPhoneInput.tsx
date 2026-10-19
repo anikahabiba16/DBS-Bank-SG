@@ -236,8 +236,11 @@ export const InternationalPhoneInput: React.FC<InternationalPhoneInputProps> = (
           src={`https://flagcdn.com/w40/${iso}.png`}
           srcSet={`https://flagcdn.com/w80/${iso}.png 2x`}
           alt={c.nameEn}
+          width="20"
+          height="14"
           className="w-full h-full object-cover"
           loading="lazy"
+          decoding="async"
           onError={(e) => {
             // Fallback to emoji if CDN image fails
             (e.currentTarget as HTMLElement).style.display = 'none';
