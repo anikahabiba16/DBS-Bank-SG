@@ -165,7 +165,8 @@ export const LoginPage: React.FC = () => {
 
   // প্ল্যাটফর্মের নাম ও লোগো
   const platformTitle = settings.companyNameBn || settings.platformName || 'DBS Bank SG';
-  const userPortalLogo = settings.userPortalLogoUrl || "/images/logo/logo-128.png";
+  const rawPortalLogo = settings.userPortalLogoUrl || "/images/logo/logo-128.png";
+  const userPortalLogo = rawPortalLogo.includes('medo.dev') ? '/images/logo/logo-128.png' : rawPortalLogo;
   const bgLogo = settings.loginBackgroundLogoUrl || userPortalLogo;
 
   return (
