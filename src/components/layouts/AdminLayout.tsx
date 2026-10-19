@@ -759,6 +759,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <img
                 src={adminLoginLogo}
                 alt="Admin Logo"
+                width="64"
+                height="64"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-contain"
               />
             </div>
