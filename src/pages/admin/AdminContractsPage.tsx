@@ -1139,7 +1139,8 @@ export const AdminContractsPage: React.FC = () => {
                 );
               }
 
-              return filteredUsers.map((user) => {
+              // Display in windowed slice for high rendering performance
+              return filteredUsers.slice(0, 50).map((user) => {
                 const userKey = user.id || user.phone;
                 const isSelected = selectedUserIds.includes(userKey);
                 const isPermitted = user.canViewLoanAgreement === true;

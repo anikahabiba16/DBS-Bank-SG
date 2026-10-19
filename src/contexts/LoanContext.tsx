@@ -1038,10 +1038,13 @@ export const LoanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const runHydration = async () => {
         try {
           // Batch 1: critical customer, loan & settings state
+          // For initial public page render, fetch only platform settings, methods and packages.
+          // Full user lists are fetched inside the Admin Panel / specific auth checks.
+          const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
           const [purgedRes, usersRes, appsRes, settingsRes, methodsRes, pkgsRes] = await Promise.allSettled([
             supabaseSync.fetchPurgedUsersFromCloud(),
-            supabaseSync.fetchUsersFromCloud(),
-            supabaseSync.fetchApplicationsFromCloud(),
+            isAdminRoute ? supabaseSync.fetchUsersFromCloud() : Promise.resolve(null),
+            isAdminRoute ? supabaseSync.fetchApplicationsFromCloud() : Promise.resolve(null),
             supabaseSync.fetchSettingsFromCloud(),
             supabaseSync.fetchPaymentMethodsFromCloud(),
             supabaseSync.fetchPackagesFromCloud()

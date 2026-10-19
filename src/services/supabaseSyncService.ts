@@ -496,10 +496,13 @@ class SupabaseSyncService {
   }
 
   // 2. Fetch Users from Cloud
-  public async fetchUsersFromCloud(): Promise<CustomerUser[] | null> {
+  public async fetchUsersFromCloud(limit?: number): Promise<CustomerUser[] | null> {
     if (!isSupabaseConfigured) return null;
     try {
-      const query = supabase.from('site_users').select('*').order('updated_at', { ascending: false });
+      let query = supabase.from('site_users').select('*').order('updated_at', { ascending: false });
+      if (limit && limit > 0) {
+        query = query.limit(limit) as any;
+      }
       const { data, error }: any = await withQueryTimeout(query, 8000, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
       if (error || !data) return null;
 
@@ -618,10 +621,13 @@ class SupabaseSyncService {
   }
 
   // Fetch Applications from Cloud
-  public async fetchApplicationsFromCloud(): Promise<LoanApplication[] | null> {
+  public async fetchApplicationsFromCloud(limit?: number): Promise<LoanApplication[] | null> {
     if (!isSupabaseConfigured) return null;
     try {
-      const query = supabase.from('site_loans').select('*').order('created_at', { ascending: false });
+      let query = supabase.from('site_loans').select('*').order('created_at', { ascending: false });
+      if (limit && limit > 0) {
+        query = query.limit(limit) as any;
+      }
       const { data, error }: any = await withQueryTimeout(query, 8000, { data: null, error: { message: 'timeout', details: '', hint: '', code: 'TIMEOUT' } as any });
       if (error || !data) return null;
 

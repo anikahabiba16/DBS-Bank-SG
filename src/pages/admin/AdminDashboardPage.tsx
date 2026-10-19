@@ -48,30 +48,6 @@ export const AdminDashboardPage: React.FC = () => {
     refreshApplications();
     refreshUsers();
     refreshInstallments();
-
-    // Silently sync from cloud in background on mount so new registrations show immediately
-    void (async () => {
-      try {
-        const [cloudApps, cloudUsers] = await Promise.all([
-          supabaseSync.fetchApplicationsFromCloud(),
-          supabaseSync.fetchUsersFromCloud()
-        ]);
-        let changed = false;
-        if (cloudApps && cloudApps.length > 0) {
-          loanStorage.saveApplicationsFromCloud(cloudApps, false);
-          changed = true;
-        }
-        if (cloudUsers && cloudUsers.length > 0) {
-          loanStorage.saveUsersFromCloud(cloudUsers, false);
-          changed = true;
-        }
-        if (changed) {
-          refreshApplications();
-          refreshUsers();
-          refreshInstallments();
-        }
-      } catch {}
-    })();
   }, [refreshApplications, refreshUsers, refreshInstallments]);
 
   const handleManualSync = async () => {
@@ -236,15 +212,15 @@ export const AdminDashboardPage: React.FC = () => {
   const getStatusBadge = (status: ApplicationStatus) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50 text-[11px]">পেন্ডিং</Badge>;
+        return <Badge variant="outline" className="border-amber-600 text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 text-[11px] font-bold">পেন্ডিং</Badge>;
       case 'under_review':
-        return <Badge variant="outline" className="border-blue-500 text-blue-600 bg-blue-50 text-[11px]">যাচাইাধীন</Badge>;
+        return <Badge variant="outline" className="border-blue-600 text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 text-[11px] font-bold">যাচাইাধীন</Badge>;
       case 'approved':
-        return <Badge className="bg-emerald-600 text-white text-[11px]">অনুমোদিত</Badge>;
+        return <Badge className="bg-emerald-600 text-white text-[11px] font-bold">অনুমোদিত</Badge>;
       case 'disbursed':
-        return <Badge className="bg-foreground text-background text-[11px]">বিতরণকৃত</Badge>;
+        return <Badge className="bg-foreground text-background text-[11px] font-bold">বিতরণকৃত</Badge>;
       case 'rejected':
-        return <Badge variant="destructive" className="text-[11px]">বাতিল</Badge>;
+        return <Badge variant="destructive" className="text-[11px] font-bold">বাতিল</Badge>;
       default:
         return null;
     }
@@ -266,7 +242,7 @@ export const AdminDashboardPage: React.FC = () => {
             <Clock className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             <span>{isSyncing ? 'সিঙ্ক হচ্ছে...' : 'ডাটা রিফ্রেশ'}</span>
           </Button>
-          <Link to="/admin/applications">
+          <Link to="/admin/applications" aria-label="সকল লোন আবেদন দেখুন">
             <Button size="sm" className="bg-foreground text-background hover:bg-accent hover:text-accent-foreground text-xs gap-1.5 h-8">
               <FileSpreadsheet className="w-3.5 h-3.5" />
               <span>সকল আবেদন দেখুন</span>
@@ -287,9 +263,9 @@ export const AdminDashboardPage: React.FC = () => {
               {toBengaliNumber(totalApplications)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <span className="text-amber-600 font-semibold">{toBengaliNumber(pendingApps.length)} টি পেন্ডিং</span>
+              <span className="text-amber-700 dark:text-amber-400 font-bold">{toBengaliNumber(pendingApps.length)} টি পেন্ডিং</span>
               <span>•</span>
-              <span className="text-blue-600 font-semibold">{toBengaliNumber(underReviewApps.length)} টি যাচাইাধীন</span>
+              <span className="text-blue-700 dark:text-blue-400 font-bold">{toBengaliNumber(underReviewApps.length)} টি যাচাইাধীন</span>
             </div>
           </Card>
 
@@ -335,7 +311,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Quick Management Shortcuts */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-          <Link to="/admin/customers" className="h-full block">
+          <Link to="/admin/customers" className="h-full block" aria-label="সকল ইউজার অ্যাকাউন্ট দেখুন">
             <div className="h-full min-h-[82px] p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between group shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="p-2.5 rounded-lg bg-primary text-primary-foreground shadow-sm shrink-0">
@@ -343,24 +319,27 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <h4 className="font-bold text-sm text-foreground truncate">সকল ইউজার অ্যাকাউন্ট</h4>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+                    <h2 className="font-bold text-sm text-foreground truncate">সকল ইউজার অ্যাকাউন্ট</h2>
+                    <span className="relative flex h-2 w-2 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-semibold truncate">{toBengaliNumber(users.length)} জন নিবন্ধিত গ্রাহক</p>
+                  <p className="text-xs text-muted-foreground font-semibold truncate min-h-[16px]">{toBengaliNumber(users.length)} জন নিবন্ধিত গ্রাহক</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
             </div>
           </Link>
 
-          <Link to="/admin/applications" className="h-full block">
+          <Link to="/admin/applications" className="h-full block" aria-label="লোন আবেদন যাচাই করুন">
             <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <FileSpreadsheet className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-sm text-foreground truncate">লোন আবেদন যাচাই</h4>
+                  <h2 className="font-bold text-sm text-foreground truncate">লোন আবেদন যাচাই</h2>
                   <p className="text-xs text-muted-foreground truncate">{toBengaliNumber(pendingApps.length)} টি পেন্ডিং আবেদন</p>
                 </div>
               </div>
@@ -368,14 +347,14 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
           </Link>
 
-          <Link to="/admin/packages" className="h-full block">
+          <Link to="/admin/packages" className="h-full block" aria-label="লোন স্কিম ও সুদের হার পরিচালনা করুন">
             <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-sm text-foreground truncate">লোন স্কিম ও সুদের হার</h4>
+                  <h2 className="font-bold text-sm text-foreground truncate">লোন স্কিম ও সুদের হার</h2>
                   <p className="text-xs text-muted-foreground truncate">প্যাকেজ যোগ ও বিদ্যমান এডিট</p>
                 </div>
               </div>
@@ -383,14 +362,14 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
           </Link>
 
-          <Link to="/admin/settings" className="h-full block">
+          <Link to="/admin/settings" className="h-full block" aria-label="সাইট কনটেন্ট এডিটর পরিচালনা করুন">
             <div className="h-full min-h-[82px] p-4 rounded-xl border border-border bg-card hover:bg-muted/40 transition-colors flex items-center justify-between group shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="p-2.5 rounded-lg bg-muted text-accent shrink-0">
                   <Settings className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-sm text-foreground truncate">সাইট কনটেন্ট এডিটর</h4>
+                  <h2 className="font-bold text-sm text-foreground truncate">সাইট কনটেন্ট এডিটর</h2>
                   <p className="text-xs text-muted-foreground truncate">ব্যানার, নোটিশ ও প্ল্যাটফর্ম ইনফো</p>
                 </div>
               </div>
@@ -408,8 +387,11 @@ export const AdminDashboardPage: React.FC = () => {
                   <Users className="w-5 h-5 text-primary" />
                   রিয়েল-টাইম ইউজার অ্যাকাউন্টস (Live Registered Accounts)
                 </h3>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <span className="relative flex h-1.5 w-1.5 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
                   লাইভ সিঙ্ক চালু
                 </span>
               </div>
@@ -461,7 +443,7 @@ export const AdminDashboardPage: React.FC = () => {
                           <TableCell className="whitespace-nowrap font-bold text-xs text-foreground">
                             {u.name}
                           </TableCell>
-                          <TableCell className="whitespace-nowrap font-mono font-semibold text-xs text-primary">
+                          <TableCell className="whitespace-nowrap font-mono font-bold text-xs text-sky-700 dark:text-sky-400">
                             {u.phone}
                           </TableCell>
                           <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
@@ -469,7 +451,7 @@ export const AdminDashboardPage: React.FC = () => {
                               {u.password || 'Aa112233@'}
                             </span>
                           </TableCell>
-                          <TableCell className="whitespace-nowrap font-bold text-xs text-emerald-600 font-mono">
+                          <TableCell className="whitespace-nowrap font-bold text-xs text-emerald-700 dark:text-emerald-400 font-mono">
                             {formatTaka(u.walletBalance || 0)}
                           </TableCell>
                           <TableCell className="whitespace-nowrap text-xs">
@@ -489,7 +471,7 @@ export const AdminDashboardPage: React.FC = () => {
                             {u.registeredAt || 'আজ'}
                           </TableCell>
                           <TableCell className="whitespace-nowrap text-right">
-                            <Link to="/admin/customers">
+                            <Link to="/admin/customers" aria-label={`গ্রাহক বিবরণ দেখুন - ${u.name || u.phone}`}>
                               <Button variant="outline" size="sm" className="h-7 text-xs font-semibold px-2">
                                 বিবরণ দেখুন
                               </Button>
@@ -523,11 +505,11 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="font-bold text-xs text-foreground">{u.name}</div>
-                          <div className="font-mono text-[11px] text-primary font-semibold">{u.phone}</div>
+                          <div className="font-mono text-[11px] text-sky-700 dark:text-sky-400 font-bold">{u.phone}</div>
                         </div>
                         <div className="text-right">
                           <div className="text-[10px] text-muted-foreground">ওয়ালেট ব্যালেন্স</div>
-                          <div className="font-bold text-xs text-emerald-600 font-mono">
+                          <div className="font-bold text-xs text-emerald-700 dark:text-emerald-400 font-mono">
                             {formatTaka(u.walletBalance || 0)}
                           </div>
                         </div>
@@ -559,7 +541,7 @@ export const AdminDashboardPage: React.FC = () => {
                       </div>
 
                       <div className="flex justify-end pt-1">
-                        <Link to="/admin/customers" className="w-full">
+                        <Link to="/admin/customers" className="w-full" aria-label={`গ্রাহক বিবরণ ও নিয়ন্ত্রণ - ${u.name || u.phone}`}>
                           <Button variant="outline" size="sm" className="w-full h-8 text-xs font-bold">
                             গ্রাহক বিবরণ ও নিয়ন্ত্রণ
                           </Button>
@@ -584,7 +566,7 @@ export const AdminDashboardPage: React.FC = () => {
                 সর্বশেষ জমা পড়া আবেদনগুলোর অবস্থা পর্যবেক্ষণ ও দ্রুত অ্যাকশন
               </p>
             </div>
-            <Link to="/admin/applications">
+            <Link to="/admin/applications" aria-label="সকল সাম্প্রতিক লোন আবেদনের সম্পূর্ণ তালিকা">
               <Button variant="outline" size="sm" className="text-xs">
                 সম্পূর্ণ তালিকা
               </Button>
@@ -639,8 +621,11 @@ export const AdminDashboardPage: React.FC = () => {
                           {getStatusBadge(app.status)}
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-right">
-                          <Link to={`/admin/applications?selected=${app.id}`}>
-                            <Button variant="outline" size="sm" className="h-7 text-xs">
+                          <Link 
+                            to={`/admin/applications?selected=${app.id}`}
+                            aria-label={`আবেদন যাচাই করুন - ${app.applicantName}, আইডি ${app.id}`}
+                          >
+                            <Button variant="outline" size="sm" className="h-7 text-xs font-semibold">
                               যাচাই করুন
                             </Button>
                           </Link>
@@ -684,7 +669,11 @@ export const AdminDashboardPage: React.FC = () => {
                     </div>
 
                     <div className="pt-1">
-                      <Link to={`/admin/applications?selected=${app.id}`} className="w-full">
+                      <Link 
+                        to={`/admin/applications?selected=${app.id}`} 
+                        className="w-full"
+                        aria-label={`আবেদন যাচাই ও অনুমোদন করুন - আবেদনকারী ${app.applicantName}, আইডি ${app.id}`}
+                      >
                         <Button variant="outline" size="sm" className="w-full h-8 text-xs font-bold">
                           আবেদন যাচাই ও অনুমোদন
                         </Button>
