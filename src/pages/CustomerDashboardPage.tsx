@@ -463,7 +463,12 @@ export const CustomerDashboardPage: React.FC = () => {
                   {activeUser?.profileImage || activeUser?.avatarUrl || activeUser?.photoUrl || currentUser?.profileImage || currentUser?.avatarUrl || currentUser?.photoUrl ? (
                     <img
                       src={activeUser?.profileImage || activeUser?.avatarUrl || activeUser?.photoUrl || currentUser?.profileImage || currentUser?.avatarUrl || currentUser?.photoUrl}
-                      alt={activeUser?.name || currentUser?.name}
+                      alt={activeUser?.name || currentUser?.name || 'Customer Profile'}
+                      width="64"
+                      height="64"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   ) : (

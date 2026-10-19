@@ -8,6 +8,8 @@ if (typeof window !== 'undefined' && window.location) {
   const p = window.location.pathname;
   if (p === '/' || p === '/login' || p === '/register') {
     import('./pages/AuthPages').catch(() => {});
+  } else if (p === '/dashboard' || p === '/wallet') {
+    import('./pages/CustomerDashboardPage').catch(() => {});
   } else if (p.startsWith('/admin')) {
     import('./pages/admin/AdminDashboardPage').catch(() => {});
   }
