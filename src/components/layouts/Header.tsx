@@ -179,7 +179,8 @@ export const Header: React.FC = () => {
                       {currentUser.profileImage || currentUser.avatarUrl || currentUser.photoUrl ? (
                         <img
                           src={currentUser.profileImage || currentUser.avatarUrl || currentUser.photoUrl}
-                          alt={currentUser.name}
+                          alt=""
+                          aria-hidden="true"
                           className="w-full h-full object-cover"
                         />
                       ) : (

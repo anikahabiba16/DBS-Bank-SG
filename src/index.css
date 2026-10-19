@@ -26,9 +26,9 @@
     --secondary: 215 45% 94%;
     --secondary-foreground: 215 50% 11%;
 
-    /* Muted Elements - High Contrast for subheadings */
+    /* Muted Elements - High Contrast for subheadings (WCAG AA & AAA compliant) */
     --muted: 204 25% 94%;
-    --muted-foreground: 215 25% 38%;
+    --muted-foreground: 215 28% 30%;
 
     /* Soft Accents & Interactive Hover - High contrast primary tint */
     --accent: 199 89% 46%;

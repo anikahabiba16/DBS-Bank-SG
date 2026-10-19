@@ -21,13 +21,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BankApprovalLetterView } from '@/components/common/BankApprovalLetterView';
-import { CustomerDepositModal } from '@/components/common/CustomerDepositModal';
-import { CustomerSupportModal } from '@/components/common/CustomerSupportModal';
-import { CustomerContractModal } from '@/components/common/CustomerContractModal';
 import { supabaseSync } from '@/services/supabaseSyncService';
-import { ChangeAccountModal } from '@/components/customer/ChangeAccountModal';
-import { VirtualDebitCardView } from '@/components/customer/VirtualDebitCardView';
+
+// Lazy load heavy modal dialogs to eliminate initial bundle bloat & avoid long main-thread tasks
+const BankApprovalLetterView = React.lazy(() => import('@/components/common/BankApprovalLetterView').then(m => ({ default: m.BankApprovalLetterView })));
+const CustomerDepositModal = React.lazy(() => import('@/components/common/CustomerDepositModal').then(m => ({ default: m.CustomerDepositModal })));
+const CustomerSupportModal = React.lazy(() => import('@/components/common/CustomerSupportModal').then(m => ({ default: m.CustomerSupportModal })));
+const CustomerContractModal = React.lazy(() => import('@/components/common/CustomerContractModal').then(m => ({ default: m.CustomerContractModal })));
+const ChangeAccountModal = React.lazy(() => import('@/components/customer/ChangeAccountModal').then(m => ({ default: m.ChangeAccountModal })));
+const VirtualDebitCardView = React.lazy(() => import('@/components/customer/VirtualDebitCardView').then(m => ({ default: m.VirtualDebitCardView })));
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -594,10 +596,10 @@ export const CustomerDashboardPage: React.FC = () => {
                   <p className="text-xs font-medium text-slate-300 flex items-center gap-1.5 pt-0.5">
                     <Wallet className="w-4 h-4 text-emerald-400" /> বর্তমান উপলব্ধ ওয়ালেট ব্যালেন্স
                   </p>
-                  <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-baseline gap-1">
+                  <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-baseline gap-1">
                     <span className="text-emerald-400 font-serif text-2xl sm:text-3xl">৳</span>
                     <span className="font-mono text-emerald-300 drop-shadow-sm">{toBengaliNumber(walletBalance.toLocaleString('en-IN'))}</span>
-                  </h3>
+                  </h2>
                 </div>
 
                 <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 w-full lg:w-auto">
@@ -637,9 +639,9 @@ export const CustomerDashboardPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground font-medium">স্বাগতম,</span>
-                  <h3 className="text-sm font-bold text-foreground">
+                  <span className="text-sm font-bold text-foreground">
                     {currentUser?.name || 'সম্মানিত গ্রাহক'}
-                  </h3>
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <Wallet className="w-3.5 h-3.5 text-emerald-600" />
@@ -744,10 +746,10 @@ export const CustomerDashboardPage: React.FC = () => {
                 <Smartphone className="w-5 h-5 text-amber-300 animate-pulse" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                <p className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
                   <span>DBS Bank SG অফিসিয়াল মোবাইল অ্যাপ</span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-400 text-amber-950 font-black">১-ক্লিক ইনস্টল</span>
-                </h4>
+                </p>
                 <p className="text-[11px] text-white/80">
                   ব্রাউজারের ঝামেলা ছাড়াই সরাসরি মোবাইলের হোম স্ক্রিন থেকে দ্রুত লোন ও ব্যাংকিং সেবা নিন
                 </p>
@@ -849,9 +851,9 @@ export const CustomerDashboardPage: React.FC = () => {
                   <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 font-bold text-xs">
                     আবেদন স্ট্যাটাস: প্রক্রিয়াধীন (Pending Admin Approval)
                   </Badge>
-                  <h3 className="text-base sm:text-lg font-bold text-amber-950">
+                  <h2 className="text-base sm:text-lg font-bold text-amber-950">
                     পূর্ণাঙ্গ কিস্তি পরিশোধের সময়সূচি (EMI Schedule) অপেক্ষমাণ
-                  </h3>
+                  </h2>
                   <p className="text-xs sm:text-sm text-amber-800 max-w-lg mx-auto leading-relaxed">
                     আপনার লোন আবেদনটি (#{selectedLoan.id}) বর্তমানে অ্যাডমিন কর্তৃক যাচাই-বাছাই ও অনুমোদনের প্রক্রিয়ায় রয়েছে। অ্যাডমিন প্যানেল থেকে লোন অনুমোদন করার পরেই স্বয়ংক্রিয়ভাবে আপনার পূর্ণাঙ্গ মাসিক কিস্তির সময়সূচি ও পরিশোধ অপশন এখানে উন্মুক্ত হবে।
                   </p>
@@ -873,9 +875,9 @@ export const CustomerDashboardPage: React.FC = () => {
                         <FileCheck2 className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-foreground">
+                        <p className="font-bold text-sm text-foreground">
                           অভিনন্দন! আপনার অফিসিয়াল লোন পাশপত্র ইস্যু করা হয়েছে
-                        </h4>
+                        </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           অনুমোদিত সনদপত্রটি যাচাই ও প্রিন্ট করতে ভিউ করুন।
                         </p>
@@ -1072,40 +1074,42 @@ export const CustomerDashboardPage: React.FC = () => {
                     <CreditCard className="w-3.5 h-3.5" />
                     আন্তর্জাতিক মানের ভার্চুয়াল ভিসা কার্ড
                   </Badge>
-                  <h3 className="text-lg font-bold text-foreground">
+                  <h2 className="text-lg font-bold text-foreground">
                     আপনার পার্সোনাল ভার্চুয়াল ডেবিট কার্ড
-                  </h3>
+                  </h2>
                   <p className="text-xs text-muted-foreground">
                     অনলাইনে নিরাপদ শপিং ও লেনদেনের জন্য অ্যাডমিন কর্তৃক ইস্যুকৃত ভার্চুয়াল কার্ড।
                   </p>
                 </div>
 
-                <VirtualDebitCardView
-                  card={currentUser?.virtualCard}
-                  platformName={settings.platformNameBn || 'DBS Bank SG'}
-                  onApplyCard={async () => {
-                    if (!currentUser) return;
-                    const newCard = {
-                      id: `card-${Date.now()}`,
-                      cardNumber: `•••• •••• •••• ••••`,
-                      cardHolder: currentUser.name,
-                      cardHolderName: currentUser.name,
-                      expiryDate: '••/••',
-                      cvv: '•••',
-                      balance: currentUser.walletBalance || 0,
-                      status: 'pending' as const,
-                      cardType: 'visa' as const,
-                      spendingLimit: 100000
-                    };
-                    // 1. Sync to Supabase virtual_cards table (zero localStorage)
-                    await supabaseSync.requestVirtualCardInCloud(currentUser.phone || currentUser.id, currentUser.name);
-                    // 2. Update user context
-                    updateCustomerVirtualCard(currentUser.phone || currentUser.id, newCard);
-                    toast.success('ভার্চুয়াল ডেবিট কার্ডের আবেদন সফলভাবে জমা হয়েছে!', {
-                      description: 'অ্যাডমিন অনুমোদন সম্পন্ন করে কার্ড সেন্ড করলে আপনি কার্ডের পূর্ণ বিবরণ দেখতে পাবেন।'
-                    });
-                  }}
-                />
+                <React.Suspense fallback={<div className="h-44 w-full flex items-center justify-center bg-muted/30 rounded-2xl animate-pulse text-xs text-muted-foreground">কার্ড লোড হচ্ছে...</div>}>
+                  <VirtualDebitCardView
+                    card={currentUser?.virtualCard}
+                    platformName={settings.platformNameBn || 'DBS Bank SG'}
+                    onApplyCard={async () => {
+                      if (!currentUser) return;
+                      const newCard = {
+                        id: `card-${Date.now()}`,
+                        cardNumber: `•••• •••• •••• ••••`,
+                        cardHolder: currentUser.name,
+                        cardHolderName: currentUser.name,
+                        expiryDate: '••/••',
+                        cvv: '•••',
+                        balance: currentUser.walletBalance || 0,
+                        status: 'pending' as const,
+                        cardType: 'visa' as const,
+                        spendingLimit: 100000
+                      };
+                      // 1. Sync to Supabase virtual_cards table (zero localStorage)
+                      await supabaseSync.requestVirtualCardInCloud(currentUser.phone || currentUser.id, currentUser.name);
+                      // 2. Update user context
+                      updateCustomerVirtualCard(currentUser.phone || currentUser.id, newCard);
+                      toast.success('ভার্চুয়াল ডেবিট কার্ডের আবেদন সফলভাবে জমা হয়েছে!', {
+                        description: 'অ্যাডমিন অনুমোদন সম্পন্ন করে কার্ড সেন্ড করলে আপনি কার্ডের পূর্ণ বিবরণ দেখতে পাবেন।'
+                      });
+                    }}
+                  />
+                </React.Suspense>
               </div>
             </Card>
           </TabsContent>
@@ -1120,7 +1124,7 @@ export const CustomerDashboardPage: React.FC = () => {
                     <Wallet className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-foreground">সহজ ওয়ালেট ব্যালেন্স</h3>
+                    <h2 className="text-base font-bold text-foreground">সহজ ওয়ালেট ব্যালেন্স</h2>
                     <p className="text-xs text-muted-foreground">যেকোনো সময় টাকা তুলুন</p>
                   </div>
                 </div>
@@ -1287,7 +1291,7 @@ export const CustomerDashboardPage: React.FC = () => {
                               </Badge>
                             </div>
                             <div>
-                              <h4 className="font-bold text-sm text-foreground">{app.packageName}</h4>
+                              <h3 className="font-bold text-sm text-foreground">{app.packageName}</h3>
                               <p className="text-xs text-muted-foreground mt-0.5">
                                 অনুমোদিত অর্থ: <strong className="text-foreground">{formatTaka(letter.loanAmount)}</strong> | মেয়াদ: {letter.durationMonths} মাস
                               </p>
@@ -1350,9 +1354,9 @@ export const CustomerDashboardPage: React.FC = () => {
                             <Scale className="w-6 h-6" />
                           </div>
                           <div className="space-y-1">
-                            <h4 className="text-sm font-bold text-foreground">
+                            <h3 className="text-sm font-bold text-foreground">
                               আপনার জন্য কোনো অনুমোদিত চুক্তিপত্র প্রস্তুত করা হয়নি
-                            </h4>
+                            </h3>
                             <p className="text-xs text-muted-foreground max-w-md mx-auto">
                               অ্যাডমিন প্যানেল থেকে অনুমোদন ও সেন্ড না করা পর্যন্ত গ্রাহক কোনো চুক্তিপত্র দেখতে পাবে না। অ্যাডমিন অনুমোদন সম্পন্ন করলে চুক্তিপত্রটি এখানে রিয়েল-টাইমে দেখতে পাবেন।
                             </p>
@@ -1382,7 +1386,7 @@ export const CustomerDashboardPage: React.FC = () => {
                               </div>
                             </div>
                             <div>
-                              <h4 className="font-bold text-sm text-foreground">{c.contractSubjectBn}</h4>
+                              <h3 className="font-bold text-sm text-foreground">{c.contractSubjectBn}</h3>
                               <p className="text-xs text-muted-foreground mt-0.5">
                                 ঋণের পরিমাণ: <strong className="text-foreground">{formatTaka(c.loanAmount)}</strong> | মেয়াদ: {toBengaliNumber(c.durationMonths)} মাস | কিস্তি: {formatTaka(c.monthlyEMI)}
                               </p>
@@ -1723,49 +1727,52 @@ export const CustomerDashboardPage: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Change Account Modal */}
-      <ChangeAccountModal
-        open={changeAccountOpen}
-        onOpenChange={setChangeAccountOpen}
-        currentAccountType={currentUser?.accountType || 'bKash'}
-        currentAccountNumber={currentUser?.accountNumber || userPhone}
-        currentAccountHolderName={currentUser?.accountHolderName || currentUser?.name || ''}
-        currentBankName={currentUser?.bankName}
-        currentBranchName={currentUser?.branchName}
-      />
-
-      {/* Customer Deposit Modal */}
-      <CustomerDepositModal
-        open={depositModalOpen}
-        onOpenChange={setDepositModalOpen}
-      />
-
-      {/* Customer Support Modal */}
-      <CustomerSupportModal
-        open={supportModalOpen}
-        onOpenChange={setSupportModalOpen}
-      />
-
-      {/* Approval Letter Modal */}
-      {currentApprovalLetter && (
-        <Dialog open={letterModalOpen} onOpenChange={setLetterModalOpen}>
-          <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-5xl p-5 sm:p-7 bg-card max-h-[90dvh] overflow-y-auto rounded-2xl shadow-2xl">
-            <DialogHeader className="sr-only">
-              <DialogTitle>অফিসিয়াল লোন অনুমোদন পত্র</DialogTitle>
-            </DialogHeader>
-            <BankApprovalLetterView letter={currentApprovalLetter} />
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Contract Modal */}
-      {selectedContract && (
-        <CustomerContractModal
-          open={contractModalOpen}
-          onOpenChange={setContractModalOpen}
-          contract={selectedContract}
+      {/* Suspense Container for Lazy Loaded Secondary Modals */}
+      <React.Suspense fallback={null}>
+        {/* Change Account Modal */}
+        <ChangeAccountModal
+          open={changeAccountOpen}
+          onOpenChange={setChangeAccountOpen}
+          currentAccountType={currentUser?.accountType || 'bKash'}
+          currentAccountNumber={currentUser?.accountNumber || userPhone}
+          currentAccountHolderName={currentUser?.accountHolderName || currentUser?.name || ''}
+          currentBankName={currentUser?.bankName}
+          currentBranchName={currentUser?.branchName}
         />
-      )}
+
+        {/* Customer Deposit Modal */}
+        <CustomerDepositModal
+          open={depositModalOpen}
+          onOpenChange={setDepositModalOpen}
+        />
+
+        {/* Customer Support Modal */}
+        <CustomerSupportModal
+          open={supportModalOpen}
+          onOpenChange={setSupportModalOpen}
+        />
+
+        {/* Approval Letter Modal */}
+        {currentApprovalLetter && (
+          <Dialog open={letterModalOpen} onOpenChange={setLetterModalOpen}>
+            <DialogContent className="max-w-[calc(100%-1.5rem)] md:max-w-5xl p-5 sm:p-7 bg-card max-h-[90dvh] overflow-y-auto rounded-2xl shadow-2xl">
+              <DialogHeader className="sr-only">
+                <DialogTitle>অফিসিয়াল লোন অনুমোদন পত্র</DialogTitle>
+              </DialogHeader>
+              <BankApprovalLetterView letter={currentApprovalLetter} />
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Contract Modal */}
+        {selectedContract && (
+          <CustomerContractModal
+            open={contractModalOpen}
+            onOpenChange={setContractModalOpen}
+            contract={selectedContract}
+          />
+        )}
+      </React.Suspense>
     </CustomerLayout>
   );
 };
