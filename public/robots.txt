@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-# Admin routes disallow from indexing
-Disallow: /admin
-Disallow: /admin/
-
 Sitemap: https://dbs-bank-sg.vercel.app/sitemap.xml

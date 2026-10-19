@@ -430,7 +430,7 @@ export const AdminDashboardPage: React.FC = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    scopedUsers.slice(0, 25).map((u) => {
+                    scopedUsers.slice(0, 10).map((u) => {
                       const boundMethods = [];
                       if (u.boundWithdrawalAccounts?.bKash) boundMethods.push('বিকাশ');
                       if (u.boundWithdrawalAccounts?.Nagad) boundMethods.push('নগদ');
@@ -492,7 +492,7 @@ export const AdminDashboardPage: React.FC = () => {
                   কোনো নিবন্ধিত গ্রাহক অ্যাকাউন্ট পাওয়া যায়নি।
                 </div>
               ) : (
-                scopedUsers.slice(0, 25).map((u) => {
+                scopedUsers.slice(0, 10).map((u) => {
                   const boundMethods = [];
                   if (u.boundWithdrawalAccounts?.bKash) boundMethods.push('বিকাশ');
                   if (u.boundWithdrawalAccounts?.Nagad) boundMethods.push('নগদ');
